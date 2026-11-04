@@ -137,14 +137,13 @@ button:disabled {
 <div id="reactor">J</div>
 <div id="status">SYSTÈME EN ATTENTE</div>
 
-<div id="messages">
-    <div class="message jarvis">
-        Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?
-    </div>
-</div>
+<div id="messages"></div>
 
 <div id="controls">
-    <input id="question" type="text" placeholder="Écrivez votre message..." autocomplete="off">
+    <input id="question" type="text"
+    placeholder="Écrivez votre message..."
+    autocomplete="off">
+
     <button id="send" onclick="envoyer()">Envoyer</button>
     <button id="voice" onclick="parler()">🎙️</button>
 </div>
@@ -157,15 +156,83 @@ const input = document.getElementById("question");
 const statusText = document.getElementById("status");
 const sendButton = document.getElementById("send");
 
+// =====================================
+// MÉMOIRE J.A.R.V.I.S
+// =====================================
+
 let historique = [];
+
+try {
+    const memoire = localStorage.getItem("jarvis_memoire");
+    const sauvegarde = memoire ? JSON.parse(memoire) : [];
+
+    if (Array.isArray(sauvegarde)) {
+        historique = sauvegarde.filter(message =>
+            message &&
+            ["user", "assistant"].includes(message.role) &&
+            typeof message.content === "string"
+        ).slice(-12);
+    }
+} catch (erreur) {
+    console.error("Erreur de lecture mémoire :", erreur);
+    historique = [];
+}
+
+function sauvegarderMemoire() {
+    try {
+        localStorage.setItem(
+            "jarvis_memoire",
+            JSON.stringify(historique)
+        );
+    } catch (erreur) {
+        console.error("Erreur de sauvegarde :", erreur);
+        statusText.textContent = "ERREUR MÉMOIRE";
+    }
+}
+
+// =====================================
+// AFFICHAGE DES MESSAGES
+// =====================================
 
 function ajouterMessage(texte, type) {
     const div = document.createElement("div");
     div.className = "message " + type;
     div.textContent = texte;
+
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
 }
+
+// =====================================
+// RESTAURATION DE LA MÉMOIRE
+// =====================================
+
+function chargerMemoire() {
+    messages.innerHTML = "";
+
+    if (historique.length === 0) {
+        ajouterMessage(
+            "Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?",
+            "jarvis"
+        );
+        return;
+    }
+
+    historique.forEach(message => {
+        ajouterMessage(
+            message.content,
+            message.role === "user" ? "user" : "jarvis"
+        );
+    });
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+chargerMemoire();
+
+// =====================================
+// COMMUNICATION AVEC GROQ
+// =====================================
 
 async function envoyer() {
     const texte = input.value.trim();
@@ -173,7 +240,13 @@ async function envoyer() {
     if (!texte || sendButton.disabled) return;
 
     ajouterMessage(texte, "user");
-    historique.push({ role: "user", content: texte });
+
+    historique.push({
+        role: "user",
+        content: texte
+    });
+
+    sauvegarderMemoire();
 
     input.value = "";
     sendButton.disabled = true;
@@ -194,12 +267,14 @@ async function envoyer() {
 
         if (!reponse.ok) {
             throw new Error(
-                donnees.details || donnees.error || "Erreur du serveur"
+                donnees.details ||
+                donnees.error ||
+                "Erreur du serveur"
             );
         }
 
         if (!donnees.reply) {
-            throw new Error("Le serveur n'a renvoyé aucune réponse.");
+            throw new Error("Aucune réponse reçue.");
         }
 
         historique.push({
@@ -207,39 +282,74 @@ async function envoyer() {
             content: donnees.reply
         });
 
+        historique = historique.slice(-12);
+        sauvegarderMemoire();
+
         ajouterMessage(donnees.reply, "jarvis");
+
         statusText.textContent = "SYSTÈME OPÉRATIONNEL";
 
     } catch (erreur) {
-        ajouterMessage("Erreur : " + erreur.message, "jarvis");
+        ajouterMessage(
+            "Erreur : " + erreur.message,
+            "jarvis"
+        );
+
         statusText.textContent = "ERREUR DE CONNEXION";
+
     } finally {
         sendButton.disabled = false;
         input.focus();
     }
 }
 
+// =====================================
+// ENVOI AVEC LA TOUCHE ENTRÉE
+// =====================================
+
 input.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") envoyer();
+    if (event.key === "Enter") {
+        envoyer();
+    }
 });
+
+// =====================================
+// EFFACEMENT DE LA MÉMOIRE
+// =====================================
 
 function effacer() {
     historique = [];
+    sauvegarderMemoire();
+
     messages.innerHTML = "";
-    ajouterMessage("Conversation effacée. Je suis à votre écoute, Monsieur.", "jarvis");
+
+    ajouterMessage(
+        "Conversation effacée. Je suis à votre écoute, Monsieur.",
+        "jarvis"
+    );
+
     statusText.textContent = "SYSTÈME EN ATTENTE";
 }
 
+// =====================================
+// RECONNAISSANCE VOCALE
+// =====================================
+
 function parler() {
     const Reconnaissance =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
 
     if (!Reconnaissance) {
-        ajouterMessage("La reconnaissance vocale n'est pas disponible sur ce navigateur.", "jarvis");
+        ajouterMessage(
+            "La reconnaissance vocale n'est pas disponible sur ce navigateur.",
+            "jarvis"
+        );
         return;
     }
 
     const reconnaissance = new Reconnaissance();
+
     reconnaissance.lang = "fr-FR";
     reconnaissance.interimResults = false;
 
