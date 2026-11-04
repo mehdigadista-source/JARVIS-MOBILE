@@ -210,13 +210,31 @@ button:disabled {
 // =====================================
 
 // Remplace ces deux valeurs par celles de TON projet.
-const SUPABASE_URL = "";
-const SUPABASE_KEY = "";
+let client = null;
 
-const client = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+async function initialiserSupabase() {
+    try {
+        const reponse = await fetch("/.netlify/functions/config");
+        const configuration = await reponse.json();
+
+        if (!reponse.ok) {
+            throw new Error(configuration.error || "Configuration inaccessible");
+        }
+
+        client = window.supabase.createClient(
+            configuration.url,
+            configuration.key
+        );
+
+        await verifierSession();
+
+        statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
+    } catch (erreur) {
+        console.error(erreur);
+        statusText.textContent = "ERREUR CONFIGURATION SUPABASE";
+    }
+}
 
 // =====================================
 // ÉLÉMENTS DE L'INTERFACE
@@ -697,7 +715,7 @@ async function verifierSession() {
     }
 }
 
-verifierSession();
+initialiserSupabase();
 
 </script>
 </body>
