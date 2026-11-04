@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>J.A.R.V.I.S MOBILE</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 * { box-sizing: border-box; }
 
@@ -55,6 +57,38 @@ header p { font-size: 11px; letter-spacing: 2px; }
     font-size: 12px;
     letter-spacing: 2px;
     margin-bottom: 15px;
+}
+
+#login {
+    width: 92%;
+    max-width: 450px;
+    margin: 10px auto 20px;
+    padding: 18px;
+    border: 1px solid #168bb4;
+    border-radius: 8px;
+    background: #091727;
+}
+
+#login h3 {
+    text-align: center;
+    color: #42d9ff;
+}
+
+#login input {
+    width: 100%;
+    margin: 7px 0;
+}
+
+#login button {
+    width: 100%;
+    margin-top: 8px;
+}
+
+#account {
+    text-align: center;
+    margin: 10px;
+    font-size: 12px;
+    color: #42d9ff;
 }
 
 #messages {
@@ -124,6 +158,13 @@ button:disabled {
     display: block;
     margin: 0 auto 20px;
 }
+
+.hidden { display: none !important; }
+
+@media(max-width: 500px) {
+    #controls { flex-wrap: wrap; }
+    #question { width: 100%; flex-basis: 100%; }
+}
 </style>
 </head>
 
@@ -136,6 +177,19 @@ button:disabled {
 
 <div id="reactor">J</div>
 <div id="status">SYSTÈME EN ATTENTE</div>
+
+<div id="login">
+    <h3>CONNEXION J.A.R.V.I.S</h3>
+    <input id="email" type="email" placeholder="Adresse e-mail">
+    <input id="password" type="password" placeholder="Mot de passe">
+    <button id="loginButton" onclick="connecter()">Se connecter</button>
+    <p id="loginError"></p>
+</div>
+
+<div id="account" class="hidden">
+    <span id="accountEmail"></span>
+    <button onclick="deconnecter()">Déconnexion</button>
+</div>
 
 <div id="messages"></div>
 
@@ -151,63 +205,76 @@ button:disabled {
 <button id="clear" onclick="effacer()">Effacer la conversation</button>
 
 <script>
+// =====================================
+// CONFIGURATION SUPABASE
+// =====================================
+
+// Remplace ces deux valeurs par celles de TON projet.
+const SUPABASE_URL = "https://bziagqjvxahcivlvsaqa.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_obzu6X0MsMpDyLpYh4a6qA_tUvMEvmW";
+
+const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// =====================================
+// ÉLÉMENTS DE L'INTERFACE
+// =====================================
+
 const messages = document.getElementById("messages");
 const input = document.getElementById("question");
 const statusText = document.getElementById("status");
 const sendButton = document.getElementById("send");
 
-// =====================================
-// MÉMOIRE J.A.R.V.I.S
-// =====================================
-
 let historique = [];
+let utilisateur = null;
+let souvenirs = [];
 
-try {
-    const memoire = localStorage.getItem("jarvis_memoire");
-    const sauvegarde = memoire ? JSON.parse(memoire) : [];
+// =====================================
+// MÉMOIRE LOCALE
+// =====================================
 
-    if (Array.isArray(sauvegarde)) {
-        historique = sauvegarde.filter(message =>
-            message &&
-            ["user", "assistant"].includes(message.role) &&
-            typeof message.content === "string"
-        ).slice(-12);
+function chargerHistorique() {
+    try {
+        const sauvegarde = JSON.parse(
+            localStorage.getItem("jarvis_memoire") || "[]"
+        );
+
+        if (Array.isArray(sauvegarde)) {
+            historique = sauvegarde.filter(message =>
+                message &&
+                ["user", "assistant"].includes(message.role) &&
+                typeof message.content === "string"
+            ).slice(-12);
+        }
+    } catch {
+        historique = [];
     }
-} catch (erreur) {
-    console.error("Erreur de lecture mémoire :", erreur);
-    historique = [];
 }
 
 function sauvegarderMemoire() {
-    try {
-        localStorage.setItem(
-            "jarvis_memoire",
-            JSON.stringify(historique)
-        );
-    } catch (erreur) {
-        console.error("Erreur de sauvegarde :", erreur);
-        statusText.textContent = "ERREUR MÉMOIRE";
-    }
+    localStorage.setItem(
+        "jarvis_memoire",
+        JSON.stringify(historique)
+    );
 }
 
+chargerHistorique();
+
 // =====================================
-// AFFICHAGE DES MESSAGES
+// AFFICHAGE
 // =====================================
 
 function ajouterMessage(texte, type) {
     const div = document.createElement("div");
     div.className = "message " + type;
     div.textContent = texte;
-
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
 }
 
-// =====================================
-// RESTAURATION DE LA MÉMOIRE
-// =====================================
-
-function chargerMemoire() {
+function chargerConversation() {
     messages.innerHTML = "";
 
     if (historique.length === 0) {
@@ -224,11 +291,226 @@ function chargerMemoire() {
             message.role === "user" ? "user" : "jarvis"
         );
     });
-
-    messages.scrollTop = messages.scrollHeight;
 }
 
-chargerMemoire();
+chargerConversation();
+
+// =====================================
+// CONNEXION SUPABASE
+// =====================================
+
+async function connecter() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("loginError");
+
+    error.textContent = "";
+
+    if (!email || !password) {
+        error.textContent = "Veuillez remplir les deux champs.";
+        return;
+    }
+
+    document.getElementById("loginButton").disabled = true;
+    statusText.textContent = "CONNEXION EN COURS...";
+
+    try {
+        const { data, error: authError } =
+            await client.auth.signInWithPassword({
+                email,
+                password
+            });
+
+        if (authError) throw authError;
+
+        utilisateur = data.user;
+
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("account").classList.remove("hidden");
+        document.getElementById("accountEmail").textContent =
+            "Connecté : " + utilisateur.email;
+
+        await chargerSouvenirs();
+
+        statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
+        ajouterMessage(
+            "Connexion réussie. Ma mémoire longue durée est activée, Monsieur.",
+            "jarvis"
+        );
+
+    } catch (erreur) {
+        error.textContent = "Connexion impossible : " + erreur.message;
+        statusText.textContent = "ERREUR DE CONNEXION";
+    } finally {
+        document.getElementById("loginButton").disabled = false;
+    }
+}
+
+// =====================================
+// DÉCONNEXION
+// =====================================
+
+async function deconnecter() {
+    await client.auth.signOut();
+
+    utilisateur = null;
+    souvenirs = [];
+
+    document.getElementById("login").classList.remove("hidden");
+    document.getElementById("account").classList.add("hidden");
+
+    statusText.textContent = "DÉCONNECTÉ";
+    ajouterMessage("Déconnexion effectuée.", "jarvis");
+}
+
+// =====================================
+// CHARGER LES SOUVENIRS SUPABASE
+// =====================================
+
+async function chargerSouvenirs() {
+    if (!utilisateur) return;
+
+    const { data, error } = await client
+        .from("jarvis_memory")
+        .select("id, memory, category, created_at")
+        .eq("owner_id", utilisateur.id)
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    souvenirs = data || [];
+}
+
+// =====================================
+// SAUVEGARDER UN SOUVENIR
+// =====================================
+
+async function enregistrerSouvenir(texte) {
+    if (!utilisateur) {
+        ajouterMessage(
+            "Veuillez vous connecter pour utiliser la mémoire longue durée.",
+            "jarvis"
+        );
+        return;
+    }
+
+    if (!texte || texte.length > 500) {
+        ajouterMessage("Ce souvenir est vide ou trop long.", "jarvis");
+        return;
+    }
+
+    const interdit = /mot de passe|password|code bancaire|carte bancaire|adresse exacte|diagnostic médical/i;
+
+    if (interdit.test(texte)) {
+        ajouterMessage(
+            "Je ne peux pas enregistrer ce type d'information sensible.",
+            "jarvis"
+        );
+        return;
+    }
+
+    const { error } = await client
+        .from("jarvis_memory")
+        .insert({
+            owner_id: utilisateur.id,
+            memory: texte,
+            category: "general"
+        });
+
+    if (error) {
+        ajouterMessage("Erreur de sauvegarde : " + error.message, "jarvis");
+        return;
+    }
+
+    await chargerSouvenirs();
+
+    ajouterMessage(
+        "Souvenir enregistré dans ma mémoire longue durée, Monsieur.",
+        "jarvis"
+    );
+}
+
+// =====================================
+// OUBLIER UN SOUVENIR
+// =====================================
+
+async function oublierSouvenir(texte) {
+    if (!utilisateur) {
+        ajouterMessage("Veuillez vous connecter d'abord.", "jarvis");
+        return;
+    }
+
+    const recherche = texte.toLowerCase();
+
+    const correspondances = souvenirs.filter(s =>
+        s.memory.toLowerCase().includes(recherche)
+    );
+
+    if (correspondances.length === 0) {
+        ajouterMessage("Je n'ai pas trouvé ce souvenir.", "jarvis");
+        return;
+    }
+
+    const ids = correspondances.map(s => s.id);
+
+    const { error } = await client
+        .from("jarvis_memory")
+        .delete()
+        .in("id", ids)
+        .eq("owner_id", utilisateur.id);
+
+    if (error) {
+        ajouterMessage("Erreur : " + error.message, "jarvis");
+        return;
+    }
+
+    await chargerSouvenirs();
+
+    ajouterMessage(
+        "Le souvenir demandé a été supprimé de ma mémoire longue durée.",
+        "jarvis"
+    );
+}
+
+// =====================================
+// COMMANDES DE MÉMOIRE
+// =====================================
+
+function traiterCommandeMemoire(texte) {
+    const minuscule = texte.toLowerCase();
+
+    const commandesMemoire = [
+        "retiens que ",
+        "souviens-toi que ",
+        "mémorise que "
+    ];
+
+    for (const commande of commandesMemoire) {
+        if (minuscule.startsWith(commande)) {
+            enregistrerSouvenir(texte.slice(commande.length).trim());
+            return true;
+        }
+    }
+
+    const commandesOubli = [
+        "oublie que ",
+        "oublie "
+    ];
+
+    for (const commande of commandesOubli) {
+        if (minuscule.startsWith(commande)) {
+            oublierSouvenir(texte.slice(commande.length).trim());
+            return true;
+        }
+    }
+
+    return false;
+}
 
 // =====================================
 // COMMUNICATION AVEC GROQ
@@ -241,6 +523,12 @@ async function envoyer() {
 
     ajouterMessage(texte, "user");
 
+    input.value = "";
+
+    if (traiterCommandeMemoire(texte)) {
+        return;
+    }
+
     historique.push({
         role: "user",
         content: texte
@@ -248,18 +536,30 @@ async function envoyer() {
 
     sauvegarderMemoire();
 
-    input.value = "";
     sendButton.disabled = true;
     statusText.textContent = "J.A.R.V.I.S RÉFLÉCHIT...";
 
     try {
+        const contexteMemoire = souvenirs.length
+            ? "Voici les souvenirs enregistrés sur l'utilisateur. Utilise-les uniquement s'ils sont utiles à la question :\n" +
+              souvenirs.map(s => "- " + s.memory).join("\n")
+            : "Aucun souvenir longue durée n'est enregistré.";
+
+        const messagesIA = [
+            {
+                role: "system",
+                content: "MÉMOIRE LONGUE DURÉE :\n" + contexteMemoire
+            },
+            ...historique.slice(-12)
+        ];
+
         const reponse = await fetch("/.netlify/functions/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                messages: historique.slice(-12)
+                messages: messagesIA
             })
         });
 
@@ -290,13 +590,8 @@ async function envoyer() {
         statusText.textContent = "SYSTÈME OPÉRATIONNEL";
 
     } catch (erreur) {
-        ajouterMessage(
-            "Erreur : " + erreur.message,
-            "jarvis"
-        );
-
+        ajouterMessage("Erreur : " + erreur.message, "jarvis");
         statusText.textContent = "ERREUR DE CONNEXION";
-
     } finally {
         sendButton.disabled = false;
         input.focus();
@@ -304,17 +599,15 @@ async function envoyer() {
 }
 
 // =====================================
-// ENVOI AVEC LA TOUCHE ENTRÉE
+// ENTRÉE CLAVIER
 // =====================================
 
 input.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        envoyer();
-    }
+    if (event.key === "Enter") envoyer();
 });
 
 // =====================================
-// EFFACEMENT DE LA MÉMOIRE
+// EFFACER LA CONVERSATION
 // =====================================
 
 function effacer() {
@@ -324,7 +617,7 @@ function effacer() {
     messages.innerHTML = "";
 
     ajouterMessage(
-        "Conversation effacée. Je suis à votre écoute, Monsieur.",
+        "Conversation effacée. Mes souvenirs longue durée sont conservés.",
         "jarvis"
     );
 
@@ -374,7 +667,38 @@ function parler() {
 
     reconnaissance.start();
 }
-</script>
 
+// =====================================
+// RESTAURATION DE SESSION
+// =====================================
+
+async function verifierSession() {
+    const { data, error } = await client.auth.getSession();
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    if (data.session) {
+        utilisateur = data.session.user;
+
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("account").classList.remove("hidden");
+        document.getElementById("accountEmail").textContent =
+            "Connecté : " + utilisateur.email;
+
+        try {
+            await chargerSouvenirs();
+            statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+        } catch {
+            statusText.textContent = "ERREUR MÉMOIRE";
+        }
+    }
+}
+
+verifierSession();
+
+</script>
 </body>
 </html>
