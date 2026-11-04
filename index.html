@@ -19,7 +19,6 @@ body {
     color: #d9f5ff;
     font-family: Arial, sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
 header {
@@ -43,19 +42,8 @@ header {
 }
 
 .status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
     color: #55e6a5;
-}
-
-.led {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #35e99a;
-    box-shadow: 0 0 12px #35e99a;
+    font-size: 11px;
 }
 
 main {
@@ -78,34 +66,9 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     box-shadow: 0 0 20px #087da8,
                 inset 0 0 25px #087da8;
     animation: pulse 3s infinite;
-}
-
-.reactor::before,
-.reactor::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    border: 2px solid #167eae;
-}
-
-.reactor::before {
-    width: 155px;
-    height: 155px;
-    border-top-color: transparent;
-    border-bottom-color: transparent;
-    animation: rotate 6s linear infinite;
-}
-
-.reactor::after {
-    width: 125px;
-    height: 125px;
-    border-left-color: transparent;
-    border-right-color: transparent;
-    animation: rotate 4s linear infinite reverse;
 }
 
 .core {
@@ -117,20 +80,17 @@ main {
                 0 0 55px #168acb;
 }
 
-@keyframes rotate {
-    to { transform: rotate(360deg); }
-}
-
 @keyframes pulse {
-    50% { box-shadow: 0 0 35px #087da8,
-                       inset 0 0 35px #087da8; }
+    50% {
+        box-shadow: 0 0 35px #087da8,
+                    inset 0 0 35px #087da8;
+    }
 }
 
 .title {
     text-align: center;
     margin: 10px 0;
     letter-spacing: 4px;
-    font-size: 17px;
     color: #75dfff;
 }
 
@@ -142,7 +102,7 @@ main {
 }
 
 .chat {
-    height: 260px;
+    height: 300px;
     overflow-y: auto;
     border: 1px solid #16405a;
     border-radius: 12px;
@@ -163,11 +123,12 @@ main {
 }
 
 .user {
-    color: #ffffff;
+    color: white;
     text-align: right;
 }
 
-.input-area {
+.input-area,
+.bottom-buttons {
     display: flex;
     gap: 8px;
 }
@@ -180,7 +141,6 @@ input {
     border-radius: 9px;
     padding: 14px;
     color: white;
-    outline: none;
     font-size: 14px;
 }
 
@@ -190,23 +150,15 @@ button {
     color: #62dcff;
     border-radius: 9px;
     padding: 12px 15px;
-    font-size: 17px;
     cursor: pointer;
 }
 
-button:active {
-    background: #164e6c;
-}
-
 .bottom-buttons {
-    display: flex;
-    gap: 10px;
     margin-top: 12px;
 }
 
 .bottom-buttons button {
     flex: 1;
-    font-size: 12px;
 }
 
 footer {
@@ -225,10 +177,7 @@ footer {
         <div class="logo">J.A.R.V.I.S</div>
         <div class="version">STARK INDUSTRIES • MOBILE 1.0</div>
     </div>
-    <div class="status">
-        <div class="led" id="led"></div>
-        <span id="status">EN ATTENTE</span>
-    </div>
+    <div class="status" id="status">EN ATTENTE</div>
 </header>
 
 <main>
@@ -251,8 +200,7 @@ footer {
     </div>
 
     <div class="input-area">
-        <input id="message" type="text"
-        placeholder="Écrivez à JARVIS..."
+        <input id="message" placeholder="Écrivez à JARVIS..."
         autocomplete="off">
         <button onclick="envoyer()">➤</button>
     </div>
@@ -289,57 +237,26 @@ function ajouterMessage(texte, type) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-async function envoyer() {
+function envoyer() {
     const texte = input.value.trim();
-
     if (!texte) return;
 
     ajouterMessage(texte, "user");
     input.value = "";
 
-    document.getElementById("status").textContent = "RÉFLEXION";
-
-    try {
-        const reponse = await fetch("/.netlify/functions/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                messages: [
-                    {
-                        role: "user",
-                        content: texte
-                    }
-                ]
-            })
-        });
-
-        const donnees = await reponse.json();
-
-        if (!reponse.ok) {
-            throw new Error(donnees.error || "Erreur du serveur");
-        }
-
-        ajouterMessage(donnees.reply, "jarvis");
-
-    } catch (erreur) {
-        ajouterMessage(
-            "Impossible de contacter mon intelligence artificielle : " + erreur.message,
-            "jarvis"
-        );
-    }
-
-    document.getElementById("status").textContent = "EN ATTENTE";
+    ajouterMessage(
+        "Interface opérationnelle. Le module IA est actuellement en attente de configuration.",
+        "jarvis"
+    );
 }
 
-input.addEventListener("keydown", function(event) {
+input.addEventListener("keydown", event => {
     if (event.key === "Enter") envoyer();
 });
 
 function effacer() {
     chat.innerHTML = "";
-    ajouterMessage("Historique de cette session effacé.", "jarvis");
+    ajouterMessage("Historique effacé.", "jarvis");
 }
 
 function parler() {
@@ -349,7 +266,7 @@ function parler() {
 
     if (!Reconnaissance) {
         ajouterMessage(
-            "La reconnaissance vocale n'est pas disponible dans ce navigateur. Nous configurerons une autre solution si nécessaire.",
+            "La reconnaissance vocale n'est pas disponible.",
             "jarvis"
         );
         return;
@@ -357,20 +274,19 @@ function parler() {
 
     const reconnaissance = new Reconnaissance();
     reconnaissance.lang = "fr-FR";
-    reconnaissance.interimResults = false;
 
     document.getElementById("status").textContent = "ÉCOUTE";
 
-    reconnaissance.onresult = function(event) {
+    reconnaissance.onresult = event => {
         input.value = event.results[0][0].transcript;
         envoyer();
     };
 
-    reconnaissance.onerror = function() {
-        ajouterMessage("Impossible de reconnaître votre voix.", "jarvis");
+    reconnaissance.onerror = () => {
+        ajouterMessage("Erreur de reconnaissance vocale.", "jarvis");
     };
 
-    reconnaissance.onend = function() {
+    reconnaissance.onend = () => {
         document.getElementById("status").textContent = "EN ATTENTE";
     };
 
@@ -380,4 +296,3 @@ function parler() {
 
 </body>
 </html>
-
