@@ -1,1 +1,353 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050b14">
+<title>J.A.R.V.I.S MOBILE</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #050b14;
+    color: #d9f5ff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+header {
+    padding: 22px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #12344b;
+}
+
+.logo {
+    color: #55dfff;
+    font-size: 21px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+.version {
+    color: #64889c;
+    font-size: 11px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #55e6a5;
+}
+
+.led {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #35e99a;
+    box-shadow: 0 0 12px #35e99a;
+}
+
+main {
+    max-width: 650px;
+    margin: auto;
+    padding: 20px;
+}
+
+.reactor-area {
+    display: flex;
+    justify-content: center;
+    padding: 25px 0;
+}
+
+.reactor {
+    width: 190px;
+    height: 190px;
+    border: 2px solid #39cfff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 20px #087da8,
+                inset 0 0 25px #087da8;
+    animation: pulse 3s infinite;
+}
+
+.reactor::before,
+.reactor::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid #167eae;
+}
+
+.reactor::before {
+    width: 155px;
+    height: 155px;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    animation: rotate 6s linear infinite;
+}
+
+.reactor::after {
+    width: 125px;
+    height: 125px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    animation: rotate 4s linear infinite reverse;
+}
+
+.core {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #65eaff;
+    box-shadow: 0 0 25px #36cfff,
+                0 0 55px #168acb;
+}
+
+@keyframes rotate {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    50% { box-shadow: 0 0 35px #087da8,
+                       inset 0 0 35px #087da8; }
+}
+
+.title {
+    text-align: center;
+    margin: 10px 0;
+    letter-spacing: 4px;
+    font-size: 17px;
+    color: #75dfff;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 11px;
+    color: #668b9e;
+    margin-bottom: 25px;
+}
+
+.chat {
+    height: 260px;
+    overflow-y: auto;
+    border: 1px solid #16405a;
+    border-radius: 12px;
+    background: #081522;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.message {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    overflow-wrap: anywhere;
+}
+
+.jarvis {
+    color: #60dfff;
+}
+
+.user {
+    color: #ffffff;
+    text-align: right;
+}
+
+.input-area {
+    display: flex;
+    gap: 8px;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    background: #0b1c2b;
+    border: 1px solid #20516c;
+    border-radius: 9px;
+    padding: 14px;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+button {
+    border: 1px solid #168fbd;
+    background: #0b263a;
+    color: #62dcff;
+    border-radius: 9px;
+    padding: 12px 15px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+button:active {
+    background: #164e6c;
+}
+
+.bottom-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.bottom-buttons button {
+    flex: 1;
+    font-size: 12px;
+}
+
+footer {
+    text-align: center;
+    color: #34586b;
+    font-size: 10px;
+    padding: 25px 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <div class="logo">J.A.R.V.I.S</div>
+        <div class="version">STARK INDUSTRIES • MOBILE 1.0</div>
+    </div>
+    <div class="status">
+        <div class="led" id="led"></div>
+        <span id="status">EN ATTENTE</span>
+    </div>
+</header>
+
+<main>
+
+    <div class="reactor-area">
+        <div class="reactor">
+            <div class="core"></div>
+        </div>
+    </div>
+
+    <div class="title">SYSTÈME J.A.R.V.I.S</div>
+    <div class="subtitle">PERSONAL ARTIFICIAL INTELLIGENCE</div>
+
+    <div class="chat" id="chat">
+        <div class="message jarvis">
+            <strong>J.A.R.V.I.S :</strong><br>
+            Bonjour Monsieur. Interface mobile initialisée.
+            Je suis prêt à recevoir vos instructions.
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input id="message" type="text"
+        placeholder="Écrivez à JARVIS..."
+        autocomplete="off">
+        <button onclick="envoyer()">➤</button>
+    </div>
+
+    <div class="bottom-buttons">
+        <button onclick="parler()">🎙️ MODE VOCAL</button>
+        <button onclick="effacer()">⌫ EFFACER</button>
+    </div>
+
+</main>
+
+<footer>
+    STARK INDUSTRIES © 2026 — J.A.R.V.I.S MOBILE
+</footer>
+
+<script>
+const chat = document.getElementById("chat");
+const input = document.getElementById("message");
+
+function ajouterMessage(texte, type) {
+    const div = document.createElement("div");
+    div.className = "message " + type;
+
+    const titre = document.createElement("strong");
+    titre.textContent = type === "user"
+        ? "VOUS : "
+        : "J.A.R.V.I.S : ";
+
+    div.appendChild(titre);
+    div.appendChild(document.createElement("br"));
+    div.appendChild(document.createTextNode(texte));
+
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function envoyer() {
+    const texte = input.value.trim();
+
+    if (!texte) return;
+
+    ajouterMessage(texte, "user");
+    input.value = "";
+
+    ajouterMessage(
+        "Interface opérationnelle. La connexion à mon intelligence artificielle sera configurée à l'étape suivante, Monsieur.",
+        "jarvis"
+    );
+}
+
+input.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") envoyer();
+});
+
+function effacer() {
+    chat.innerHTML = "";
+    ajouterMessage("Historique de cette session effacé.", "jarvis");
+}
+
+function parler() {
+    const Reconnaissance =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!Reconnaissance) {
+        ajouterMessage(
+            "La reconnaissance vocale n'est pas disponible dans ce navigateur. Nous configurerons une autre solution si nécessaire.",
+            "jarvis"
+        );
+        return;
+    }
+
+    const reconnaissance = new Reconnaissance();
+    reconnaissance.lang = "fr-FR";
+    reconnaissance.interimResults = false;
+
+    document.getElementById("status").textContent = "ÉCOUTE";
+
+    reconnaissance.onresult = function(event) {
+        input.value = event.results[0][0].transcript;
+        envoyer();
+    };
+
+    reconnaissance.onerror = function() {
+        ajouterMessage("Impossible de reconnaître votre voix.", "jarvis");
+    };
+
+    reconnaissance.onend = function() {
+        document.getElementById("status").textContent = "EN ATTENTE";
+    };
+
+    reconnaissance.start();
+}
+</script>
+
+</body>
+</html>
+
