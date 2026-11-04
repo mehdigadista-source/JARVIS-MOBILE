@@ -8,7 +8,7 @@ export default async (request) => {
   }
 
   try {
-    const apiKey = Netlify.env.get("GROQ_API_KEY");
+    const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
       throw new Error("Clé API Groq introuvable dans Netlify.");
