@@ -4,131 +4,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050b14">
 <title>J.A.R.V.I.S MOBILE</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; }
 
 body {
-    background: #050b14;
+    margin: 0;
+    background: #050b16;
     color: #d9f5ff;
     font-family: Arial, sans-serif;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-    padding: 22px 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #12344b;
+    text-align: center;
+    padding: 22px 10px;
+    border-bottom: 1px solid #087fa8;
+    color: #42d9ff;
+    letter-spacing: 4px;
 }
 
-.logo {
-    color: #55dfff;
-    font-size: 21px;
-    font-weight: bold;
-    letter-spacing: 3px;
-}
+header h1 { margin: 0; font-size: 25px; }
+header p { font-size: 11px; letter-spacing: 2px; }
 
-.version {
-    color: #64889c;
-    font-size: 11px;
-}
-
-.status {
-    color: #55e6a5;
-    font-size: 11px;
-}
-
-main {
-    max-width: 650px;
-    margin: auto;
-    padding: 20px;
-}
-
-.reactor-area {
-    display: flex;
-    justify-content: center;
-    padding: 25px 0;
-}
-
-.reactor {
-    width: 190px;
-    height: 190px;
-    border: 2px solid #39cfff;
+#reactor {
+    width: 100px;
+    height: 100px;
+    border: 3px solid #28cfff;
     border-radius: 50%;
+    margin: 25px auto;
+    box-shadow: 0 0 25px #00bfff;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 20px #087da8,
-                inset 0 0 25px #087da8;
-    animation: pulse 3s infinite;
-}
-
-.core {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: #65eaff;
-    box-shadow: 0 0 25px #36cfff,
-                0 0 55px #168acb;
+    color: #70eaff;
+    font-size: 28px;
+    animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-    50% {
-        box-shadow: 0 0 35px #087da8,
-                    inset 0 0 35px #087da8;
-    }
+    50% { box-shadow: 0 0 45px #00bfff; }
 }
 
-.title {
+#status {
     text-align: center;
-    margin: 10px 0;
-    letter-spacing: 4px;
-    color: #75dfff;
-}
-
-.subtitle {
-    text-align: center;
-    font-size: 11px;
-    color: #668b9e;
-    margin-bottom: 25px;
-}
-
-.chat {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #16405a;
-    border-radius: 12px;
-    background: #081522;
-    padding: 15px;
+    color: #39dfff;
+    font-size: 12px;
+    letter-spacing: 2px;
     margin-bottom: 15px;
+}
+
+#messages {
+    flex: 1;
+    width: 92%;
+    max-width: 750px;
+    margin: auto;
+    padding: 15px;
+    overflow-y: auto;
+    min-height: 250px;
+    max-height: 55vh;
 }
 
 .message {
-    font-size: 14px;
+    padding: 13px;
+    margin: 10px 0;
+    border-radius: 8px;
     line-height: 1.5;
-    margin-bottom: 15px;
+    white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
 
-.jarvis {
-    color: #60dfff;
-}
-
 .user {
-    color: white;
-    text-align: right;
+    background: #102b45;
+    border-left: 3px solid #3b9cff;
 }
 
-.input-area,
-.bottom-buttons {
+.jarvis {
+    background: #092d35;
+    border-left: 3px solid #26dfff;
+}
+
+#controls {
+    width: 92%;
+    max-width: 750px;
+    margin: 15px auto 30px;
     display: flex;
     gap: 8px;
 }
@@ -136,36 +98,31 @@ main {
 input {
     flex: 1;
     min-width: 0;
-    background: #0b1c2b;
-    border: 1px solid #20516c;
-    border-radius: 9px;
     padding: 14px;
+    border: 1px solid #168bb4;
+    border-radius: 6px;
+    background: #091727;
     color: white;
-    font-size: 14px;
+    outline: none;
 }
 
 button {
-    border: 1px solid #168fbd;
-    background: #0b263a;
-    color: #62dcff;
-    border-radius: 9px;
     padding: 12px 15px;
+    border: 1px solid #22cfff;
+    border-radius: 6px;
+    background: #08283a;
+    color: #54dfff;
     cursor: pointer;
 }
 
-.bottom-buttons {
-    margin-top: 12px;
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.bottom-buttons button {
-    flex: 1;
-}
-
-footer {
-    text-align: center;
-    color: #34586b;
-    font-size: 10px;
-    padding: 25px 10px;
+#clear {
+    display: block;
+    margin: 0 auto 20px;
 }
 </style>
 </head>
@@ -173,121 +130,136 @@ footer {
 <body>
 
 <header>
-    <div>
-        <div class="logo">J.A.R.V.I.S</div>
-        <div class="version">STARK INDUSTRIES • MOBILE 1.0</div>
-    </div>
-    <div class="status" id="status">EN ATTENTE</div>
+    <h1>J.A.R.V.I.S</h1>
+    <p>STARK INDUSTRIES • MOBILE SYSTEM</p>
 </header>
 
-<main>
+<div id="reactor">J</div>
+<div id="status">SYSTÈME EN ATTENTE</div>
 
-    <div class="reactor-area">
-        <div class="reactor">
-            <div class="core"></div>
-        </div>
+<div id="messages">
+    <div class="message jarvis">
+        Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?
     </div>
+</div>
 
-    <div class="title">SYSTÈME J.A.R.V.I.S</div>
-    <div class="subtitle">PERSONAL ARTIFICIAL INTELLIGENCE</div>
+<div id="controls">
+    <input id="question" type="text" placeholder="Écrivez votre message..." autocomplete="off">
+    <button id="send" onclick="envoyer()">Envoyer</button>
+    <button id="voice" onclick="parler()">🎙️</button>
+</div>
 
-    <div class="chat" id="chat">
-        <div class="message jarvis">
-            <strong>J.A.R.V.I.S :</strong><br>
-            Bonjour Monsieur. Interface mobile initialisée.
-            Je suis prêt à recevoir vos instructions.
-        </div>
-    </div>
-
-    <div class="input-area">
-        <input id="message" placeholder="Écrivez à JARVIS..."
-        autocomplete="off">
-        <button onclick="envoyer()">➤</button>
-    </div>
-
-    <div class="bottom-buttons">
-        <button onclick="parler()">🎙️ MODE VOCAL</button>
-        <button onclick="effacer()">⌫ EFFACER</button>
-    </div>
-
-</main>
-
-<footer>
-    STARK INDUSTRIES © 2026 — J.A.R.V.I.S MOBILE
-</footer>
+<button id="clear" onclick="effacer()">Effacer la conversation</button>
 
 <script>
-const chat = document.getElementById("chat");
-const input = document.getElementById("message");
+const messages = document.getElementById("messages");
+const input = document.getElementById("question");
+const statusText = document.getElementById("status");
+const sendButton = document.getElementById("send");
+
+let historique = [];
 
 function ajouterMessage(texte, type) {
     const div = document.createElement("div");
     div.className = "message " + type;
-
-    const titre = document.createElement("strong");
-    titre.textContent = type === "user"
-        ? "VOUS : "
-        : "J.A.R.V.I.S : ";
-
-    div.appendChild(titre);
-    div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode(texte));
-
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+    div.textContent = texte;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
 }
 
-function envoyer() {
+async function envoyer() {
     const texte = input.value.trim();
-    if (!texte) return;
+
+    if (!texte || sendButton.disabled) return;
 
     ajouterMessage(texte, "user");
-    input.value = "";
+    historique.push({ role: "user", content: texte });
 
-    ajouterMessage(
-        "Interface opérationnelle. Le module IA est actuellement en attente de configuration.",
-        "jarvis"
-    );
+    input.value = "";
+    sendButton.disabled = true;
+    statusText.textContent = "J.A.R.V.I.S RÉFLÉCHIT...";
+
+    try {
+        const reponse = await fetch("/.netlify/functions/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                messages: historique.slice(-12)
+            })
+        });
+
+        const donnees = await reponse.json();
+
+        if (!reponse.ok) {
+            throw new Error(
+                donnees.details || donnees.error || "Erreur du serveur"
+            );
+        }
+
+        if (!donnees.reply) {
+            throw new Error("Le serveur n'a renvoyé aucune réponse.");
+        }
+
+        historique.push({
+            role: "assistant",
+            content: donnees.reply
+        });
+
+        ajouterMessage(donnees.reply, "jarvis");
+        statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
+    } catch (erreur) {
+        ajouterMessage("Erreur : " + erreur.message, "jarvis");
+        statusText.textContent = "ERREUR DE CONNEXION";
+    } finally {
+        sendButton.disabled = false;
+        input.focus();
+    }
 }
 
-input.addEventListener("keydown", event => {
+input.addEventListener("keydown", function(event) {
     if (event.key === "Enter") envoyer();
 });
 
 function effacer() {
-    chat.innerHTML = "";
-    ajouterMessage("Historique effacé.", "jarvis");
+    historique = [];
+    messages.innerHTML = "";
+    ajouterMessage("Conversation effacée. Je suis à votre écoute, Monsieur.", "jarvis");
+    statusText.textContent = "SYSTÈME EN ATTENTE";
 }
 
 function parler() {
     const Reconnaissance =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+        window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!Reconnaissance) {
-        ajouterMessage(
-            "La reconnaissance vocale n'est pas disponible.",
-            "jarvis"
-        );
+        ajouterMessage("La reconnaissance vocale n'est pas disponible sur ce navigateur.", "jarvis");
         return;
     }
 
     const reconnaissance = new Reconnaissance();
     reconnaissance.lang = "fr-FR";
+    reconnaissance.interimResults = false;
 
-    document.getElementById("status").textContent = "ÉCOUTE";
+    reconnaissance.onstart = function() {
+        statusText.textContent = "JE VOUS ÉCOUTE...";
+    };
 
-    reconnaissance.onresult = event => {
+    reconnaissance.onresult = function(event) {
         input.value = event.results[0][0].transcript;
         envoyer();
     };
 
-    reconnaissance.onerror = () => {
-        ajouterMessage("Erreur de reconnaissance vocale.", "jarvis");
+    reconnaissance.onerror = function() {
+        statusText.textContent = "ERREUR MICRO";
     };
 
-    reconnaissance.onend = () => {
-        document.getElementById("status").textContent = "EN ATTENTE";
+    reconnaissance.onend = function() {
+        if (statusText.textContent === "JE VOUS ÉCOUTE...") {
+            statusText.textContent = "SYSTÈME EN ATTENTE";
+        }
     };
 
     reconnaissance.start();
