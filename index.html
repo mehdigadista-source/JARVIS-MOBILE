@@ -289,7 +289,7 @@ function ajouterMessage(texte, type) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-function envoyer() {
+async function envoyer() {
     const texte = input.value.trim();
 
     if (!texte) return;
@@ -297,10 +297,40 @@ function envoyer() {
     ajouterMessage(texte, "user");
     input.value = "";
 
-    ajouterMessage(
-        "Interface opérationnelle. La connexion à mon intelligence artificielle sera configurée à l'étape suivante, Monsieur.",
-        "jarvis"
-    );
+    document.getElementById("status").textContent = "RÉFLEXION";
+
+    try {
+        const reponse = await fetch("/.netlify/functions/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                messages: [
+                    {
+                        role: "user",
+                        content: texte
+                    }
+                ]
+            })
+        });
+
+        const donnees = await reponse.json();
+
+        if (!reponse.ok) {
+            throw new Error(donnees.error || "Erreur du serveur");
+        }
+
+        ajouterMessage(donnees.reply, "jarvis");
+
+    } catch (erreur) {
+        ajouterMessage(
+            "Impossible de contacter mon intelligence artificielle : " + erreur.message,
+            "jarvis"
+        );
+    }
+
+    document.getElementById("status").textContent = "EN ATTENTE";
 }
 
 input.addEventListener("keydown", function(event) {
