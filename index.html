@@ -270,7 +270,8 @@ function choisirVoixFrancaise() {
   const voix = window.speechSynthesis.getVoices();
 
   voixFrancaise =
-    voix.find(v => v.lang === "fr-FR" && /Google|Microsoft|Thomas|Audrey|Amelie|Hortense/i.test(v.name)) ||
+    voix.find(v => v.lang === "fr-FR" && /Henri|Thomas|Paul|Claude/i.test(v.name)) ||
+    voix.find(v => v.lang === "fr-FR" && /male|homme/i.test(v.name)) ||
     voix.find(v => v.lang === "fr-FR") ||
     voix.find(v => v.lang.toLowerCase().startsWith("fr")) ||
     null;
@@ -325,8 +326,8 @@ function lireReponse(texte) {
     const phrase = new SpeechSynthesisUtterance(morceaux[index++].trim());
 
     phrase.lang = "fr-FR";
-    phrase.rate = 1.05;
-    phrase.pitch = 1;
+    phrase.rate = 0.92;
+    phrase.pitch = 0.75;
     phrase.volume = 1;
 
     if (voixFrancaise) phrase.voice = voixFrancaise;
@@ -376,7 +377,9 @@ function basculerVoix() {
 
       if (voixFrancaise) test.voice = voixFrancaise;
 
-      test.rate = 1.05;
+      test.rate = 0.92;
+      test.pitch = 0.75;
+      test.volume = 1;
 
       test.onstart = () => {
         voixEnCours = true;
