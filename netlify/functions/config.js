@@ -1,11 +1,15 @@
-
 export default async (request) => {
     if (request.method !== "GET") {
         return new Response(
-            JSON.stringify({ error: "Méthode non autorisée" }),
+            JSON.stringify({
+                error: "Méthode non autorisée."
+            }),
             {
                 status: 405,
-                headers: { "Content-Type": "application/json" }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-store"
+                }
             }
         );
     }
@@ -15,10 +19,15 @@ export default async (request) => {
 
     if (!url || !key) {
         return new Response(
-            JSON.stringify({ error: "Configuration Supabase manquante" }),
+            JSON.stringify({
+                error: "Configuration Supabase manquante."
+            }),
             {
                 status: 500,
-                headers: { "Content-Type": "application/json" }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-store"
+                }
             }
         );
     }
