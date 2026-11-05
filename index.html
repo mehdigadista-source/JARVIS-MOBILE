@@ -982,15 +982,22 @@ async function initialiserSupabase(){
   }
 }
 
-/* VOIX */
+
+/* VOIX FEMININE J.A.R.V.I.S */
 
 function choisirVoixFrancaise(){
   if(!window.speechSynthesis) return;
+
   const voix=window.speechSynthesis.getVoices();
+
   voixFrancaise=
-    voix.find(v=>v.lang==="fr-FR" && /Henri|Thomas|Paul|Claude/i.test(v.name))||
+    voix.find(v=>/Denise.*Neural/i.test(v.name))||
+    voix.find(v=>/Heloise.*Neural/i.test(v.name))||
+    voix.find(v=>/Vivienne.*Neural/i.test(v.name))||
+    voix.find(v=>/female|femme/i.test(v.name) && v.lang.toLowerCase().startsWith("fr"))||
     voix.find(v=>v.lang==="fr-FR")||
-    voix.find(v=>v.lang.toLowerCase().startsWith("fr"))||null;
+    voix.find(v=>v.lang.toLowerCase().startsWith("fr"))||
+    null;
 }
 
 if("speechSynthesis" in window){
@@ -1030,9 +1037,10 @@ function lireReponse(texte){
 
     const phrase=new SpeechSynthesisUtterance(morceaux[index++].trim());
     phrase.lang="fr-FR";
-    phrase.rate=.92;
-    phrase.pitch=.75;
+    phrase.rate=0.95;
+    phrase.pitch=1.08;
     phrase.volume=1;
+
     if(voixFrancaise) phrase.voice=voixFrancaise;
 
     phrase.onstart=()=>{voixEnCours=true;mettreAJourEtatVoix()};
@@ -1040,6 +1048,7 @@ function lireReponse(texte){
     phrase.onerror=()=>{voixEnCours=false;mettreAJourEtatVoix()};
     window.speechSynthesis.speak(phrase);
   }
+
   suivant();
 }
 
@@ -1051,14 +1060,17 @@ function arreterVoix(){
 
 function basculerVoix(){
   voixActive=!voixActive;
+
   if(!voixActive){
     arreterVoix();
   }else{
     choisirVoixFrancaise();
-    lireReponse("Voix de J.A.R.V.I.S activée.");
+    lireReponse("Bonjour Monsieur. J.A.R.V.I.S est à votre écoute.");
   }
+
   mettreAJourEtatVoix();
 }
+
 
 /* HISTORIQUE */
 
