@@ -5,6 +5,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#060b14">
+
+<!-- IDENTITÉ APPLICATION J.A.R.V.I.S -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="J.A.R.V.I.S">
+
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
 <title>J.A.R.V.I.S — Stark Industries</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -25,9 +37,17 @@
 
 *{box-sizing:border-box}
 
+html {
+  min-height:100%;
+  background:#060b14;
+}
+
 body {
   margin:0;
   min-height:100vh;
+  min-height:100dvh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
   background:
     radial-gradient(ellipse at 60% -20%,#12334b 0,transparent 45%),
     var(--bg);
@@ -84,7 +104,7 @@ option{background:#07111e;color:white}
 
 .hidden{display:none!important}
 
-#app{min-height:100vh;display:flex}
+#app{min-height:100vh;min-height:100dvh;display:flex}
 
 /* SIDEBAR */
 
@@ -536,7 +556,7 @@ hr {
 
   main {
     width:100%;
-    padding:17px 13px 110px;
+    padding:17px 13px calc(110px + env(safe-area-inset-bottom));
   }
 
   #mobile-nav {
@@ -982,7 +1002,6 @@ async function initialiserSupabase(){
   }
 }
 
-
 /* VOIX FEMININE J.A.R.V.I.S */
 
 function choisirVoixFrancaise(){
@@ -1070,7 +1089,6 @@ function basculerVoix(){
 
   mettreAJourEtatVoix();
 }
-
 
 /* HISTORIQUE */
 
@@ -1379,7 +1397,7 @@ async function actualiserPerformances(){
 
   const ua=navigator.userAgent;
   document.getElementById("browserName").textContent=
-    /Edg/.test(ua)?"Edge":/Chrome/.test(ua)?"Chrome":/Firefox/.test(ua)?"Firefox":/Safari/.test(ua)?"Safari":"Navigateur web";
+    /Edg/.test(ua)?"Edge":/Chrome/.test(ua)?"Chrome":/Firefox/.test(ua)? "Firefox":/Safari/.test(ua)?"Safari":"Navigateur web";
 
   if(navigator.getBattery){
     try{
