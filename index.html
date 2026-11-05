@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#060b14">
 <title>J.A.R.V.I.S — Stark Industries</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,7 +25,7 @@
 
 *{box-sizing:border-box}
 
-body{
+body {
   margin:0;
   min-height:100vh;
   background:
@@ -34,9 +35,9 @@ body{
   font-family:Arial,sans-serif;
 }
 
-button,input{font:inherit}
+button,input,textarea,select{font:inherit}
 
-button{
+button {
   cursor:pointer;
   color:var(--cyan);
   background:#10283b;
@@ -46,17 +47,14 @@ button{
   transition:.2s;
 }
 
-button:hover{
+button:hover {
   border-color:var(--cyan);
   box-shadow:0 0 14px #32cfff22;
 }
 
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
+button:disabled{opacity:.45;cursor:not-allowed}
 
-input{
+input,textarea,select {
   width:100%;
   padding:13px;
   border-radius:9px;
@@ -66,15 +64,19 @@ input{
   outline:none;
 }
 
-input:focus{border-color:var(--cyan)}
+input:focus,textarea:focus,select:focus{border-color:var(--cyan)}
 
-.primary{
+textarea{resize:vertical;min-height:85px}
+
+option{background:#07111e;color:white}
+
+.primary {
   background:linear-gradient(135deg,#087fa8,#07506e);
   color:white;
   border:1px solid #25bfe9;
 }
 
-.danger{
+.danger {
   color:#ff9baa;
   background:#32151f;
   border-color:#8e3549;
@@ -82,14 +84,11 @@ input:focus{border-color:var(--cyan)}
 
 .hidden{display:none!important}
 
-#app{
-  min-height:100vh;
-  display:flex;
-}
+#app{min-height:100vh;display:flex}
 
-/* BARRE LATÉRALE */
+/* SIDEBAR */
 
-.sidebar{
+.sidebar {
   width:245px;
   min-width:245px;
   height:100vh;
@@ -101,63 +100,64 @@ input:focus{border-color:var(--cyan)}
   display:flex;
   flex-direction:column;
   z-index:20;
+  overflow-y:auto;
 }
 
-.brand{
+.brand {
   text-align:center;
-  padding:8px 0 28px;
+  padding:8px 0 25px;
   border-bottom:1px solid var(--line);
 }
 
-.brand h1{
+.brand h1 {
   margin:0;
   color:var(--cyan);
   font-size:25px;
-  letter-spacing:6px;
+  letter-spacing:5px;
   text-shadow:0 0 16px #00bfff88;
 }
 
-.brand p{
+.brand p {
   color:var(--muted);
   font-size:9px;
   letter-spacing:2px;
 }
 
-.side-label{
+.side-label {
   color:#55768b;
   font-size:9px;
   letter-spacing:2px;
-  margin:25px 10px 10px;
+  margin:22px 10px 10px;
 }
 
-.nav-btn{
+.nav-btn {
   width:100%;
   display:flex;
   align-items:center;
   gap:13px;
   text-align:left;
-  padding:13px;
-  margin:4px 0;
+  padding:12px;
+  margin:3px 0;
   color:#8da7b9;
   background:transparent;
   border:1px solid transparent;
-  font-size:12px;
+  font-size:11px;
 }
 
-.nav-btn .ico{
+.nav-btn .ico {
   width:24px;
-  font-size:19px;
+  font-size:18px;
   text-align:center;
 }
 
-.nav-btn.active{
+.nav-btn.active {
   color:var(--cyan);
   background:#0d293a;
   border-color:#1a607b;
   box-shadow:inset 3px 0 var(--cyan);
 }
 
-.sidebar-bottom{
+.sidebar-bottom {
   margin-top:auto;
   padding:14px 8px;
   border-top:1px solid var(--line);
@@ -165,15 +165,12 @@ input:focus{border-color:var(--cyan)}
   color:var(--muted);
 }
 
-/* CONTENU PRINCIPAL */
+/* CONTENU */
 
-.content{
-  flex:1;
-  min-width:0;
-}
+.content{flex:1;min-width:0}
 
-.topbar{
-  height:76px;
+.topbar {
+  min-height:76px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -184,62 +181,59 @@ input:focus{border-color:var(--cyan)}
   backdrop-filter:blur(15px);
 }
 
-.topbar-title{
+.topbar-title {
   font-size:13px;
   letter-spacing:2px;
   color:var(--cyan);
 }
 
-.topbar-right{
+.topbar-right {
   text-align:right;
   font-size:11px;
   color:var(--muted);
 }
 
-#clock{
+#clock {
   color:var(--cyan);
   font-size:17px;
   font-weight:bold;
   letter-spacing:2px;
 }
 
-#status{
+#status {
   color:var(--cyan);
   font-size:10px;
   letter-spacing:1.5px;
+  padding:8px 30px;
 }
 
-main{
+main {
   width:min(1250px,96%);
   margin:auto;
-  padding:22px 20px 40px;
+  padding:20px 20px 45px;
 }
 
-.page{
-  display:none;
-  animation:appear .25s ease;
-}
-
+.page{display:none;animation:appear .25s ease}
 .page.active{display:block}
 
-@keyframes appear{
+@keyframes appear {
   from{opacity:0;transform:translateY(7px)}
   to{opacity:1;transform:translateY(0)}
 }
 
-.page-heading{
+.page-heading {
   margin:0 0 7px;
   font-size:22px;
   letter-spacing:1px;
 }
 
-.page-subtitle{
+.page-subtitle {
   color:var(--muted);
   font-size:12px;
   margin:0 0 22px;
 }
 
-.panel{
+.panel {
   background:linear-gradient(145deg,#101f30,#091321);
   border:1px solid var(--line);
   border-radius:15px;
@@ -248,26 +242,26 @@ main{
   box-shadow:0 10px 30px #0003;
 }
 
-.section-title{
+.section-title {
   color:var(--cyan);
   font-size:12px;
   letter-spacing:1.8px;
   margin:0 0 15px;
 }
 
-.grid{
+.grid {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:13px;
 }
 
-.grid-3{
+.grid-3 {
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:13px;
 }
 
-.stat{
+.stat {
   background:#071421;
   border:1px solid var(--line);
   border-radius:12px;
@@ -275,30 +269,39 @@ main{
   min-width:0;
 }
 
-.stat small{
+.stat small {
   display:block;
   color:var(--muted);
   font-size:9px;
   letter-spacing:1.4px;
 }
 
-.stat strong{
+.stat strong {
   display:block;
   color:var(--cyan);
-  font-size:21px;
+  font-size:20px;
   margin-top:10px;
   overflow-wrap:anywhere;
 }
 
-.muted{
+.muted {
   color:var(--muted);
   font-size:12px;
   line-height:1.7;
 }
 
+.action-row {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.action-row button{flex:1}
+
 /* ACCUEIL */
 
-.dashboard-hero{
+.dashboard-hero {
   display:grid;
   grid-template-columns:1fr 220px;
   align-items:center;
@@ -313,20 +316,20 @@ main{
   margin-bottom:17px;
 }
 
-.dashboard-hero h2{
+.dashboard-hero h2 {
   color:var(--cyan);
   font-size:24px;
   letter-spacing:2px;
   margin:0 0 10px;
 }
 
-.dashboard-hero p{
+.dashboard-hero p {
   color:var(--muted);
   font-size:12px;
   line-height:1.7;
 }
 
-.reactor{
+.reactor {
   width:125px;
   height:125px;
   margin:auto;
@@ -336,23 +339,27 @@ main{
   place-items:center;
   color:#baf5ff;
   font-size:35px;
-  box-shadow:
-    0 0 25px #00bfff66,
-    inset 0 0 25px #00bfff33;
+  box-shadow:0 0 25px #00bfff66,inset 0 0 25px #00bfff33;
   animation:pulse 2.5s infinite;
 }
 
-@keyframes pulse{
-  50%{
-    box-shadow:
-      0 0 45px #00bfffaa,
-      inset 0 0 30px #00bfff55;
-  }
+@keyframes pulse {
+  50%{box-shadow:0 0 45px #00bfffaa,inset 0 0 30px #00bfff55}
+}
+
+.module-button {
+  min-height:75px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  font-size:11px;
 }
 
 /* CHAT */
 
-#messages{
+#messages {
   height:380px;
   min-height:230px;
   overflow-y:auto;
@@ -362,7 +369,7 @@ main{
   border-radius:11px;
 }
 
-.message{
+.message {
   padding:12px 14px;
   margin:9px 0;
   border-radius:10px;
@@ -372,35 +379,20 @@ main{
   font-size:13px;
 }
 
-.user{
-  background:#102a43;
-  border-left:3px solid #409dff;
-}
+.user{background:#102a43;border-left:3px solid #409dff}
+.jarvis{background:#092b35;border-left:3px solid var(--cyan)}
 
-.jarvis{
-  background:#092b35;
-  border-left:3px solid var(--cyan);
-}
-
-#controls{
+#controls {
   display:flex;
   gap:8px;
   margin-top:12px;
 }
 
-#controls input{
-  flex:1;
-  min-width:0;
-}
-
+#controls input{flex:1;min-width:0}
 #controls button{padding:12px 15px}
+#clear{width:100%;margin-top:10px}
 
-#clear{
-  width:100%;
-  margin-top:10px;
-}
-
-#voice-panel{
+#voice-panel {
   background:#061421;
   border:1px solid var(--line);
   border-radius:11px;
@@ -409,7 +401,7 @@ main{
   text-align:center;
 }
 
-#voice-spectrum{
+#voice-spectrum {
   height:43px;
   display:flex;
   justify-content:center;
@@ -417,7 +409,7 @@ main{
   gap:4px;
 }
 
-#voice-spectrum span{
+#voice-spectrum span {
   width:4px;
   height:6px;
   border-radius:5px;
@@ -425,28 +417,27 @@ main{
   opacity:.4;
 }
 
-#voice-spectrum.speaking span{
+#voice-spectrum.speaking span {
   opacity:1;
   animation:spectrum .55s ease-in-out infinite alternate;
 }
 
 #voice-spectrum.speaking span:nth-child(2n){animation-delay:.12s}
 #voice-spectrum.speaking span:nth-child(3n){animation-delay:.24s}
-#voice-spectrum.speaking span:nth-child(4n){animation-delay:.32s}
 
-@keyframes spectrum{
+@keyframes spectrum {
   from{height:6px}
   to{height:34px}
 }
 
-#voice-status{
+#voice-status {
   color:var(--muted);
   font-size:10px;
   letter-spacing:1px;
   margin:5px;
 }
 
-.voice-actions{
+.voice-actions {
   display:flex;
   gap:8px;
   justify-content:center;
@@ -457,7 +448,7 @@ main{
 
 /* CAMÉRA */
 
-#cameraPreview{
+#cameraPreview {
   width:100%;
   max-height:55vh;
   object-fit:cover;
@@ -466,17 +457,14 @@ main{
   border-radius:11px;
 }
 
-.action-row{
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
+#visionResult {
+  white-space:pre-wrap;
+  line-height:1.7;
 }
 
-.action-row button{flex:1}
+/* LISTES */
 
-/* MÉMOIRE */
-
-.memory-item{
+.memory-item {
   background:#071421;
   border:1px solid var(--line);
   border-radius:9px;
@@ -487,36 +475,39 @@ main{
   overflow-wrap:anywhere;
 }
 
-.memory-item small{
+.memory-item small {
   display:block;
   color:var(--muted);
   margin-top:7px;
 }
 
+.module-success{color:var(--green)}
+.module-warning{color:var(--gold)}
+.module-error{color:var(--red)}
+
 /* CONNEXION */
 
-#login{
+#login {
   max-width:440px;
   margin:35px auto;
 }
 
-#login h3{
+#login h3 {
   color:var(--cyan);
   text-align:center;
   letter-spacing:2px;
 }
 
 #login input{margin:7px 0}
-
 #loginButton{width:100%;margin-top:8px}
 
-#loginError{
+#loginError {
   color:#ff9baa;
   font-size:12px;
   overflow-wrap:anywhere;
 }
 
-#account{
+#account {
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -526,51 +517,46 @@ main{
   color:var(--cyan);
 }
 
-hr{
+hr {
   border:0;
   border-top:1px solid var(--line);
   margin:20px 0;
 }
 
-/* NAVIGATION MOBILE */
+/* MOBILE */
 
-#mobile-nav{
-  display:none;
-}
+#mobile-nav{display:none}
 
-/* RESPONSIVE */
-
-@media(max-width:850px){
+@media(max-width:850px) {
   #app{display:block}
-
   .sidebar{display:none}
 
-  .topbar{
-    height:65px;
-    padding:0 16px;
-  }
+  .topbar{min-height:65px;padding:0 16px}
+  #status{padding:8px 16px}
 
-  main{
+  main {
     width:100%;
-    padding:17px 13px 100px;
+    padding:17px 13px 110px;
   }
 
-  #mobile-nav{
+  #mobile-nav {
     position:fixed;
     z-index:30;
     bottom:0;
     left:0;
     right:0;
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:2px;
+    display:flex;
+    overflow-x:auto;
+    gap:3px;
     padding:8px 4px calc(8px + env(safe-area-inset-bottom));
     background:rgba(4,12,22,.97);
     border-top:1px solid var(--line);
     backdrop-filter:blur(15px);
   }
 
-  #mobile-nav .nav-btn{
+  #mobile-nav .nav-btn {
+    flex:1;
+    min-width:62px;
     flex-direction:column;
     justify-content:center;
     gap:4px;
@@ -580,18 +566,16 @@ hr{
     font-size:8px;
   }
 
-  #mobile-nav .nav-btn .ico{
-    font-size:18px;
-  }
+  #mobile-nav .nav-btn .ico{font-size:18px}
 
-  .dashboard-hero{
+  .dashboard-hero {
     grid-template-columns:1fr 115px;
     padding:17px;
   }
 
   .dashboard-hero h2{font-size:18px}
 
-  .reactor{
+  .reactor {
     width:90px;
     height:90px;
     font-size:26px;
@@ -600,70 +584,54 @@ hr{
   .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
-@media(max-width:420px){
-  .dashboard-hero{
+@media(max-width:420px) {
+  .dashboard-hero {
     grid-template-columns:1fr;
     text-align:center;
   }
 
   .dashboard-hero .reactor{grid-row:1}
-
   .grid-3{grid-template-columns:1fr 1fr}
-
   #messages{height:42vh}
-
   #controls{gap:5px}
-
   #controls button{padding:11px}
 }
 </style>
 </head>
 
 <body>
-
 <div id="app">
 
-  <!-- NAVIGATION PC -->
   <aside class="sidebar">
     <div class="brand">
       <h1>J.A.R.V.I.S</h1>
-      <p>STARK INDUSTRIES</p>
+      <p>STARK INDUSTRIES // MK-3000</p>
     </div>
 
-    <div class="side-label">MENU PRINCIPAL</div>
+    <div class="side-label">SYSTÈME</div>
+    <button class="nav-btn active" data-page="home" onclick="ouvrirOnglet('home')"><span class="ico">⌂</span>Tableau de bord</button>
+    <button class="nav-btn" data-page="pc" onclick="ouvrirOnglet('pc')"><span class="ico">⌘</span>Contrôle PC</button>
+    <button class="nav-btn" data-page="camera" onclick="ouvrirOnglet('camera')"><span class="ico">◎</span>Vision caméra</button>
+    <button class="nav-btn" data-page="performance" onclick="ouvrirOnglet('performance')"><span class="ico">▥</span>Performances</button>
 
-    <button class="nav-btn active" data-page="home" onclick="ouvrirOnglet('home',this)">
-      <span class="ico">⌂</span> Tableau de bord
-    </button>
-
-    <button class="nav-btn" data-page="pc" onclick="ouvrirOnglet('pc',this)">
-      <span class="ico">⌘</span> Contrôle PC
-    </button>
-
-    <button class="nav-btn" data-page="camera" onclick="ouvrirOnglet('camera',this)">
-      <span class="ico">◎</span> Caméra
-    </button>
-
-    <button class="nav-btn" data-page="performance" onclick="ouvrirOnglet('performance',this)">
-      <span class="ico">▥</span> Performances
-    </button>
-
-    <button class="nav-btn" data-page="settings" onclick="ouvrirOnglet('settings',this)">
-      <span class="ico">⚙</span> Réglages
-    </button>
+    <div class="side-label">MODULES AVANCÉS</div>
+    <button class="nav-btn" data-page="morse" onclick="ouvrirOnglet('morse')"><span class="ico">·−</span>Code Morse</button>
+    <button class="nav-btn" data-page="search" onclick="ouvrirOnglet('search')"><span class="ico">⌕</span>Recherche Web</button>
+    <button class="nav-btn" data-page="diagnostic" onclick="ouvrirOnglet('diagnostic')"><span class="ico">⛨</span>Diagnostic</button>
+    <button class="nav-btn" data-page="automation" onclick="ouvrirOnglet('automation')"><span class="ico">⚡</span>Automatisations</button>
+    <button class="nav-btn" data-page="smart-home" onclick="ouvrirOnglet('smart-home')"><span class="ico">⌂</span>Maison connectée</button>
+    <button class="nav-btn" data-page="phone" onclick="ouvrirOnglet('phone')"><span class="ico">▣</span>Téléphone</button>
+    <button class="nav-btn" data-page="settings" onclick="ouvrirOnglet('settings')"><span class="ico">⚙</span>Réglages</button>
 
     <div class="sidebar-bottom">
       <div>STARK INDUSTRIES</div>
-      <p id="sideStatus">Système en initialisation...</p>
+      <p id="sideStatus">Initialisation...</p>
     </div>
   </aside>
 
-  <!-- CONTENU -->
   <div class="content">
-
     <header class="topbar">
       <div class="topbar-title">J.A.R.V.I.S / INTERFACE</div>
-
       <div class="topbar-right">
         <div id="clock">00:00:00</div>
         <div id="date"></div>
@@ -674,62 +642,51 @@ hr{
 
     <main>
 
-      <!-- CONNEXION -->
       <section id="login" class="panel">
         <h3>CONNEXION J.A.R.V.I.S</h3>
-
         <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username">
-
         <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password">
-
         <button id="loginButton" class="primary" onclick="connecter()">Se connecter</button>
-
         <p id="loginError"></p>
+        <p class="muted">Pour utiliser un autre compte, déconnectez-vous puis connectez-vous avec ses identifiants.</p>
       </section>
 
       <div id="account" class="panel hidden">
         <span id="accountEmail"></span>
-        <button class="danger" onclick="deconnecter()">Déconnexion</button>
+        <button class="danger" onclick="deconnecter()">Déconnexion / Changer de compte</button>
       </div>
 
       <!-- ACCUEIL -->
       <section id="page-home" class="page active">
-
         <div class="dashboard-hero">
           <div>
             <h2>CENTRE DE COMMANDE</h2>
-            <p>
-              Bonjour Monsieur. Tous les systèmes principaux
-              sont prêts à recevoir vos instructions.
-            </p>
-            <div id="homeState" style="color:var(--green);font-size:11px;letter-spacing:2px">
-              ● SYSTÈME ACTIF
-            </div>
+            <p>Bonjour Monsieur. Tous les systèmes principaux sont prêts à recevoir vos instructions.</p>
+            <div id="homeState" style="color:var(--green);font-size:11px;letter-spacing:2px">● SYSTÈME ACTIF</div>
           </div>
-
           <div class="reactor">J</div>
         </div>
 
         <div class="grid-3">
-          <div class="stat">
-            <small>ÉTAT DU SYSTÈME</small>
-            <strong id="systemState">ACTIF</strong>
-          </div>
-
-          <div class="stat">
-            <small>MÉMOIRE LONGUE DURÉE</small>
-            <strong id="memoryState">—</strong>
-          </div>
-
-          <div class="stat">
-            <small>CONNEXION INTERNET</small>
-            <strong id="homeNetwork">—</strong>
-          </div>
+          <div class="stat"><small>ÉTAT DU SYSTÈME</small><strong id="systemState">ACTIF</strong></div>
+          <div class="stat"><small>MÉMOIRE LONGUE DURÉE</small><strong id="memoryState">—</strong></div>
+          <div class="stat"><small>CONNEXION INTERNET</small><strong id="homeNetwork">—</strong></div>
         </div>
 
         <div class="panel" style="margin-top:17px">
-          <h3 class="section-title">ASSISTANT INTELLIGENT</h3>
+          <h3 class="section-title">ACCÈS RAPIDE AUX MODULES</h3>
+          <div class="grid">
+            <button class="module-button" onclick="ouvrirOnglet('morse')">📡<span>MORSE</span></button>
+            <button class="module-button" onclick="ouvrirOnglet('search')">🔎<span>RECHERCHE WEB</span></button>
+            <button class="module-button" onclick="ouvrirOnglet('diagnostic')">🛡️<span>DIAGNOSTIC</span></button>
+            <button class="module-button" onclick="ouvrirOnglet('automation')">⚡<span>AUTOMATISATIONS</span></button>
+            <button class="module-button" onclick="ouvrirOnglet('smart-home')">💡<span>MAISON CONNECTÉE</span></button>
+            <button class="module-button" onclick="ouvrirOnglet('phone')">📱<span>TÉLÉPHONE</span></button>
+          </div>
+        </div>
 
+        <div class="panel">
+          <h3 class="section-title">ASSISTANT INTELLIGENT</h3>
           <div id="messages"></div>
 
           <div id="voice-panel">
@@ -737,12 +694,8 @@ hr{
               <span></span><span></span><span></span><span></span><span></span>
               <span></span><span></span><span></span><span></span><span></span>
               <span></span><span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span><span></span>
-              <span></span>
             </div>
-
             <div id="voice-status">VOIX EN ATTENTE</div>
-
             <div class="voice-actions">
               <button id="voiceToggle" onclick="basculerVoix()">🔊 Voix activée</button>
               <button class="danger" onclick="arreterVoix()">■ Arrêter la voix</button>
@@ -754,108 +707,174 @@ hr{
             <button id="send" class="primary" onclick="envoyer()">➤</button>
             <button id="voice" onclick="parler()">🎙️</button>
           </div>
-
           <button id="clear" onclick="effacer()">Effacer la conversation</button>
         </div>
-
       </section>
 
       <!-- PC -->
       <section id="page-pc" class="page">
         <h2 class="page-heading">CONTRÔLE ORDINATEUR</h2>
-        <p class="page-subtitle">Module de liaison avec votre ordinateur.</p>
-
+        <p class="page-subtitle">Liaison sécurisée avec votre ordinateur.</p>
         <div class="panel">
           <div class="reactor">⌘</div>
-
           <h3 class="section-title">STARK PC CONNECTION</h3>
-
-          <p class="muted">
-            Cette interface accueillera les commandes de ton J.A.R.V.I.S
-            installé sur Windows.
-          </p>
-
-          <p class="muted">
-            Pour contrôler réellement ton ordinateur, il faudra installer
-            un programme compagnon sécurisé sur le PC.
-          </p>
-
-          <div class="stat">
-            <small>ÉTAT DE LA LIAISON</small>
-            <strong style="color:var(--gold)">NON CONFIGURÉE</strong>
-          </div>
+          <p class="muted">Le contrôle réel du PC nécessite un programme compagnon installé sur Windows. Cette page ne peut pas prendre le contrôle de ton ordinateur toute seule.</p>
+          <div class="stat"><small>ÉTAT DE LA LIAISON</small><strong style="color:var(--gold)">NON CONFIGURÉE</strong></div>
+          <p class="muted">Le futur compagnon pourra proposer des commandes autorisées, avec authentification et confirmation des actions sensibles.</p>
         </div>
       </section>
 
-      <!-- CAMERA -->
+      <!-- CAMÉRA -->
       <section id="page-camera" class="page">
         <h2 class="page-heading">CAMÉRA & VISION</h2>
-        <p class="page-subtitle">Flux vidéo local de votre appareil.</p>
-
+        <p class="page-subtitle">Flux vidéo local et analyse sur demande.</p>
         <div class="panel">
           <h3 class="section-title">CAMÉRA EN DIRECT</h3>
-
           <video id="cameraPreview" autoplay playsinline muted></video>
-
           <p id="cameraStatus" class="muted">La caméra est arrêtée.</p>
-
           <div class="action-row">
             <button class="primary" onclick="demarrerCamera()">Activer la caméra</button>
             <button class="danger" onclick="arreterCamera()">Arrêter</button>
           </div>
-
-          <p class="muted">
-            La vidéo reste sur cet appareil. Elle n'est pas envoyée à l'IA.
-          </p>
+          <p class="muted">Le flux reste local tant que tu ne demandes pas explicitement une analyse. La caméra doit rester autorisée et la page ouverte.</p>
+        </div>
+        <div class="panel">
+          <h3 class="section-title">ANALYSE VISUELLE</h3>
+          <button class="primary" onclick="analyserCamera()">Analyser l'image actuelle</button>
+          <div id="visionResult" class="muted" style="margin-top:14px">Aucune analyse effectuée. Le module de vision par IA devra être connecté à un service compatible.</div>
         </div>
       </section>
 
       <!-- PERFORMANCES -->
       <section id="page-performance" class="page">
         <h2 class="page-heading">PERFORMANCES</h2>
-        <p class="page-subtitle">Surveillance des ressources accessibles au navigateur.</p>
-
+        <p class="page-subtitle">Mesures disponibles pour le navigateur.</p>
         <div class="grid">
-          <div class="stat">
-            <small>MÉMOIRE NAVIGATEUR</small>
-            <strong id="browserMemory">Indisponible</strong>
-          </div>
-
-          <div class="stat">
-            <small>STOCKAGE DU SITE</small>
-            <strong id="siteStorage">Calcul...</strong>
-          </div>
-
-          <div class="stat">
-            <small>CONNEXION</small>
-            <strong id="networkState">—</strong>
-          </div>
-
-          <div class="stat">
-            <small>TAILLE ÉCRAN</small>
-            <strong id="screenSize">—</strong>
-          </div>
-
-          <div class="stat">
-            <small>NAVIGATEUR</small>
-            <strong id="browserName">—</strong>
-          </div>
-
-          <div class="stat">
-            <small>BATTERIE</small>
-            <strong id="batteryState">—</strong>
-          </div>
+          <div class="stat"><small>MÉMOIRE NAVIGATEUR</small><strong id="browserMemory">Indisponible</strong></div>
+          <div class="stat"><small>STOCKAGE DU SITE</small><strong id="siteStorage">Calcul...</strong></div>
+          <div class="stat"><small>CONNEXION</small><strong id="networkState">—</strong></div>
+          <div class="stat"><small>TAILLE ÉCRAN</small><strong id="screenSize">—</strong></div>
+          <div class="stat"><small>NAVIGATEUR</small><strong id="browserName">—</strong></div>
+          <div class="stat"><small>BATTERIE</small><strong id="batteryState">—</strong></div>
         </div>
-
         <div class="panel" style="margin-top:17px">
           <h3 class="section-title">SURVEILLANCE SYSTÈME</h3>
-          <p class="muted">
-            Ces informations concernent le navigateur et le site web.
-            Elles ne représentent pas les mesures complètes du téléphone
-            ou de l'ordinateur.
-          </p>
-
+          <p class="muted">Ces informations concernent le navigateur et le stockage du site, pas l'ensemble du téléphone ou du PC.</p>
           <button class="primary" onclick="actualiserPerformances()">Actualiser les données</button>
+        </div>
+      </section>
+
+      <!-- MORSE -->
+      <section id="page-morse" class="page">
+        <h2 class="page-heading">TRANSMISSION MORSE</h2>
+        <p class="page-subtitle">Conversion en code Morse international.</p>
+        <div class="panel">
+          <h3 class="section-title">MESSAGE À TRANSMETTRE</h3>
+          <textarea id="morseInput" placeholder="Écris ton message ici..."></textarea>
+          <div class="action-row">
+            <button class="primary" onclick="convertirMorse()">Convertir</button>
+            <button onclick="effacerMorse()">Effacer</button>
+          </div>
+          <div class="stat" style="margin-top:14px">
+            <small>SÉQUENCE MORSE</small>
+            <strong id="morseOutput" style="font-size:17px;line-height:1.8">—</strong>
+          </div>
+          <div class="action-row">
+            <button class="primary" onclick="emettreMorse()">▶ Émettre le son</button>
+            <button onclick="clignoterMorse()">✦ Signal lumineux</button>
+            <button class="danger" onclick="arreterMorse()">■ Arrêter</button>
+          </div>
+          <p id="morseStatus" class="muted">En attente d'un message.</p>
+        </div>
+      </section>
+
+      <!-- RECHERCHE -->
+      <section id="page-search" class="page">
+        <h2 class="page-heading">RECHERCHE INTELLIGENTE</h2>
+        <p class="page-subtitle">Recherche Web et découverte d'images.</p>
+        <div class="panel">
+          <h3 class="section-title">CENTRE DE RECHERCHE</h3>
+          <input id="searchInput" placeholder="Exemple : photos de chats, voitures BMW...">
+          <div class="action-row">
+            <button class="primary" onclick="rechercheGoogle(false)">Recherche Google</button>
+            <button onclick="rechercheGoogle(true)">Recherche d'images</button>
+            <button onclick="rechercheGoogle(false,true)">Google Maps</button>
+          </div>
+          <p class="muted">Les recherches s'ouvrent dans un nouvel onglet. J.A.R.V.I.S ne peut pas lire automatiquement toutes les pages sans un module serveur dédié.</p>
+        </div>
+      </section>
+
+      <!-- DIAGNOSTIC -->
+      <section id="page-diagnostic" class="page">
+        <h2 class="page-heading">DIAGNOSTIC & SÉCURITÉ</h2>
+        <p class="page-subtitle">Contrôle des fonctions accessibles au navigateur.</p>
+        <div class="panel">
+          <h3 class="section-title">ANALYSE DU NAVIGATEUR</h3>
+          <button class="primary" onclick="lancerDiagnostic()">Lancer le diagnostic</button>
+          <div id="diagnosticResults" style="margin-top:15px"><p class="muted">Aucune analyse effectuée.</p></div>
+        </div>
+        <div class="panel">
+          <h3 class="section-title">PROTECTION</h3>
+          <p class="muted">Un site Web ne peut pas scanner l'ensemble des fichiers du téléphone ou détecter tous les virus. Utilise les protections intégrées de ton système ou un antivirus reconnu pour une analyse complète.</p>
+        </div>
+      </section>
+
+      <!-- AUTOMATISATIONS -->
+      <section id="page-automation" class="page">
+        <h2 class="page-heading">AUTOMATISATIONS</h2>
+        <p class="page-subtitle">Création et gestion de rappels locaux.</p>
+        <div class="panel">
+          <h3 class="section-title">NOUVELLE AUTOMATISATION</h3>
+          <input id="automationName" placeholder="Nom du rappel">
+          <input id="automationDate" type="datetime-local" style="margin-top:10px">
+          <button class="primary" style="width:100%;margin-top:12px" onclick="ajouterAutomatisation()">Créer le rappel</button>
+          <p class="muted">Ces rappels fonctionnent lorsque le site reste ouvert. Pour une exécution en arrière-plan, il faudra ajouter un serveur ou une application native.</p>
+        </div>
+        <div class="panel">
+          <h3 class="section-title">MES AUTOMATISATIONS</h3>
+          <div id="automationList"></div>
+        </div>
+      </section>
+
+      <!-- MAISON CONNECTÉE -->
+      <section id="page-smart-home" class="page">
+        <h2 class="page-heading">MAISON CONNECTÉE</h2>
+        <p class="page-subtitle">Centre de commande domotique.</p>
+        <div class="panel">
+          <h3 class="section-title">CONNEXION HOME ASSISTANT</h3>
+          <p class="muted">Une connexion Home Assistant permettra de commander les appareils compatibles : lumières, prises, volets et capteurs.</p>
+          <input id="haUrl" placeholder="Adresse de Home Assistant (ex. https://maison.example.com)">
+          <input id="haToken" type="password" placeholder="Jeton d'accès (non enregistré ici)">
+          <button class="primary" style="width:100%;margin-top:10px" onclick="testerMaison()">Tester la connexion</button>
+          <p id="haStatus" class="muted">Aucune connexion configurée.</p>
+          <p class="muted">Ne partage jamais ton jeton. Pour la version finale, nous utiliserons une fonction serveur sécurisée plutôt que de l'exposer dans le navigateur.</p>
+        </div>
+        <div class="panel">
+          <h3 class="section-title">APPAREILS</h3>
+          <p class="muted">Les appareils apparaîtront ici après la mise en place de l'intégration sécurisée.</p>
+        </div>
+      </section>
+
+      <!-- TÉLÉPHONE -->
+      <section id="page-phone" class="page">
+        <h2 class="page-heading">CENTRE TÉLÉPHONE</h2>
+        <p class="page-subtitle">Fonctions disponibles et intégrations mobiles.</p>
+        <div class="grid">
+          <div class="stat"><small>PLATEFORME</small><strong id="phonePlatform">—</strong></div>
+          <div class="stat"><small>NOTIFICATIONS WEB</small><strong id="phoneNotifications">—</strong></div>
+          <div class="stat"><small>MICROPHONE</small><strong id="phoneMic">—</strong></div>
+          <div class="stat"><small>CAMÉRA</small><strong id="phoneCamera">—</strong></div>
+        </div>
+        <div class="panel" style="margin-top:17px">
+          <h3 class="section-title">NOTIFICATIONS J.A.R.V.I.S</h3>
+          <button class="primary" onclick="demanderNotifications()">Autoriser les notifications</button>
+          <button onclick="testerNotification()">Envoyer une notification test</button>
+          <p id="notificationStatus" class="muted">Aucune notification envoyée.</p>
+        </div>
+        <div class="panel">
+          <h3 class="section-title">INTÉGRATION IPHONE</h3>
+          <p class="muted">Sur iPhone, les SMS, les notifications des autres applications, les widgets d'écran d'accueil et le réveil vocal avec écran éteint nécessitent des fonctions natives iOS et des autorisations Apple. Le site seul ne peut pas les contrôler.</p>
+          <p class="muted">Les prochaines intégrations pourront utiliser les raccourcis Siri et une application compagnon iOS.</p>
         </div>
       </section>
 
@@ -863,35 +882,23 @@ hr{
       <section id="page-settings" class="page">
         <h2 class="page-heading">PARAMÈTRES</h2>
         <p class="page-subtitle">Configuration et mémoire personnelle.</p>
-
         <div class="panel">
           <h3 class="section-title">COMPTE UTILISATEUR</h3>
           <p id="settingsEmail" class="muted">Non connecté</p>
-
           <hr>
-
           <h3 class="section-title">MÉMOIRE LONGUE DURÉE</h3>
-          <p class="muted">
-            Souvenirs enregistrés dans ton compte Supabase.
-          </p>
-
-          <div id="memoryList">
-            <p class="muted">Connecte-toi pour consulter tes souvenirs.</p>
-          </div>
-
+          <p class="muted">Souvenirs enregistrés dans ton compte Supabase.</p>
+          <div id="memoryList"><p class="muted">Connecte-toi pour consulter tes souvenirs.</p></div>
           <button onclick="actualiserSouvenirs()">Actualiser la mémoire</button>
-
           <hr>
-
+          <h3 class="section-title">PERSONNALISATION</h3>
+          <label class="muted" for="assistantName">Nom de l'assistant</label>
+          <input id="assistantName" value="J.A.R.V.I.S">
+          <button style="margin-top:10px" onclick="sauverPersonnalisation()">Enregistrer</button>
+          <hr>
           <h3 class="section-title">COMMANDES VOCALES</h3>
-          <p class="muted">
-            La reconnaissance vocale dépend de ton navigateur.
-          </p>
-
           <button onclick="parler()">🎙️ Tester le microphone</button>
-
           <hr>
-
           <button class="danger" onclick="deconnecter()">Déconnexion</button>
         </div>
       </section>
@@ -900,961 +907,829 @@ hr{
   </div>
 </div>
 
-<!-- NAVIGATION MOBILE -->
 <nav id="mobile-nav">
-  <button class="nav-btn active" data-page="home" onclick="ouvrirOnglet('home',this)">
-    <span class="ico">⌂</span><span>ACCUEIL</span>
-  </button>
-
-  <button class="nav-btn" data-page="pc" onclick="ouvrirOnglet('pc',this)">
-    <span class="ico">⌘</span><span>PC</span>
-  </button>
-
-  <button class="nav-btn" data-page="camera" onclick="ouvrirOnglet('camera',this)">
-    <span class="ico">◎</span><span>CAMÉRA</span>
-  </button>
-
-  <button class="nav-btn" data-page="performance" onclick="ouvrirOnglet('performance',this)">
-    <span class="ico">▥</span><span>PERF.</span>
-  </button>
-
-  <button class="nav-btn" data-page="settings" onclick="ouvrirOnglet('settings',this)">
-    <span class="ico">⚙</span><span>RÉGLAGES</span>
-  </button>
+  <button class="nav-btn active" data-page="home" onclick="ouvrirOnglet('home')"><span class="ico">⌂</span><span>ACCUEIL</span></button>
+  <button class="nav-btn" data-page="camera" onclick="ouvrirOnglet('camera')"><span class="ico">◎</span><span>CAMÉRA</span></button>
+  <button class="nav-btn" data-page="morse" onclick="ouvrirOnglet('morse')"><span class="ico">·−</span><span>MORSE</span></button>
+  <button class="nav-btn" data-page="search" onclick="ouvrirOnglet('search')"><span class="ico">⌕</span><span>RECHERCHE</span></button>
+  <button class="nav-btn" data-page="settings" onclick="ouvrirOnglet('settings')"><span class="ico">⚙</span><span>RÉGLAGES</span></button>
 </nav>
 
 <script>
-/* =========================================
-   HORLOGE
-========================================= */
+/* HORLOGE */
 
 function actualiserHorloge(){
-  const maintenant = new Date();
-
-  document.getElementById("clock").textContent =
-    maintenant.toLocaleTimeString("fr-FR");
-
-  document.getElementById("date").textContent =
-    maintenant.toLocaleDateString("fr-FR",{
-      weekday:"long",
-      day:"numeric",
-      month:"long",
-      year:"numeric"
-    });
+  const maintenant=new Date();
+  document.getElementById("clock").textContent=maintenant.toLocaleTimeString("fr-FR");
+  document.getElementById("date").textContent=maintenant.toLocaleDateString("fr-FR",{
+    weekday:"long",day:"numeric",month:"long",year:"numeric"
+  });
 }
-
 actualiserHorloge();
 setInterval(actualiserHorloge,1000);
 
+/* VARIABLES */
 
-/* =========================================
-   CONFIGURATION SUPABASE
-========================================= */
+let client=null;
+let utilisateur=null;
+let historique=[];
+let souvenirs=[];
+let fluxCamera=null;
+let voixActive=true;
+let voixEnCours=false;
+let voixFrancaise=null;
 
-let client = null;
+const messages=document.getElementById("messages");
+const input=document.getElementById("question");
+const statusText=document.getElementById("status");
+const sendButton=document.getElementById("send");
 
-async function initialiserSupabase(){
-  try{
-    const reponse = await fetch("/.netlify/functions/config");
-    const configuration = await reponse.json();
+/* NAVIGATION */
 
-    if(!reponse.ok){
-      throw new Error(configuration.error || "Configuration inaccessible");
-    }
-
-    client = window.supabase.createClient(
-      configuration.url,
-      configuration.key
-    );
-
-    await verifierSession();
-
-    statusText.textContent = "SYSTÈME OPÉRATIONNEL";
-    document.getElementById("homeState").textContent = "● SYSTÈME ACTIF";
-    document.getElementById("systemState").textContent = "ACTIF";
-    document.getElementById("sideStatus").textContent = "Système opérationnel";
-
-  }catch(erreur){
-    console.error(erreur);
-
-    statusText.textContent = "ERREUR CONFIGURATION SUPABASE";
-    document.getElementById("systemState").textContent = "ERREUR";
-    document.getElementById("sideStatus").textContent = "Configuration à vérifier";
-  }
-}
-
-
-/* =========================================
-   ÉLÉMENTS ET VARIABLES
-========================================= */
-
-const messages = document.getElementById("messages");
-const input = document.getElementById("question");
-const statusText = document.getElementById("status");
-const sendButton = document.getElementById("send");
-
-let historique = [];
-let utilisateur = null;
-let souvenirs = [];
-let fluxCamera = null;
-
-
-/* =========================================
-   SYNTHÈSE VOCALE
-========================================= */
-
-let voixActive = true;
-let voixEnCours = false;
-let voixFrancaise = null;
-
-function choisirVoixFrancaise(){
-  if(!("speechSynthesis" in window)) return;
-
-  const voix = window.speechSynthesis.getVoices();
-
-  voixFrancaise =
-    voix.find(v => v.lang === "fr-FR" && /Henri|Thomas|Paul|Claude/i.test(v.name)) ||
-    voix.find(v => v.lang === "fr-FR" && /male|homme/i.test(v.name)) ||
-    voix.find(v => v.lang === "fr-FR") ||
-    voix.find(v => v.lang.toLowerCase().startsWith("fr")) ||
-    null;
-}
-
-if("speechSynthesis" in window){
-  choisirVoixFrancaise();
-  window.speechSynthesis.onvoiceschanged = choisirVoixFrancaise;
-}
-
-function mettreAJourEtatVoix(){
-  const spectre = document.getElementById("voice-spectrum");
-  const etiquette = document.getElementById("voice-status");
-  const bouton = document.getElementById("voiceToggle");
-
-  if(spectre){
-    spectre.classList.toggle("speaking",voixEnCours);
-  }
-
-  if(etiquette){
-    etiquette.textContent = voixEnCours
-      ? "J.A.R.V.I.S PARLE..."
-      : (voixActive ? "VOIX EN ATTENTE" : "VOIX DÉSACTIVÉE");
-  }
-
-  if(bouton){
-    bouton.textContent = voixActive
-      ? "🔊 Voix activée"
-      : "🔇 Voix désactivée";
-  }
-}
-
-function lireReponse(texte){
-  if(!voixActive || !("speechSynthesis" in window) || !texte) return;
-
-  window.speechSynthesis.cancel();
-  voixEnCours = false;
-
-  const propre = String(texte)
-    .replace(/```[\s\S]*?```/g," bloc de code omis. ")
-    .replace(/https?:\/\/\S+/g," lien ")
-    .replace(/[#*_`>|]/g," ")
-    .replace(/\s+/g," ")
-    .trim();
-
-  const morceaux = propre.match(/[\s\S]{1,220}(?:\s|$)/g) || [propre];
-  let index = 0;
-
-  function lireMorceauSuivant(){
-    if(!voixActive || index >= morceaux.length){
-      voixEnCours = false;
-      mettreAJourEtatVoix();
-      return;
-    }
-
-    const phrase = new SpeechSynthesisUtterance(morceaux[index++].trim());
-
-    phrase.lang = "fr-FR";
-    phrase.rate = 0.92;
-    phrase.pitch = 0.75;
-    phrase.volume = 1;
-
-    if(voixFrancaise) phrase.voice = voixFrancaise;
-
-    phrase.onstart = () => {
-      voixEnCours = true;
-      mettreAJourEtatVoix();
-    };
-
-    phrase.onend = lireMorceauSuivant;
-
-    phrase.onerror = () => {
-      voixEnCours = false;
-      mettreAJourEtatVoix();
-
-      document.getElementById("voice-status").textContent =
-        "LECTURE VOCALE INDISPONIBLE";
-    };
-
-    window.speechSynthesis.speak(phrase);
-  }
-
-  mettreAJourEtatVoix();
-  lireMorceauSuivant();
-}
-
-function arreterVoix(){
-  if("speechSynthesis" in window){
-    window.speechSynthesis.cancel();
-  }
-
-  voixEnCours = false;
-  mettreAJourEtatVoix();
-}
-
-function basculerVoix(){
-  voixActive = !voixActive;
-
-  if(!voixActive){
-    arreterVoix();
-  }else{
-    if("speechSynthesis" in window){
-      choisirVoixFrancaise();
-
-      const test = new SpeechSynthesisUtterance(
-        "Voix de J.A.R.V.I.S activée."
-      );
-
-      test.lang = "fr-FR";
-
-      if(voixFrancaise) test.voice = voixFrancaise;
-
-      test.rate = 0.92;
-      test.pitch = 0.75;
-      test.volume = 1;
-
-      test.onstart = () => {
-        voixEnCours = true;
-        mettreAJourEtatVoix();
-      };
-
-      test.onend = () => {
-        voixEnCours = false;
-        mettreAJourEtatVoix();
-      };
-
-      test.onerror = () => {
-        voixEnCours = false;
-        mettreAJourEtatVoix();
-      };
-
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(test);
-    }
-  }
-
-  mettreAJourEtatVoix();
-}
-
-
-/* =========================================
-   NAVIGATION
-========================================= */
-
-function ouvrirOnglet(nom,bouton){
-  document.querySelectorAll(".page").forEach(page=>{
-    page.classList.remove("active");
-  });
-
-  const page = document.getElementById("page-"+nom);
-
+function ouvrirOnglet(nom){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  const page=document.getElementById("page-"+nom);
   if(page) page.classList.add("active");
 
-  document.querySelectorAll(".nav-btn").forEach(btn=>{
-    btn.classList.remove("active");
-  });
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll('.nav-btn[data-page="'+nom+'"]').forEach(b=>b.classList.add("active"));
 
-  document.querySelectorAll('.nav-btn[data-page="'+nom+'"]').forEach(btn=>{
-    btn.classList.add("active");
-  });
-
-  if(nom === "performance") actualiserPerformances();
-  if(nom === "settings") afficherSouvenirs();
-  if(nom !== "camera") arreterCamera();
+  if(nom==="performance") actualiserPerformances();
+  if(nom==="settings") afficherSouvenirs();
+  if(nom==="phone") actualiserTelephone();
+  if(nom!=="camera") arreterCamera();
 
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
+/* SUPABASE */
 
-/* =========================================
-   HISTORIQUE LOCAL
-========================================= */
+async function initialiserSupabase(){
+  try{
+    const reponse=await fetch("/.netlify/functions/config");
+    const configuration=await reponse.json();
+    if(!reponse.ok) throw new Error(configuration.error||"Configuration inaccessible");
+
+    client=window.supabase.createClient(configuration.url,configuration.key);
+    await verifierSession();
+
+    statusText.textContent="SYSTÈME OPÉRATIONNEL";
+    document.getElementById("sideStatus").textContent="Système opérationnel";
+  }catch(e){
+    console.error(e);
+    statusText.textContent="ERREUR CONFIGURATION";
+    document.getElementById("sideStatus").textContent="Configuration à vérifier";
+  }
+}
+
+/* VOIX */
+
+function choisirVoixFrancaise(){
+  if(!window.speechSynthesis) return;
+  const voix=window.speechSynthesis.getVoices();
+  voixFrancaise=
+    voix.find(v=>v.lang==="fr-FR" && /Henri|Thomas|Paul|Claude/i.test(v.name))||
+    voix.find(v=>v.lang==="fr-FR")||
+    voix.find(v=>v.lang.toLowerCase().startsWith("fr"))||null;
+}
+
+if("speechSynthesis" in window){
+  choisirVoixFrancaise();
+  window.speechSynthesis.onvoiceschanged=choisirVoixFrancaise;
+}
+
+function mettreAJourEtatVoix(){
+  document.getElementById("voice-spectrum").classList.toggle("speaking",voixEnCours);
+  document.getElementById("voice-status").textContent=
+    voixEnCours?"J.A.R.V.I.S PARLE...":voixActive?"VOIX EN ATTENTE":"VOIX DÉSACTIVÉE";
+  document.getElementById("voiceToggle").textContent=
+    voixActive?"🔊 Voix activée":"🔇 Voix désactivée";
+}
+
+function lireReponse(texte){
+  if(!voixActive||!window.speechSynthesis||!texte) return;
+
+  window.speechSynthesis.cancel();
+  voixEnCours=false;
+
+  const propre=String(texte)
+    .replace(/```[\s\S]*?```/g," bloc de code omis. ")
+    .replace(/https?:\/\/\S+/g," lien ")
+    .replace(/[#*_`>|]/g," ")
+    .replace(/\s+/g," ").trim();
+
+  const morceaux=propre.match(/[\s\S]{1,200}(?:\s|$)/g)||[propre];
+  let index=0;
+
+  function suivant(){
+    if(!voixActive||index>=morceaux.length){
+      voixEnCours=false;
+      mettreAJourEtatVoix();
+      return;
+    }
+
+    const phrase=new SpeechSynthesisUtterance(morceaux[index++].trim());
+    phrase.lang="fr-FR";
+    phrase.rate=.92;
+    phrase.pitch=.75;
+    phrase.volume=1;
+    if(voixFrancaise) phrase.voice=voixFrancaise;
+
+    phrase.onstart=()=>{voixEnCours=true;mettreAJourEtatVoix()};
+    phrase.onend=suivant;
+    phrase.onerror=()=>{voixEnCours=false;mettreAJourEtatVoix()};
+    window.speechSynthesis.speak(phrase);
+  }
+  suivant();
+}
+
+function arreterVoix(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  voixEnCours=false;
+  mettreAJourEtatVoix();
+}
+
+function basculerVoix(){
+  voixActive=!voixActive;
+  if(!voixActive){
+    arreterVoix();
+  }else{
+    choisirVoixFrancaise();
+    lireReponse("Voix de J.A.R.V.I.S activée.");
+  }
+  mettreAJourEtatVoix();
+}
+
+/* HISTORIQUE */
 
 function chargerHistorique(){
   try{
-    const sauvegarde = JSON.parse(
-      localStorage.getItem("jarvis_memoire") || "[]"
-    );
-
-    if(Array.isArray(sauvegarde)){
-      historique = sauvegarde.filter(message =>
-        message &&
-        ["user","assistant"].includes(message.role) &&
-        typeof message.content === "string"
-      ).slice(-12);
-    }
-
-  }catch{
-    historique = [];
-  }
+    const data=JSON.parse(localStorage.getItem("jarvis_memoire")||"[]");
+    historique=Array.isArray(data)?data.filter(m=>
+      m&&["user","assistant"].includes(m.role)&&typeof m.content==="string"
+    ).slice(-12):[];
+  }catch{historique=[]}
 }
 
 function sauvegarderMemoire(){
-  localStorage.setItem(
-    "jarvis_memoire",
-    JSON.stringify(historique)
-  );
+  localStorage.setItem("jarvis_memoire",JSON.stringify(historique));
 }
 
-chargerHistorique();
-
 function ajouterMessage(texte,type){
-  const div = document.createElement("div");
-
-  div.className = "message "+type;
-  div.textContent = texte;
-
+  const div=document.createElement("div");
+  div.className="message "+type;
+  div.textContent=texte;
   messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  messages.scrollTop=messages.scrollHeight;
 }
 
 function chargerConversation(){
-  messages.innerHTML = "";
-
-  if(historique.length === 0){
-    ajouterMessage(
-      "Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?",
-      "jarvis"
-    );
-
+  messages.innerHTML="";
+  if(!historique.length){
+    ajouterMessage("Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?","jarvis");
     return;
   }
-
-  historique.forEach(message=>{
-    ajouterMessage(
-      message.content,
-      message.role === "user" ? "user" : "jarvis"
-    );
-  });
+  historique.forEach(m=>ajouterMessage(m.content,m.role==="user"?"user":"jarvis"));
 }
-
+chargerHistorique();
 chargerConversation();
 
-
-/* =========================================
-   CONNEXION
-========================================= */
+/* CONNEXION ET COMPTES */
 
 async function connecter(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const error = document.getElementById("loginError");
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  const error=document.getElementById("loginError");
+  error.textContent="";
 
-  error.textContent = "";
+  if(!client){error.textContent="Initialisation en cours. Réessaie dans quelques secondes.";return}
+  if(!email||!password){error.textContent="Remplis les deux champs.";return}
 
-  if(!client){
-    error.textContent = "Le système termine son initialisation. Réessaie dans quelques secondes.";
-    return;
-  }
-
-  if(!email || !password){
-    error.textContent = "Veuillez remplir les deux champs.";
-    return;
-  }
-
-  document.getElementById("loginButton").disabled = true;
-  statusText.textContent = "CONNEXION EN COURS...";
+  document.getElementById("loginButton").disabled=true;
+  statusText.textContent="CONNEXION EN COURS...";
 
   try{
-    const {data,error:authError} = await client.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const {data,error:authError}=await client.auth.signInWithPassword({email,password});
     if(authError) throw authError;
 
-    utilisateur = data.user;
-
+    utilisateur=data.user;
     afficherCompte();
     await chargerSouvenirs();
-
-    statusText.textContent = "SYSTÈME OPÉRATIONNEL";
-
-    ajouterMessage(
-      "Connexion réussie. Ma mémoire longue durée est activée, Monsieur.",
-      "jarvis"
-    );
-
-  }catch(erreur){
-    error.textContent = "Connexion impossible : "+erreur.message;
-    statusText.textContent = "ERREUR DE CONNEXION";
-
+    statusText.textContent="SYSTÈME OPÉRATIONNEL";
+    ajouterMessage("Connexion réussie. Ma mémoire longue durée est activée, Monsieur.","jarvis");
+  }catch(e){
+    error.textContent="Connexion impossible : "+e.message;
+    statusText.textContent="ERREUR DE CONNEXION";
   }finally{
-    document.getElementById("loginButton").disabled = false;
+    document.getElementById("loginButton").disabled=false;
   }
 }
 
 function afficherCompte(){
   document.getElementById("login").classList.add("hidden");
   document.getElementById("account").classList.remove("hidden");
-
-  const libelle = "Connecté : "+(utilisateur?.email || "");
-
-  document.getElementById("accountEmail").textContent = libelle;
-  document.getElementById("settingsEmail").textContent =
-    utilisateur?.email || "Non connecté";
-
-  document.getElementById("memoryState").textContent =
-    utilisateur ? "CONNECTÉE" : "—";
+  document.getElementById("accountEmail").textContent="Connecté : "+(utilisateur?.email||"");
+  document.getElementById("settingsEmail").textContent=utilisateur?.email||"Non connecté";
+  document.getElementById("memoryState").textContent="CONNECTÉE";
 }
 
 async function deconnecter(){
   arreterVoix();
-
   if(client) await client.auth.signOut();
-
-  utilisateur = null;
-  souvenirs = [];
-
+  utilisateur=null;
+  souvenirs=[];
   document.getElementById("login").classList.remove("hidden");
   document.getElementById("account").classList.add("hidden");
-
-  document.getElementById("settingsEmail").textContent = "Non connecté";
-  document.getElementById("memoryState").textContent = "—";
-
+  document.getElementById("settingsEmail").textContent="Non connecté";
+  document.getElementById("memoryState").textContent="—";
   afficherSouvenirs();
-
-  statusText.textContent = "DÉCONNECTÉ";
-
+  statusText.textContent="DÉCONNECTÉ";
   ajouterMessage("Déconnexion effectuée.","jarvis");
 }
 
+async function verifierSession(){
+  const {data,error}=await client.auth.getSession();
+  if(error) throw error;
+  if(data.session){
+    utilisateur=data.session.user;
+    afficherCompte();
+    try{await chargerSouvenirs()}catch(e){console.error(e)}
+  }
+}
 
-/* =========================================
-   MÉMOIRE LONGUE DURÉE
-========================================= */
+/* MÉMOIRE */
 
 async function chargerSouvenirs(){
-  if(!utilisateur || !client) return;
-
-  const {data,error} = await client
-    .from("jarvis_memory")
-    .select("id, memory, category, created_at")
+  if(!utilisateur||!client) return;
+  const {data,error}=await client.from("jarvis_memory")
+    .select("id,memory,category,created_at")
     .eq("owner_id",utilisateur.id)
     .order("created_at",{ascending:false})
     .limit(30);
-
-  if(error){
-    console.error(error);
-    throw error;
-  }
-
-  souvenirs = data || [];
+  if(error) throw error;
+  souvenirs=data||[];
   afficherSouvenirs();
 }
 
 async function enregistrerSouvenir(texte){
-  if(!utilisateur){
-    ajouterMessage(
-      "Veuillez vous connecter pour utiliser la mémoire longue durée.",
-      "jarvis"
-    );
-
+  if(!utilisateur){ajouterMessage("Connectez-vous pour utiliser la mémoire longue durée.","jarvis");return}
+  if(!texte||texte.length>500){ajouterMessage("Souvenir vide ou trop long.","jarvis");return}
+  if(/mot de passe|password|code bancaire|carte bancaire|adresse exacte|diagnostic médical/i.test(texte)){
+    ajouterMessage("Je ne peux pas enregistrer ce type d'information sensible.","jarvis");
     return;
   }
-
-  if(!texte || texte.length > 500){
-    ajouterMessage("Ce souvenir est vide ou trop long.","jarvis");
-    return;
-  }
-
-  const interdit =
-    /mot de passe|password|code bancaire|carte bancaire|adresse exacte|diagnostic médical/i;
-
-  if(interdit.test(texte)){
-    ajouterMessage(
-      "Je ne peux pas enregistrer ce type d'information sensible.",
-      "jarvis"
-    );
-
-    return;
-  }
-
-  const {error} = await client.from("jarvis_memory").insert({
-    owner_id:utilisateur.id,
-    memory:texte,
-    category:"general"
+  const {error}=await client.from("jarvis_memory").insert({
+    owner_id:utilisateur.id,memory:texte,category:"general"
   });
-
-  if(error){
-    ajouterMessage("Erreur de sauvegarde : "+error.message,"jarvis");
-    return;
-  }
-
+  if(error){ajouterMessage("Erreur : "+error.message,"jarvis");return}
   await chargerSouvenirs();
-
-  ajouterMessage(
-    "Souvenir enregistré dans ma mémoire longue durée, Monsieur.",
-    "jarvis"
-  );
+  ajouterMessage("Souvenir enregistré, Monsieur.","jarvis");
 }
 
 async function oublierSouvenir(texte){
-  if(!utilisateur){
-    ajouterMessage("Veuillez vous connecter d'abord.","jarvis");
-    return;
-  }
-
-  const recherche = texte.toLowerCase();
-
-  const correspondances = souvenirs.filter(s =>
-    s.memory.toLowerCase().includes(recherche)
-  );
-
-  if(correspondances.length === 0){
-    ajouterMessage("Je n'ai pas trouvé ce souvenir.","jarvis");
-    return;
-  }
-
-  const ids = correspondances.map(s=>s.id);
-
-  const {error} = await client
-    .from("jarvis_memory")
-    .delete()
-    .in("id",ids)
-    .eq("owner_id",utilisateur.id);
-
-  if(error){
-    ajouterMessage("Erreur : "+error.message,"jarvis");
-    return;
-  }
-
+  if(!utilisateur) return;
+  const correspondances=souvenirs.filter(s=>s.memory.toLowerCase().includes(texte.toLowerCase()));
+  if(!correspondances.length){ajouterMessage("Souvenir introuvable.","jarvis");return}
+  const {error}=await client.from("jarvis_memory").delete()
+    .in("id",correspondances.map(s=>s.id)).eq("owner_id",utilisateur.id);
+  if(error){ajouterMessage("Erreur : "+error.message,"jarvis");return}
   await chargerSouvenirs();
-
-  ajouterMessage(
-    "Le souvenir demandé a été supprimé de ma mémoire longue durée.",
-    "jarvis"
-  );
+  ajouterMessage("Souvenir supprimé.","jarvis");
 }
 
 function afficherSouvenirs(){
-  const zone = document.getElementById("memoryList");
-
-  if(!utilisateur){
-    zone.innerHTML =
-      '<p class="muted">Connecte-toi pour consulter tes souvenirs.</p>';
-
-    return;
-  }
-
-  if(!souvenirs.length){
-    zone.innerHTML =
-      '<p class="muted">Aucun souvenir enregistré pour le moment.</p>';
-
-    return;
-  }
-
-  zone.innerHTML = "";
-
+  const zone=document.getElementById("memoryList");
+  zone.innerHTML="";
+  if(!utilisateur){zone.textContent="Connectez-vous pour consulter vos souvenirs.";return}
+  if(!souvenirs.length){zone.textContent="Aucun souvenir enregistré.";return}
   souvenirs.forEach(s=>{
-    const item = document.createElement("div");
-    item.className = "memory-item";
-
-    const contenu = document.createElement("div");
-    contenu.textContent = s.memory;
-
-    const date = document.createElement("small");
-
-    date.textContent = s.created_at
-      ? new Date(s.created_at).toLocaleString("fr-FR")
-      : "";
-
+    const item=document.createElement("div");
+    item.className="memory-item";
+    const contenu=document.createElement("div");
+    contenu.textContent=s.memory;
+    const date=document.createElement("small");
+    date.textContent=s.created_at?new Date(s.created_at).toLocaleString("fr-FR"):"";
     item.append(contenu,date);
     zone.appendChild(item);
   });
 }
 
 async function actualiserSouvenirs(){
-  if(!utilisateur){
-    afficherSouvenirs();
-    return;
-  }
-
-  try{
-    await chargerSouvenirs();
-  }catch(e){
-    ajouterMessage("Erreur mémoire : "+e.message,"jarvis");
-  }
+  try{await chargerSouvenirs()}catch(e){ajouterMessage("Erreur mémoire : "+e.message,"jarvis")}
 }
 
 function traiterCommandeMemoire(texte){
-  const minuscule = texte.toLowerCase();
-
-  const commandesMemoire = [
-    "retiens que ",
-    "souviens-toi que ",
-    "mémorise que "
-  ];
-
-  for(const commande of commandesMemoire){
-    if(minuscule.startsWith(commande)){
-      enregistrerSouvenir(
-        texte.slice(commande.length).trim()
-      );
-
-      return true;
-    }
+  const t=texte.toLowerCase();
+  for(const cmd of ["retiens que ","souviens-toi que ","mémorise que "]){
+    if(t.startsWith(cmd)){enregistrerSouvenir(texte.slice(cmd.length).trim());return true}
   }
-
-  const commandesOubli = [
-    "oublie que ",
-    "oublie "
-  ];
-
-  for(const commande of commandesOubli){
-    if(minuscule.startsWith(commande)){
-      oublierSouvenir(
-        texte.slice(commande.length).trim()
-      );
-
-      return true;
-    }
+  for(const cmd of ["oublie que ","oublie "]){
+    if(t.startsWith(cmd)){oublierSouvenir(texte.slice(cmd.length).trim());return true}
   }
-
   return false;
 }
 
-
-/* =========================================
-   COMMUNICATION AVEC GROQ
-========================================= */
+/* CHAT GROQ */
 
 async function envoyer(){
-  const texte = input.value.trim();
-
-  if(!texte || sendButton.disabled) return;
+  const texte=input.value.trim();
+  if(!texte||sendButton.disabled) return;
 
   ajouterMessage(texte,"user");
-  input.value = "";
+  input.value="";
 
   if(traiterCommandeMemoire(texte)) return;
 
-  historique.push({
-    role:"user",
-    content:texte
-  });
-
+  historique.push({role:"user",content:texte});
   sauvegarderMemoire();
 
-  sendButton.disabled = true;
-  statusText.textContent = "J.A.R.V.I.S RÉFLÉCHIT...";
+  sendButton.disabled=true;
+  statusText.textContent="J.A.R.V.I.S RÉFLÉCHIT...";
 
   try{
-    const contexteMemoire = souvenirs.length
-      ? "Voici les souvenirs enregistrés sur l'utilisateur. Utilise-les uniquement s'ils sont utiles à la question :\n"+
-        souvenirs.map(s=>"- "+s.memory).join("\n")
-      : "Aucun souvenir longue durée n'est enregistré.";
+    const contexte=souvenirs.length
+      ?"Souvenirs utiles :\n"+souvenirs.map(s=>"- "+s.memory).join("\n")
+      :"Aucun souvenir longue durée.";
 
-    const messagesIA = [
-      {
-        role:"system",
-        content:"MÉMOIRE LONGUE DURÉE :\n"+contexteMemoire
-      },
+    const messagesIA=[
+      {role:"system",content:"Tu es J.A.R.V.I.S, assistant francophone, poli et précis. Tu t'adresses à l'utilisateur en disant Monsieur. Tu ne prétends jamais contrôler un appareil sans intégration réelle. "+contexte},
       ...historique.slice(-12)
     ];
 
-    const reponse = await fetch("/.netlify/functions/chat",{
+    const reponse=await fetch("/.netlify/functions/chat",{
       method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        messages:messagesIA
-      })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({messages:messagesIA})
     });
 
-    const donnees = await reponse.json();
+    const donnees=await reponse.json();
+    if(!reponse.ok) throw new Error(donnees.details||donnees.error||"Erreur serveur");
+    if(!donnees.reply) throw new Error("Aucune réponse reçue.");
 
-    if(!reponse.ok){
-      throw new Error(
-        donnees.details ||
-        donnees.error ||
-        "Erreur du serveur"
-      );
-    }
-
-    if(!donnees.reply){
-      throw new Error("Aucune réponse reçue.");
-    }
-
-    historique.push({
-      role:"assistant",
-      content:donnees.reply
-    });
-
-    historique = historique.slice(-12);
-
+    historique.push({role:"assistant",content:donnees.reply});
+    historique=historique.slice(-12);
     sauvegarderMemoire();
-
     ajouterMessage(donnees.reply,"jarvis");
-
     lireReponse(donnees.reply);
-
-    statusText.textContent = "SYSTÈME OPÉRATIONNEL";
-
-  }catch(erreur){
-    ajouterMessage("Erreur : "+erreur.message,"jarvis");
-    statusText.textContent = "ERREUR DE CONNEXION";
-
+    statusText.textContent="SYSTÈME OPÉRATIONNEL";
+  }catch(e){
+    ajouterMessage("Erreur : "+e.message,"jarvis");
+    statusText.textContent="ERREUR DE CONNEXION";
   }finally{
-    sendButton.disabled = false;
+    sendButton.disabled=false;
     input.focus();
   }
 }
 
-input.addEventListener("keydown",event=>{
-  if(event.key === "Enter") envoyer();
-});
+input.addEventListener("keydown",e=>{if(e.key==="Enter") envoyer()});
 
 function effacer(){
   arreterVoix();
-
-  historique = [];
-
+  historique=[];
   sauvegarderMemoire();
-
-  messages.innerHTML = "";
-
-  ajouterMessage(
-    "Conversation effacée. Mes souvenirs longue durée sont conservés.",
-    "jarvis"
-  );
-
-  statusText.textContent = "SYSTÈME EN ATTENTE";
+  messages.innerHTML="";
+  ajouterMessage("Conversation effacée. Les souvenirs longue durée sont conservés.","jarvis");
 }
 
-
-/* =========================================
-   MICROPHONE
-========================================= */
+/* MICROPHONE */
 
 function parler(){
-  const Reconnaissance =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
+  const Reconnaissance=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!Reconnaissance){
-    ajouterMessage(
-      "La reconnaissance vocale n'est pas disponible sur ce navigateur.",
-      "jarvis"
-    );
-
+    ajouterMessage("Reconnaissance vocale indisponible sur ce navigateur.","jarvis");
     return;
   }
-
-  const reconnaissance = new Reconnaissance();
-
-  reconnaissance.lang = "fr-FR";
-  reconnaissance.interimResults = false;
-
-  reconnaissance.onstart = ()=>{
-    statusText.textContent = "JE VOUS ÉCOUTE...";
-  };
-
-  reconnaissance.onresult = event=>{
-    input.value = event.results[0][0].transcript;
-    envoyer();
-  };
-
-  reconnaissance.onerror = ()=>{
-    statusText.textContent = "ERREUR MICRO";
-  };
-
-  reconnaissance.onend = ()=>{
-    if(statusText.textContent === "JE VOUS ÉCOUTE..."){
-      statusText.textContent = "SYSTÈME OPÉRATIONNEL";
-    }
-  };
-
+  const reconnaissance=new Reconnaissance();
+  reconnaissance.lang="fr-FR";
+  reconnaissance.interimResults=false;
+  reconnaissance.onstart=()=>statusText.textContent="JE VOUS ÉCOUTE...";
+  reconnaissance.onresult=e=>{input.value=e.results[0][0].transcript;envoyer()};
+  reconnaissance.onerror=()=>statusText.textContent="ERREUR MICRO";
+  reconnaissance.onend=()=>{if(statusText.textContent==="JE VOUS ÉCOUTE...")statusText.textContent="SYSTÈME OPÉRATIONNEL"};
   reconnaissance.start();
 }
 
-
-/* =========================================
-   CAMÉRA
-========================================= */
+/* CAMÉRA */
 
 async function demarrerCamera(){
-  const video = document.getElementById("cameraPreview");
-  const info = document.getElementById("cameraStatus");
-
-  if(!navigator.mediaDevices?.getUserMedia){
-    info.textContent = "Caméra indisponible sur ce navigateur.";
-    return;
-  }
-
+  const video=document.getElementById("cameraPreview");
+  const info=document.getElementById("cameraStatus");
+  if(!navigator.mediaDevices?.getUserMedia){info.textContent="Caméra indisponible.";return}
   try{
-    fluxCamera = await navigator.mediaDevices.getUserMedia({
-      video:{
-        facingMode:"environment"
-      },
-      audio:false
+    fluxCamera=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"environment"},audio:false
     });
-
-    video.srcObject = fluxCamera;
-
-    info.textContent =
-      "Caméra activée. Le flux reste sur cet appareil.";
-
-  }catch(erreur){
-    info.textContent =
-      "Accès caméra refusé ou indisponible : "+erreur.message;
-  }
+    video.srcObject=fluxCamera;
+    info.textContent="Caméra activée sur cet appareil.";
+  }catch(e){info.textContent="Accès caméra refusé : "+e.message}
 }
 
 function arreterCamera(){
   if(fluxCamera){
-    fluxCamera.getTracks().forEach(track=>track.stop());
-    fluxCamera = null;
+    fluxCamera.getTracks().forEach(t=>t.stop());
+    fluxCamera=null;
   }
-
-  const video = document.getElementById("cameraPreview");
-
-  if(video) video.srcObject = null;
-
-  const info = document.getElementById("cameraStatus");
-
-  if(info) info.textContent = "La caméra est arrêtée.";
+  const video=document.getElementById("cameraPreview");
+  if(video) video.srcObject=null;
+  const info=document.getElementById("cameraStatus");
+  if(info) info.textContent="La caméra est arrêtée.";
 }
 
+function analyserCamera(){
+  const video=document.getElementById("cameraPreview");
+  const zone=document.getElementById("visionResult");
+  if(!fluxCamera||!video.videoWidth){
+    zone.textContent="Active d'abord la caméra.";
+    return;
+  }
+  zone.textContent="Image disponible. Le module de vision par IA n'est pas encore connecté. Aucune image n'a été envoyée.";
+}
 
-/* =========================================
-   PERFORMANCES
-========================================= */
+/* PERFORMANCES */
 
 async function actualiserPerformances(){
-  const mem = document.getElementById("browserMemory");
-  const stock = document.getElementById("siteStorage");
-  const reseau = document.getElementById("networkState");
-  const ecran = document.getElementById("screenSize");
-  const navigateur = document.getElementById("browserName");
-  const batterie = document.getElementById("batteryState");
-  const homeNetwork = document.getElementById("homeNetwork");
+  const mem=document.getElementById("browserMemory");
+  const stock=document.getElementById("siteStorage");
 
   if(performance.memory?.usedJSHeapSize){
-    mem.textContent =
-      (performance.memory.usedJSHeapSize/1048576).toFixed(1)+" Mo";
-  }else{
-    mem.textContent = "Indisponible";
-  }
+    mem.textContent=(performance.memory.usedJSHeapSize/1048576).toFixed(1)+" Mo";
+  }else{mem.textContent="Indisponible"}
 
   try{
-    const estimation = await navigator.storage.estimate();
+    const estimation=await navigator.storage.estimate();
+    stock.textContent=estimation.usage!=null?(estimation.usage/1048576).toFixed(1)+" Mo":"Indisponible";
+  }catch{stock.textContent="Indisponible"}
 
-    stock.textContent = estimation.usage != null
-      ? (estimation.usage/1048576).toFixed(1)+" Mo"
-      : "Indisponible";
+  const reseau=navigator.onLine?"EN LIGNE":"HORS LIGNE";
+  document.getElementById("networkState").textContent=reseau;
+  document.getElementById("homeNetwork").textContent=reseau;
+  document.getElementById("screenSize").textContent=innerWidth+" × "+innerHeight;
 
-  }catch{
-    stock.textContent = "Indisponible";
-  }
-
-  reseau.textContent = navigator.onLine ? "EN LIGNE" : "HORS LIGNE";
-  homeNetwork.textContent = navigator.onLine ? "EN LIGNE" : "HORS LIGNE";
-
-  ecran.textContent = window.innerWidth+" × "+window.innerHeight;
-
-  const ua = navigator.userAgent;
-
-  if(ua.includes("Chrome")){
-    navigateur.textContent = "Chrome";
-  }else if(ua.includes("Firefox")){
-    navigateur.textContent = "Firefox";
-  }else if(ua.includes("Safari")){
-    navigateur.textContent = "Safari";
-  }else{
-    navigateur.textContent = "Navigateur web";
-  }
+  const ua=navigator.userAgent;
+  document.getElementById("browserName").textContent=
+    /Edg/.test(ua)?"Edge":/Chrome/.test(ua)?"Chrome":/Firefox/.test(ua)?"Firefox":/Safari/.test(ua)?"Safari":"Navigateur web";
 
   if(navigator.getBattery){
     try{
-      const b = await navigator.getBattery();
+      const b=await navigator.getBattery();
+      document.getElementById("batteryState").textContent=Math.round(b.level*100)+" %";
+    }catch{document.getElementById("batteryState").textContent="Indisponible"}
+  }else{document.getElementById("batteryState").textContent="Indisponible"}
+}
 
-      batterie.textContent =
-        Math.round(b.level*100)+" %";
+/* MORSE */
 
-    }catch{
-      batterie.textContent = "Indisponible";
+const alphabetMorse={
+ A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
+ K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
+ U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+ 0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
+ ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--","/":"-..-.","-":"-....-","(":"-.--.",")":"-.--.-"
+};
+
+let contexteMorse=null;
+let generationMorse=0;
+
+function convertirMorse(){
+  const texte=document.getElementById("morseInput").value.toUpperCase();
+  const resultat=[];
+  for(const c of texte){
+    if(c===" ") resultat.push("/");
+    else resultat.push(alphabetMorse[c]||"?");
+  }
+  document.getElementById("morseOutput").textContent=resultat.join(" ");
+  document.getElementById("morseStatus").textContent="? indique un caractère non pris en charge.";
+}
+
+function effacerMorse(){
+  arreterMorse();
+  document.getElementById("morseInput").value="";
+  document.getElementById("morseOutput").textContent="—";
+}
+
+function pauseMorse(ms,generation){
+  return new Promise(resolve=>{
+    setTimeout(()=>resolve(generation===generationMorse),ms);
+  });
+}
+
+async function emettreMorse(){
+  arreterMorse();
+  const texte=document.getElementById("morseInput").value.toUpperCase();
+  if(!texte.trim()){document.getElementById("morseStatus").textContent="Écris un message.";return}
+  convertirMorse();
+
+  const generation=generationMorse;
+  const unite=120;
+
+  try{
+    contexteMorse=new (window.AudioContext||window.webkitAudioContext)();
+    await contexteMorse.resume();
+
+    document.getElementById("morseStatus").textContent="Émission sonore en cours...";
+
+    for(let i=0;i<texte.length;i++){
+      if(generation!==generationMorse) return;
+      const c=texte[i];
+      if(c===" "){if(!await pauseMorse(unite*7,generation))return;continue}
+      const code=alphabetMorse[c];
+      if(!code) continue;
+
+      for(const symbole of code){
+        if(generation!==generationMorse)return;
+        const osc=contexteMorse.createOscillator();
+        const gain=contexteMorse.createGain();
+        osc.frequency.value=650;
+        gain.gain.value=.12;
+        osc.connect(gain);
+        gain.connect(contexteMorse.destination);
+        osc.start();
+        await pauseMorse(symbole==="."?unite:unite*3,generation);
+        osc.stop();
+        if(!await pauseMorse(unite,generation))return;
+      }
+      if(i<texte.length-1&&!await pauseMorse(unite*2,generation))return;
     }
-  }else{
-    batterie.textContent = "Indisponible";
+    if(generation===generationMorse)document.getElementById("morseStatus").textContent="Émission terminée.";
+  }catch(e){
+    document.getElementById("morseStatus").textContent="Émission impossible : "+e.message;
+  }finally{
+    if(contexteMorse&&generation===generationMorse){
+      contexteMorse.close().catch(()=>{});
+      contexteMorse=null;
+    }
   }
 }
 
+async function clignoterMorse(){
+  arreterMorse();
+  const texte=document.getElementById("morseInput").value.toUpperCase();
+  if(!texte.trim())return;
+  convertirMorse();
 
-/* =========================================
-   RESTAURATION DE SESSION
-========================================= */
+  const generation=generationMorse;
+  const unite=180;
+  const status=document.getElementById("morseStatus");
+  status.textContent="Signal lumineux en cours. Évite de regarder directement une lumière intense.";
 
-async function verifierSession(){
-  const {data,error} = await client.auth.getSession();
+  for(let i=0;i<texte.length;i++){
+    if(generation!==generationMorse)return;
+    const c=texte[i];
+    if(c===" "){if(!await pauseMorse(unite*7,generation))return;continue}
+    const code=alphabetMorse[c];
+    if(!code)continue;
+    for(const symbole of code){
+      if(generation!==generationMorse)return;
+      document.body.style.background="#ffffff";
+      if(!await pauseMorse(symbole==="."?unite:unite*3,generation))return;
+      document.body.style.background="#060b14";
+      if(!await pauseMorse(unite,generation))return;
+    }
+    if(!await pauseMorse(unite*2,generation))return;
+  }
+  document.body.style.background="#060b14";
+  status.textContent="Signal lumineux terminé.";
+}
 
-  if(error){
-    console.error(error);
+function arreterMorse(){
+  generationMorse++;
+  if(contexteMorse){
+    contexteMorse.close().catch(()=>{});
+    contexteMorse=null;
+  }
+  document.body.style.background="#060b14";
+  const status=document.getElementById("morseStatus");
+  if(status)status.textContent="Signal arrêté.";
+}
+
+/* RECHERCHE GOOGLE */
+
+function rechercheGoogle(images=false,maps=false){
+  const q=document.getElementById("searchInput").value.trim();
+  if(!q){document.getElementById("searchInput").focus();return}
+  const url=maps
+    ?"https://www.google.com/maps/search/"+encodeURIComponent(q)
+    :images
+      ?"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q)
+      :"https://www.google.com/search?q="+encodeURIComponent(q);
+  window.open(url,"_blank","noopener,noreferrer");
+}
+
+/* DIAGNOSTIC */
+
+async function lancerDiagnostic(){
+  const zone=document.getElementById("diagnosticResults");
+  zone.textContent="Analyse en cours...";
+  const tests=[
+    ["Connexion Internet",navigator.onLine,"État de la connexion."],
+    ["Contexte HTTPS",window.isSecureContext,"Certaines fonctions nécessitent une connexion sécurisée."],
+    ["Stockage local",!!window.localStorage,"Stockage local du navigateur."],
+    ["Synthèse vocale",!!window.speechSynthesis,"Lecture des réponses."],
+    ["Reconnaissance vocale",!!(window.SpeechRecognition||window.webkitSpeechRecognition),"Disponibilité du microphone vocal."],
+    ["Caméra",!!navigator.mediaDevices?.getUserMedia,"Accès caméra sous autorisation."],
+    ["Notifications","Notification" in window,"Notifications du navigateur."]
+  ];
+
+  try{
+    const s=await navigator.storage.estimate();
+    tests.push(["Stockage du site",true,s.usage!=null?(s.usage/1048576).toFixed(1)+" Mo utilisés.":"Estimation indisponible."]);
+  }catch{tests.push(["Stockage du site",false,"Estimation indisponible."])}
+
+  zone.innerHTML="";
+  let alertes=0;
+
+  tests.forEach(([nom,ok,detail])=>{
+    if(!ok)alertes++;
+    const item=document.createElement("div");
+    item.className="memory-item";
+    const titre=document.createElement("strong");
+    titre.className=ok?"module-success":"module-warning";
+    titre.textContent=(ok?"✓ ":"⚠ ")+nom;
+    const desc=document.createElement("small");
+    desc.textContent=detail;
+    item.append(titre,desc);
+    zone.appendChild(item);
+  });
+
+  const bilan=document.createElement("p");
+  bilan.className="muted";
+  bilan.textContent=alertes
+    ?alertes+" fonction(s) indisponible(s) ou à vérifier. Cela ne signifie pas qu'un virus a été détecté."
+    :"Tous les contrôles disponibles sont satisfaisants. Ce test ne constitue pas un scan antivirus.";
+  zone.prepend(bilan);
+}
+
+/* AUTOMATISATIONS */
+
+let automatisations=[];
+try{
+  const a=JSON.parse(localStorage.getItem("jarvis_automations")||"[]");
+  automatisations=Array.isArray(a)?a:[];
+}catch{automatisations=[]}
+
+function sauvegarderAutomatisations(){
+  localStorage.setItem("jarvis_automations",JSON.stringify(automatisations));
+}
+
+async function ajouterAutomatisation(){
+  const nom=document.getElementById("automationName").value.trim();
+  const date=document.getElementById("automationDate").value;
+  if(!nom||!date){alert("Indique un nom et une date.");return}
+  const moment=new Date(date);
+  if(Number.isNaN(moment.getTime())||moment<=new Date()){alert("Choisis une date future.");return}
+  if(!("Notification" in window)){alert("Notifications indisponibles.");return}
+
+  const permission=await Notification.requestPermission();
+  if(permission!=="granted"){alert("Autorisation de notification refusée.");return}
+
+  automatisations.push({
+    id:Date.now(),nom,date:moment.getTime(),active:true,terminee:false
+  });
+  sauvegarderAutomatisations();
+  document.getElementById("automationName").value="";
+  document.getElementById("automationDate").value="";
+  afficherAutomatisations();
+}
+
+function afficherAutomatisations(){
+  const zone=document.getElementById("automationList");
+  zone.innerHTML="";
+  if(!automatisations.length){zone.textContent="Aucun rappel enregistré.";return}
+
+  automatisations.forEach(a=>{
+    const item=document.createElement("div");
+    item.className="memory-item";
+    const titre=document.createElement("strong");
+    titre.textContent=a.nom;
+    const date=document.createElement("small");
+    date.textContent=new Date(a.date).toLocaleString("fr-FR")+
+      (a.terminee?" — TERMINÉ":a.active?" — ACTIF":" — EN PAUSE");
+
+    const actions=document.createElement("div");
+    actions.className="action-row";
+
+    const pause=document.createElement("button");
+    pause.textContent=a.active?"Mettre en pause":"Réactiver";
+    pause.disabled=a.terminee;
+    pause.onclick=()=>{
+      a.active=!a.active;
+      sauvegarderAutomatisations();
+      afficherAutomatisations();
+    };
+
+    const supprimer=document.createElement("button");
+    supprimer.className="danger";
+    supprimer.textContent="Supprimer";
+    supprimer.onclick=()=>{
+      automatisations=automatisations.filter(x=>x.id!==a.id);
+      sauvegarderAutomatisations();
+      afficherAutomatisations();
+    };
+
+    actions.append(pause,supprimer);
+    item.append(titre,date,actions);
+    zone.appendChild(item);
+  });
+}
+
+function verifierAutomatisations(){
+  let changement=false;
+  const maintenant=Date.now();
+  automatisations.forEach(a=>{
+    if(a.active&&!a.terminee&&maintenant>=a.date){
+      if("Notification" in window&&Notification.permission==="granted"){
+        new Notification("J.A.R.V.I.S — Rappel",{body:a.nom});
+      }
+      a.active=false;
+      a.terminee=true;
+      changement=true;
+    }
+  });
+  if(changement){
+    sauvegarderAutomatisations();
+    afficherAutomatisations();
+  }
+}
+
+afficherAutomatisations();
+setInterval(verifierAutomatisations,5000);
+
+/* TÉLÉPHONE ET NOTIFICATIONS */
+
+function actualiserTelephone(){
+  const ua=navigator.userAgent;
+  document.getElementById("phonePlatform").textContent=
+    /iPhone|iPad|iPod/i.test(ua)?"iOS":/Android/i.test(ua)?"Android":"Ordinateur";
+  document.getElementById("phoneNotifications").textContent=
+    "Notification" in window?"Disponible":"Indisponible";
+  document.getElementById("phoneMic").textContent=
+    navigator.mediaDevices?.getUserMedia?"Disponible":"Indisponible";
+  document.getElementById("phoneCamera").textContent=
+    navigator.mediaDevices?.getUserMedia?"Disponible":"Indisponible";
+}
+
+async function demanderNotifications(){
+  if(!("Notification" in window)){
+    document.getElementById("notificationStatus").textContent="Notifications non prises en charge.";
     return;
   }
+  const p=await Notification.requestPermission();
+  document.getElementById("notificationStatus").textContent="Autorisation : "+p;
+}
 
-  if(data.session){
-    utilisateur = data.session.user;
+function testerNotification(){
+  if(!("Notification" in window)||Notification.permission!=="granted"){
+    document.getElementById("notificationStatus").textContent="Autorise d'abord les notifications.";
+    return;
+  }
+  new Notification("J.A.R.V.I.S",{body:"Test de notification réussi, Monsieur."});
+  document.getElementById("notificationStatus").textContent="Notification de test envoyée.";
+}
 
-    afficherCompte();
+/* MAISON CONNECTÉE */
 
-    try{
-      await chargerSouvenirs();
-      statusText.textContent = "SYSTÈME OPÉRATIONNEL";
-    }catch{
-      statusText.textContent = "ERREUR MÉMOIRE";
-    }
+async function testerMaison(){
+  const adresse=document.getElementById("haUrl").value.trim();
+  const status=document.getElementById("haStatus");
+  if(!adresse){
+    status.textContent="Indique d'abord l'adresse de ton serveur domotique.";
+    return;
+  }
+  try{
+    const url=new URL(adresse);
+    if(!["https:","http:"].includes(url.protocol))throw new Error("Adresse invalide.");
+    status.textContent="Adresse valide. Le connecteur sécurisé Home Assistant reste à configurer côté serveur.";
+  }catch(e){
+    status.textContent="Adresse invalide : "+e.message;
   }
 }
 
+/* PERSONNALISATION */
 
-/* =========================================
-   ÉTAT DE LA CONNEXION
-========================================= */
+function sauverPersonnalisation(){
+  const nom=document.getElementById("assistantName").value.trim();
+  if(!nom){alert("Indique un nom.");return}
+  localStorage.setItem("jarvis_assistant_name",nom);
+  alert("Nom enregistré sur cet appareil.");
+}
 
-window.addEventListener("online",()=>{
-  document.getElementById("networkState").textContent = "EN LIGNE";
-  document.getElementById("homeNetwork").textContent = "EN LIGNE";
-});
+const nomSauve=localStorage.getItem("jarvis_assistant_name");
+if(nomSauve)document.getElementById("assistantName").value=nomSauve;
 
-window.addEventListener("offline",()=>{
-  document.getElementById("networkState").textContent = "HORS LIGNE";
-  document.getElementById("homeNetwork").textContent = "HORS LIGNE";
-});
+/* ÉTAT RÉSEAU */
 
+window.addEventListener("online",actualiserPerformances);
+window.addEventListener("offline",actualiserPerformances);
 window.addEventListener("resize",()=>{
-  document.getElementById("screenSize").textContent =
-    window.innerWidth+" × "+window.innerHeight;
+  document.getElementById("screenSize").textContent=innerWidth+" × "+innerHeight;
 });
 
-
-/* =========================================
-   DÉMARRAGE
-========================================= */
+/* DÉMARRAGE */
 
 actualiserPerformances();
+actualiserTelephone();
 initialiserSupabase();
 mettreAJourEtatVoix();
-
 </script>
 </body>
 </html>
