@@ -1463,50 +1463,94 @@ function pauseMorse(ms,generation){
   });
 }
 
+
 async function emettreMorse(){
   arreterMorse();
-  const texte=document.getElementById("morseInput").value.toUpperCase();
-  if(!texte.trim()){document.getElementById("morseStatus").textContent="Écris un message.";return}
+
+  const texte = document.getElementById("morseInput").value.toUpperCase();
+
+  if(!texte.trim()){
+    document.getElementById("morseStatus").textContent = "Écris un message.";
+    return;
+  }
+
   convertirMorse();
 
-  const generation=generationMorse;
-  const unite=120;
+  const generation = generationMorse;
+  const unite = 120;
 
   try{
-    contexteMorse=new (window.AudioContext||window.webkitAudioContext)();
-    await contexteMorse.resume();
+    const Audio = window.AudioContext || window.webkitAudioContext;
 
-    document.getElementById("morseStatus").textContent="Émission sonore en cours...";
+    if(!Audio){
+      throw new Error("Audio non pris en charge par ce navigateur.");
+    }
 
-    for(let i=0;i<texte.length;i++){
-      if(generation!==generationMorse) return;
-      const c=texte[i];
-      if(c===" "){if(!await pauseMorse(unite*7,generation))return;continue}
-      const code=alphabetMorse[c];
+    contexteMorse = new Audio();
+
+    if(contexteMorse.state === "suspended"){
+      await contexteMorse.resume();
+    }
+
+    document.getElementById("morseStatus").textContent = "Émission sonore en cours...";
+
+    for(let i = 0; i < texte.length; i++){
+
+      if(generation !== generationMorse) return;
+
+      const c = texte[i];
+
+      if(c === " "){
+        if(!await pauseMorse(unite * 7, generation)) return;
+        continue;
+      }
+
+      const code = alphabetMorse[c];
       if(!code) continue;
 
       for(const symbole of code){
-        if(generation!==generationMorse)return;
-        const osc=contexteMorse.createOscillator();
-        const gain=contexteMorse.createGain();
-        osc.frequency.value=650;
-        gain.gain.value=.12;
+
+        if(generation !== generationMorse) return;
+
+        const osc = contexteMorse.createOscillator();
+        const gain = contexteMorse.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(650, contexteMorse.currentTime);
+
+        gain.gain.setValueAtTime(0.12, contexteMorse.currentTime);
+
         osc.connect(gain);
         gain.connect(contexteMorse.destination);
+
         osc.start();
-        await pauseMorse(symbole==="."?unite:unite*3,generation);
+
+        await pauseMorse(
+          symbole === "." ? unite : unite * 3,
+          generation
+        );
+
         osc.stop();
-        if(!await pauseMorse(unite,generation))return;
+
+        if(!await pauseMorse(unite, generation)) return;
       }
-      if(i<texte.length-1&&!await pauseMorse(unite*2,generation))return;
+
+      if(i < texte.length - 1){
+        if(!await pauseMorse(unite * 2, generation)) return;
+      }
     }
-    if(generation===generationMorse)document.getElementById("morseStatus").textContent="Émission terminée.";
+
+    if(generation === generationMorse){
+      document.getElementById("morseStatus").textContent = "Émission terminée.";
+    }
+
   }catch(e){
-    document.getElementById("morseStatus").textContent="Émission impossible : "+e.message;
+    document.getElementById("morseStatus").textContent = "Émission impossible : " + e.message;
+
   }finally{
-    if(contexteMorse&&generation===generationMorse){
+    if(contexteMorse && generation === generationMorse){
       contexteMorse.close().catch(()=>{});
-      contexteMorse=null;
+      contexteMorse = null;
     }
   }
 }
