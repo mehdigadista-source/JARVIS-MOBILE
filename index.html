@@ -936,17 +936,31 @@ hr {
 </nav>
 
 <script>
+/* =========================================================
+   J.A.R.V.I.S — SYSTEME STARK
+   SCRIPT PRINCIPAL AMÉLIORÉ
+========================================================= */
+
 /* HORLOGE */
 
 function actualiserHorloge(){
   const maintenant=new Date();
-  document.getElementById("clock").textContent=maintenant.toLocaleTimeString("fr-FR");
-  document.getElementById("date").textContent=maintenant.toLocaleDateString("fr-FR",{
-    weekday:"long",day:"numeric",month:"long",year:"numeric"
-  });
+
+  document.getElementById("clock").textContent=
+    maintenant.toLocaleTimeString("fr-FR");
+
+  document.getElementById("date").textContent=
+    maintenant.toLocaleDateString("fr-FR",{
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    });
 }
+
 actualiserHorloge();
 setInterval(actualiserHorloge,1000);
+
 
 /* VARIABLES */
 
@@ -955,24 +969,62 @@ let utilisateur=null;
 let historique=[];
 let souvenirs=[];
 let fluxCamera=null;
-let voixActive=true;
+
+let voixActive=localStorage.getItem("jarvis_voix")!=="false";
 let voixEnCours=false;
 let voixFrancaise=null;
+let reconnaissanceActive=null;
+
+let contexteMorse=null;
+let generationMorse=0;
 
 const messages=document.getElementById("messages");
 const input=document.getElementById("question");
 const statusText=document.getElementById("status");
 const sendButton=document.getElementById("send");
 
+
+/* OUTILS */
+
+function afficherStatut(texte){
+  statusText.textContent=texte;
+  const side=document.getElementById("sideStatus");
+  if(side) side.textContent=texte;
+}
+
+function afficherErreur(texte){
+  ajouterMessage("Erreur : "+texte,"jarvis");
+  afficherStatut("ERREUR");
+}
+
+function sauvegarderLocal(cle,valeur){
+  try{
+    localStorage.setItem(cle,JSON.stringify(valeur));
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+
 /* NAVIGATION */
 
 function ouvrirOnglet(nom){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+
   const page=document.getElementById("page-"+nom);
   if(page) page.classList.add("active");
 
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll('.nav-btn[data-page="'+nom+'"]').forEach(b=>b.classList.add("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  document.querySelectorAll('.nav-btn[data-page="'+nom+'"]').forEach(b=>{
+    b.classList.add("active");
+  });
 
   if(nom==="performance") actualiserPerformances();
   if(nom==="settings") afficherSouvenirs();
@@ -982,27 +1034,42 @@ function ouvrirOnglet(nom){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
+
 /* SUPABASE */
 
 async function initialiserSupabase(){
   try{
+    if(!window.supabase){
+      throw new Error("Bibliothèque Supabase indisponible.");
+    }
+
     const reponse=await fetch("/api/config");
     const configuration=await reponse.json();
-    if(!reponse.ok) throw new Error(configuration.error||"Configuration inaccessible");
 
-    client=window.supabase.createClient(configuration.url,configuration.key);
+    if(!reponse.ok){
+      throw new Error(configuration.error||"Configuration inaccessible.");
+    }
+
+    if(!configuration.url||!configuration.key){
+      throw new Error("Configuration Supabase incomplète.");
+    }
+
+    client=window.supabase.createClient(
+      configuration.url,
+      configuration.key
+    );
+
     await verifierSession();
 
-    statusText.textContent="SYSTÈME OPÉRATIONNEL";
-    document.getElementById("sideStatus").textContent="Système opérationnel";
+    afficherStatut("SYSTÈME OPÉRATIONNEL");
   }catch(e){
     console.error(e);
-    statusText.textContent="ERREUR CONFIGURATION";
-    document.getElementById("sideStatus").textContent="Configuration à vérifier";
+    afficherStatut("ERREUR DE CONFIGURATION");
   }
 }
 
-/* VOIX FEMININE J.A.R.V.I.S */
+
+/* VOIX */
 
 function choisirVoixFrancaise(){
   if(!window.speechSynthesis) return;
@@ -1013,7 +1080,7 @@ function choisirVoixFrancaise(){
     voix.find(v=>/Denise.*Neural/i.test(v.name))||
     voix.find(v=>/Heloise.*Neural/i.test(v.name))||
     voix.find(v=>/Vivienne.*Neural/i.test(v.name))||
-    voix.find(v=>/female|femme/i.test(v.name) && v.lang.toLowerCase().startsWith("fr"))||
+    voix.find(v=>/female|femme/i.test(v.name)&&v.lang.toLowerCase().startsWith("fr"))||
     voix.find(v=>v.lang==="fr-FR")||
     voix.find(v=>v.lang.toLowerCase().startsWith("fr"))||
     null;
@@ -1025,11 +1092,25 @@ if("speechSynthesis" in window){
 }
 
 function mettreAJourEtatVoix(){
-  document.getElementById("voice-spectrum").classList.toggle("speaking",voixEnCours);
-  document.getElementById("voice-status").textContent=
-    voixEnCours?"J.A.R.V.I.S PARLE...":voixActive?"VOIX EN ATTENTE":"VOIX DÉSACTIVÉE";
-  document.getElementById("voiceToggle").textContent=
-    voixActive?"🔊 Voix activée":"🔇 Voix désactivée";
+  const spectre=document.getElementById("voice-spectrum");
+  const etat=document.getElementById("voice-status");
+  const bouton=document.getElementById("voiceToggle");
+
+  if(spectre){
+    spectre.classList.toggle("speaking",voixEnCours);
+  }
+
+  if(etat){
+    etat.textContent=voixEnCours
+      ?"J.A.R.V.I.S PARLE..."
+      :voixActive?"VOIX EN ATTENTE":"VOIX DÉSACTIVÉE";
+  }
+
+  if(bouton){
+    bouton.textContent=voixActive
+      ?"🔊 Voix activée"
+      :"🔇 Voix désactivée";
+  }
 }
 
 function lireReponse(texte){
@@ -1042,29 +1123,39 @@ function lireReponse(texte){
     .replace(/```[\s\S]*?```/g," bloc de code omis. ")
     .replace(/https?:\/\/\S+/g," lien ")
     .replace(/[#*_`>|]/g," ")
-    .replace(/\s+/g," ").trim();
+    .replace(/\s+/g," ")
+    .trim();
 
-  const morceaux=propre.match(/[\s\S]{1,200}(?:\s|$)/g)||[propre];
+  const phrases=propre.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[propre];
   let index=0;
 
   function suivant(){
-    if(!voixActive||index>=morceaux.length){
+    if(!voixActive||index>=phrases.length){
       voixEnCours=false;
       mettreAJourEtatVoix();
       return;
     }
 
-    const phrase=new SpeechSynthesisUtterance(morceaux[index++].trim());
+    const phrase=new SpeechSynthesisUtterance(phrases[index++]);
     phrase.lang="fr-FR";
-    phrase.rate=0.95;
-    phrase.pitch=1.08;
+    phrase.rate=0.94;
+    phrase.pitch=1.05;
     phrase.volume=1;
 
     if(voixFrancaise) phrase.voice=voixFrancaise;
 
-    phrase.onstart=()=>{voixEnCours=true;mettreAJourEtatVoix()};
+    phrase.onstart=()=>{
+      voixEnCours=true;
+      mettreAJourEtatVoix();
+    };
+
     phrase.onend=suivant;
-    phrase.onerror=()=>{voixEnCours=false;mettreAJourEtatVoix()};
+
+    phrase.onerror=()=>{
+      voixEnCours=false;
+      mettreAJourEtatVoix();
+    };
+
     window.speechSynthesis.speak(phrase);
   }
 
@@ -1072,13 +1163,18 @@ function lireReponse(texte){
 }
 
 function arreterVoix(){
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(window.speechSynthesis){
+    window.speechSynthesis.cancel();
+  }
+
   voixEnCours=false;
   mettreAJourEtatVoix();
 }
 
 function basculerVoix(){
   voixActive=!voixActive;
+
+  localStorage.setItem("jarvis_voix",String(voixActive));
 
   if(!voixActive){
     arreterVoix();
@@ -1090,19 +1186,27 @@ function basculerVoix(){
   mettreAJourEtatVoix();
 }
 
+
 /* HISTORIQUE */
 
 function chargerHistorique(){
   try{
     const data=JSON.parse(localStorage.getItem("jarvis_memoire")||"[]");
-    historique=Array.isArray(data)?data.filter(m=>
-      m&&["user","assistant"].includes(m.role)&&typeof m.content==="string"
-    ).slice(-12):[];
-  }catch{historique=[]}
+
+    historique=Array.isArray(data)
+      ?data.filter(m=>
+        m&&
+        ["user","assistant"].includes(m.role)&&
+        typeof m.content==="string"
+      ).slice(-12)
+      :[];
+  }catch{
+    historique=[];
+  }
 }
 
 function sauvegarderMemoire(){
-  localStorage.setItem("jarvis_memoire",JSON.stringify(historique));
+  sauvegarderLocal("jarvis_memoire",historique);
 }
 
 function ajouterMessage(texte,type){
@@ -1115,154 +1219,355 @@ function ajouterMessage(texte,type){
 
 function chargerConversation(){
   messages.innerHTML="";
+
   if(!historique.length){
-    ajouterMessage("Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?","jarvis");
+    ajouterMessage(
+      "Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?",
+      "jarvis"
+    );
     return;
   }
-  historique.forEach(m=>ajouterMessage(m.content,m.role==="user"?"user":"jarvis"));
+
+  historique.forEach(m=>{
+    ajouterMessage(
+      m.content,
+      m.role==="user"?"user":"jarvis"
+    );
+  });
 }
+
 chargerHistorique();
 chargerConversation();
 
-/* CONNEXION ET COMPTES */
+
+/* CONNEXION */
 
 async function connecter(){
   const email=document.getElementById("email").value.trim();
   const password=document.getElementById("password").value;
   const error=document.getElementById("loginError");
+
   error.textContent="";
 
-  if(!client){error.textContent="Initialisation en cours. Réessaie dans quelques secondes.";return}
-  if(!email||!password){error.textContent="Remplis les deux champs.";return}
+  if(!client){
+    error.textContent="Initialisation en cours. Réessaie dans quelques secondes.";
+    return;
+  }
 
-  document.getElementById("loginButton").disabled=true;
-  statusText.textContent="CONNEXION EN COURS...";
+  if(!email||!password){
+    error.textContent="Remplis les deux champs.";
+    return;
+  }
+
+  const bouton=document.getElementById("loginButton");
+  bouton.disabled=true;
+
+  afficherStatut("CONNEXION EN COURS...");
 
   try{
-    const {data,error:authError}=await client.auth.signInWithPassword({email,password});
+    const {data,error:authError}=await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
     if(authError) throw authError;
 
     utilisateur=data.user;
+
     afficherCompte();
     await chargerSouvenirs();
-    statusText.textContent="SYSTÈME OPÉRATIONNEL";
-    ajouterMessage("Connexion réussie. Ma mémoire longue durée est activée, Monsieur.","jarvis");
+
+    afficherStatut("SYSTÈME OPÉRATIONNEL");
+
+    ajouterMessage(
+      "Connexion réussie. Ma mémoire longue durée est activée, Monsieur.",
+      "jarvis"
+    );
+
   }catch(e){
     error.textContent="Connexion impossible : "+e.message;
-    statusText.textContent="ERREUR DE CONNEXION";
+    afficherStatut("ERREUR DE CONNEXION");
   }finally{
-    document.getElementById("loginButton").disabled=false;
+    bouton.disabled=false;
   }
 }
 
 function afficherCompte(){
   document.getElementById("login").classList.add("hidden");
   document.getElementById("account").classList.remove("hidden");
-  document.getElementById("accountEmail").textContent="Connecté : "+(utilisateur?.email||"");
-  document.getElementById("settingsEmail").textContent=utilisateur?.email||"Non connecté";
+
+  document.getElementById("accountEmail").textContent=
+    "Connecté : "+(utilisateur?.email||"");
+
+  document.getElementById("settingsEmail").textContent=
+    utilisateur?.email||"Non connecté";
+
   document.getElementById("memoryState").textContent="CONNECTÉE";
 }
 
 async function deconnecter(){
   arreterVoix();
-  if(client) await client.auth.signOut();
+
+  if(client){
+    const {error}=await client.auth.signOut();
+    if(error) console.error(error);
+  }
+
   utilisateur=null;
   souvenirs=[];
+
   document.getElementById("login").classList.remove("hidden");
   document.getElementById("account").classList.add("hidden");
   document.getElementById("settingsEmail").textContent="Non connecté";
   document.getElementById("memoryState").textContent="—";
+
   afficherSouvenirs();
-  statusText.textContent="DÉCONNECTÉ";
+  afficherStatut("DÉCONNECTÉ");
+
   ajouterMessage("Déconnexion effectuée.","jarvis");
 }
 
 async function verifierSession(){
   const {data,error}=await client.auth.getSession();
+
   if(error) throw error;
+
   if(data.session){
     utilisateur=data.session.user;
     afficherCompte();
-    try{await chargerSouvenirs()}catch(e){console.error(e)}
+
+    try{
+      await chargerSouvenirs();
+    }catch(e){
+      console.error(e);
+    }
   }
 }
 
-/* MÉMOIRE */
+
+/* MÉMOIRE LONGUE DURÉE */
 
 async function chargerSouvenirs(){
   if(!utilisateur||!client) return;
-  const {data,error}=await client.from("jarvis_memory")
+
+  const {data,error}=await client
+    .from("jarvis_memory")
     .select("id,memory,category,created_at")
     .eq("owner_id",utilisateur.id)
     .order("created_at",{ascending:false})
-    .limit(30);
+    .limit(50);
+
   if(error) throw error;
+
   souvenirs=data||[];
+
   afficherSouvenirs();
+
+  document.getElementById("memoryState").textContent=
+    souvenirs.length+" SOUVENIR(S)";
 }
 
 async function enregistrerSouvenir(texte){
-  if(!utilisateur){ajouterMessage("Connectez-vous pour utiliser la mémoire longue durée.","jarvis");return}
-  if(!texte||texte.length>500){ajouterMessage("Souvenir vide ou trop long.","jarvis");return}
+  if(!utilisateur){
+    ajouterMessage("Connectez-vous pour utiliser la mémoire longue durée.","jarvis");
+    return;
+  }
+
+  texte=texte.trim();
+
+  if(!texte||texte.length>500){
+    ajouterMessage("Souvenir vide ou trop long (500 caractères maximum).","jarvis");
+    return;
+  }
+
   if(/mot de passe|password|code bancaire|carte bancaire|adresse exacte|diagnostic médical/i.test(texte)){
     ajouterMessage("Je ne peux pas enregistrer ce type d'information sensible.","jarvis");
     return;
   }
+
   const {error}=await client.from("jarvis_memory").insert({
-    owner_id:utilisateur.id,memory:texte,category:"general"
+    owner_id:utilisateur.id,
+    memory:texte,
+    category:"general"
   });
-  if(error){ajouterMessage("Erreur : "+error.message,"jarvis");return}
+
+  if(error){
+    ajouterMessage("Erreur mémoire : "+error.message,"jarvis");
+    return;
+  }
+
   await chargerSouvenirs();
+
   ajouterMessage("Souvenir enregistré, Monsieur.","jarvis");
+}
+
+async function modifierSouvenir(id,ancienTexte){
+  if(!utilisateur||!client) return;
+
+  const nouveau=prompt("Modifier ce souvenir :",ancienTexte);
+
+  if(nouveau===null) return;
+
+  const texte=nouveau.trim();
+
+  if(!texte||texte.length>500){
+    alert("Le souvenir doit contenir entre 1 et 500 caractères.");
+    return;
+  }
+
+  const {error}=await client
+    .from("jarvis_memory")
+    .update({memory:texte})
+    .eq("id",id)
+    .eq("owner_id",utilisateur.id);
+
+  if(error){
+    alert("Modification impossible : "+error.message);
+    return;
+  }
+
+  await chargerSouvenirs();
+}
+
+async function supprimerSouvenir(id){
+  if(!utilisateur||!client) return;
+
+  if(!confirm("Supprimer définitivement ce souvenir ?")) return;
+
+  const {error}=await client
+    .from("jarvis_memory")
+    .delete()
+    .eq("id",id)
+    .eq("owner_id",utilisateur.id);
+
+  if(error){
+    alert("Suppression impossible : "+error.message);
+    return;
+  }
+
+  await chargerSouvenirs();
 }
 
 async function oublierSouvenir(texte){
   if(!utilisateur) return;
-  const correspondances=souvenirs.filter(s=>s.memory.toLowerCase().includes(texte.toLowerCase()));
-  if(!correspondances.length){ajouterMessage("Souvenir introuvable.","jarvis");return}
-  const {error}=await client.from("jarvis_memory").delete()
-    .in("id",correspondances.map(s=>s.id)).eq("owner_id",utilisateur.id);
-  if(error){ajouterMessage("Erreur : "+error.message,"jarvis");return}
+
+  const recherche=texte.toLowerCase().trim();
+
+  const correspondances=souvenirs.filter(s=>
+    s.memory.toLowerCase().includes(recherche)
+  );
+
+  if(!correspondances.length){
+    ajouterMessage("Souvenir introuvable.","jarvis");
+    return;
+  }
+
+  if(!confirm("Supprimer "+correspondances.length+" souvenir(s) correspondant(s) ?")){
+    return;
+  }
+
+  const ids=correspondances.map(s=>s.id);
+
+  const {error}=await client
+    .from("jarvis_memory")
+    .delete()
+    .in("id",ids)
+    .eq("owner_id",utilisateur.id);
+
+  if(error){
+    ajouterMessage("Erreur : "+error.message,"jarvis");
+    return;
+  }
+
   await chargerSouvenirs();
-  ajouterMessage("Souvenir supprimé.","jarvis");
+
+  ajouterMessage("Souvenir(s) supprimé(s).","jarvis");
 }
 
 function afficherSouvenirs(){
   const zone=document.getElementById("memoryList");
+
   zone.innerHTML="";
-  if(!utilisateur){zone.textContent="Connectez-vous pour consulter vos souvenirs.";return}
-  if(!souvenirs.length){zone.textContent="Aucun souvenir enregistré.";return}
+
+  if(!utilisateur){
+    zone.textContent="Connectez-vous pour consulter vos souvenirs.";
+    return;
+  }
+
+  if(!souvenirs.length){
+    zone.textContent="Aucun souvenir enregistré.";
+    return;
+  }
+
   souvenirs.forEach(s=>{
     const item=document.createElement("div");
     item.className="memory-item";
+
     const contenu=document.createElement("div");
     contenu.textContent=s.memory;
+
     const date=document.createElement("small");
-    date.textContent=s.created_at?new Date(s.created_at).toLocaleString("fr-FR"):"";
-    item.append(contenu,date);
+    date.textContent=s.created_at
+      ?new Date(s.created_at).toLocaleString("fr-FR")
+      :"";
+
+    const actions=document.createElement("div");
+    actions.className="action-row";
+
+    const modifier=document.createElement("button");
+    modifier.textContent="Modifier";
+    modifier.onclick=()=>modifierSouvenir(s.id,s.memory);
+
+    const supprimer=document.createElement("button");
+    supprimer.textContent="Supprimer";
+    supprimer.className="danger";
+    supprimer.onclick=()=>supprimerSouvenir(s.id);
+
+    actions.append(modifier,supprimer);
+    item.append(contenu,date,actions);
+
     zone.appendChild(item);
   });
 }
 
 async function actualiserSouvenirs(){
-  try{await chargerSouvenirs()}catch(e){ajouterMessage("Erreur mémoire : "+e.message,"jarvis")}
+  try{
+    await chargerSouvenirs();
+  }catch(e){
+    ajouterMessage("Erreur mémoire : "+e.message,"jarvis");
+  }
 }
 
 function traiterCommandeMemoire(texte){
   const t=texte.toLowerCase();
-  for(const cmd of ["retiens que ","souviens-toi que ","mémorise que "]){
-    if(t.startsWith(cmd)){enregistrerSouvenir(texte.slice(cmd.length).trim());return true}
+
+  for(const cmd of [
+    "retiens que ",
+    "souviens-toi que ",
+    "mémorise que "
+  ]){
+    if(t.startsWith(cmd)){
+      enregistrerSouvenir(texte.slice(cmd.length).trim());
+      return true;
+    }
   }
+
   for(const cmd of ["oublie que ","oublie "]){
-    if(t.startsWith(cmd)){oublierSouvenir(texte.slice(cmd.length).trim());return true}
+    if(t.startsWith(cmd)){
+      oublierSouvenir(texte.slice(cmd.length).trim());
+      return true;
+    }
   }
+
   return false;
 }
+
 
 /* CHAT GROQ */
 
 async function envoyer(){
   const texte=input.value.trim();
+
   if(!texte||sendButton.disabled) return;
 
   ajouterMessage(texte,"user");
@@ -1270,19 +1575,35 @@ async function envoyer(){
 
   if(traiterCommandeMemoire(texte)) return;
 
-  historique.push({role:"user",content:texte});
+  historique.push({
+    role:"user",
+    content:texte
+  });
+
+  historique=historique.slice(-12);
   sauvegarderMemoire();
 
   sendButton.disabled=true;
-  statusText.textContent="J.A.R.V.I.S RÉFLÉCHIT...";
+  afficherStatut("J.A.R.V.I.S RÉFLÉCHIT...");
 
   try{
     const contexte=souvenirs.length
-      ?"Souvenirs utiles :\n"+souvenirs.map(s=>"- "+s.memory).join("\n")
+      ?"Souvenirs utiles enregistrés par l'utilisateur :\n"+
+        souvenirs.map(s=>"- "+s.memory).join("\n")
       :"Aucun souvenir longue durée.";
 
     const messagesIA=[
-      {role:"system",content:"Tu es J.A.R.V.I.S, assistant francophone, poli et précis. Tu t'adresses à l'utilisateur en disant Monsieur. Tu ne prétends jamais contrôler un appareil sans intégration réelle. "+contexte},
+      {
+        role:"system",
+        content:
+          "Tu es J.A.R.V.I.S, assistant francophone inspiré d'un assistant technologique de science-fiction. "+
+          "Tu t'adresses à l'utilisateur en disant Monsieur. "+
+          "Tu es poli, précis, utile et honnête. "+
+          "Tu ne prétends jamais contrôler un appareil sans intégration réelle. "+
+          "Tu distingues les possibilités réelles des fonctions non connectées. "+
+          "Tu ne demandes jamais de mots de passe, clés privées ou jetons secrets. "+
+          "\n\n"+contexte
+      },
       ...historique.slice(-12)
     ];
 
@@ -1293,37 +1614,50 @@ async function envoyer(){
     });
 
     const donnees=await reponse.json();
-    if(!reponse.ok) throw new Error(donnees.details||donnees.error||"Erreur serveur");
-    if(!donnees.reply) throw new Error("Aucune réponse reçue.");
 
-    historique.push({role:"assistant",content:donnees.reply});
+    if(!reponse.ok){
+      throw new Error(donnees.details||donnees.error||"Erreur serveur");
+    }
+
+    if(!donnees.reply){
+      throw new Error("Aucune réponse reçue.");
+    }
+
+    historique.push({
+      role:"assistant",
+      content:donnees.reply
+    });
+
     historique=historique.slice(-12);
     sauvegarderMemoire();
+
     ajouterMessage(donnees.reply,"jarvis");
     lireReponse(donnees.reply);
-    statusText.textContent="SYSTÈME OPÉRATIONNEL";
-}catch(e){
-    if (!navigator.onLine) {
-      const message =
-        "Je fonctionne actuellement en mode hors ligne, Monsieur. " +
-        "Mon interface et ma mémoire locale restent accessibles, " +
-        "mais mon intelligence en ligne et la synchronisation Supabase " +
+
+    afficherStatut("SYSTÈME OPÉRATIONNEL");
+
+  }catch(e){
+    if(!navigator.onLine){
+      const message=
+        "Je fonctionne actuellement en mode hors ligne, Monsieur. "+
+        "Mon interface et ma mémoire locale restent accessibles, "+
+        "mais mon intelligence en ligne et la synchronisation Supabase "+
         "sont temporairement indisponibles.";
 
-      ajouterMessage(message, "jarvis");
+      ajouterMessage(message,"jarvis");
 
       historique.push({
-        role: "assistant",
-        content: message
+        role:"assistant",
+        content:message
       });
 
-      historique = historique.slice(-12);
+      historique=historique.slice(-12);
       sauvegarderMemoire();
 
-      statusText.textContent = "MODE HORS LIGNE";
-    } else {
-      ajouterMessage("Erreur : " + e.message, "jarvis");
-      statusText.textContent = "ERREUR DE CONNEXION";
+      afficherStatut("MODE HORS LIGNE");
+    }else{
+      ajouterMessage("Erreur : "+e.message,"jarvis");
+      afficherStatut("ERREUR DE CONNEXION");
     }
   }finally{
     sendButton.disabled=false;
@@ -1331,47 +1665,116 @@ async function envoyer(){
   }
 }
 
-input.addEventListener("keydown",e=>{if(e.key==="Enter") envoyer()});
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){
+    e.preventDefault();
+    envoyer();
+  }
+});
 
 function effacer(){
   arreterVoix();
+
+  if(!confirm("Effacer l'historique de cette conversation ? Les souvenirs longue durée seront conservés.")){
+    return;
+  }
+
   historique=[];
   sauvegarderMemoire();
+
   messages.innerHTML="";
-  ajouterMessage("Conversation effacée. Les souvenirs longue durée sont conservés.","jarvis");
+
+  ajouterMessage(
+    "Conversation effacée. Les souvenirs longue durée sont conservés.",
+    "jarvis"
+  );
 }
+
 
 /* MICROPHONE */
 
 function parler(){
-  const Reconnaissance=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const Reconnaissance=
+    window.SpeechRecognition||
+    window.webkitSpeechRecognition;
+
   if(!Reconnaissance){
-    ajouterMessage("Reconnaissance vocale indisponible sur ce navigateur.","jarvis");
+    ajouterMessage(
+      "Reconnaissance vocale indisponible sur ce navigateur. Utilisez le clavier.",
+      "jarvis"
+    );
     return;
   }
+
+  if(reconnaissanceActive){
+    reconnaissanceActive.stop();
+    reconnaissanceActive=null;
+    afficherStatut("ÉCOUTE ARRÊTÉE");
+    return;
+  }
+
   const reconnaissance=new Reconnaissance();
+
   reconnaissance.lang="fr-FR";
   reconnaissance.interimResults=false;
-  reconnaissance.onstart=()=>statusText.textContent="JE VOUS ÉCOUTE...";
-  reconnaissance.onresult=e=>{input.value=e.results[0][0].transcript;envoyer()};
-  reconnaissance.onerror=()=>statusText.textContent="ERREUR MICRO";
-  reconnaissance.onend=()=>{if(statusText.textContent==="JE VOUS ÉCOUTE...")statusText.textContent="SYSTÈME OPÉRATIONNEL"};
-  reconnaissance.start();
+  reconnaissance.continuous=false;
+
+  reconnaissance.onstart=()=>{
+    reconnaissanceActive=reconnaissance;
+    afficherStatut("JE VOUS ÉCOUTE...");
+  };
+
+  reconnaissance.onresult=e=>{
+    input.value=e.results[0][0].transcript;
+    envoyer();
+  };
+
+  reconnaissance.onerror=e=>{
+    afficherStatut("ERREUR MICRO : "+e.error);
+  };
+
+  reconnaissance.onend=()=>{
+    reconnaissanceActive=null;
+
+    if(statusText.textContent==="JE VOUS ÉCOUTE..."){
+      afficherStatut("SYSTÈME OPÉRATIONNEL");
+    }
+  };
+
+  try{
+    reconnaissance.start();
+  }catch(e){
+    reconnaissanceActive=null;
+    afficherErreur(e.message);
+  }
 }
+
 
 /* CAMÉRA */
 
 async function demarrerCamera(){
   const video=document.getElementById("cameraPreview");
   const info=document.getElementById("cameraStatus");
-  if(!navigator.mediaDevices?.getUserMedia){info.textContent="Caméra indisponible.";return}
+
+  if(!navigator.mediaDevices?.getUserMedia){
+    info.textContent="Caméra indisponible sur ce navigateur.";
+    return;
+  }
+
   try{
+    arreterCamera();
+
     fluxCamera=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:"environment"},audio:false
+      video:{facingMode:"environment"},
+      audio:false
     });
+
     video.srcObject=fluxCamera;
+
     info.textContent="Caméra activée sur cet appareil.";
-  }catch(e){info.textContent="Accès caméra refusé : "+e.message}
+  }catch(e){
+    info.textContent="Accès caméra refusé : "+e.message;
+  }
 }
 
 function arreterCamera(){
@@ -1379,8 +1782,10 @@ function arreterCamera(){
     fluxCamera.getTracks().forEach(t=>t.stop());
     fluxCamera=null;
   }
+
   const video=document.getElementById("cameraPreview");
   if(video) video.srcObject=null;
+
   const info=document.getElementById("cameraStatus");
   if(info) info.textContent="La caméra est arrêtée.";
 }
@@ -1388,12 +1793,17 @@ function arreterCamera(){
 function analyserCamera(){
   const video=document.getElementById("cameraPreview");
   const zone=document.getElementById("visionResult");
+
   if(!fluxCamera||!video.videoWidth){
     zone.textContent="Active d'abord la caméra.";
     return;
   }
-  zone.textContent="Image disponible. Le module de vision par IA n'est pas encore connecté. Aucune image n'a été envoyée.";
+
+  zone.textContent=
+    "Image disponible. Le module de vision par IA n'est pas encore connecté. "+
+    "Aucune image n'a été envoyée.";
 }
+
 
 /* PERFORMANCES */
 
@@ -1402,301 +1812,442 @@ async function actualiserPerformances(){
   const stock=document.getElementById("siteStorage");
 
   if(performance.memory?.usedJSHeapSize){
-    mem.textContent=(performance.memory.usedJSHeapSize/1048576).toFixed(1)+" Mo";
-  }else{mem.textContent="Indisponible"}
+    mem.textContent=
+      (performance.memory.usedJSHeapSize/1048576).toFixed(1)+" Mo";
+  }else{
+    mem.textContent="Indisponible";
+  }
 
   try{
     const estimation=await navigator.storage.estimate();
-    stock.textContent=estimation.usage!=null?(estimation.usage/1048576).toFixed(1)+" Mo":"Indisponible";
-  }catch{stock.textContent="Indisponible"}
+
+    stock.textContent=estimation.usage!=null
+      ?(estimation.usage/1048576).toFixed(1)+" Mo"
+      :"Indisponible";
+  }catch{
+    stock.textContent="Indisponible";
+  }
 
   const reseau=navigator.onLine?"EN LIGNE":"HORS LIGNE";
+
   document.getElementById("networkState").textContent=reseau;
   document.getElementById("homeNetwork").textContent=reseau;
-  document.getElementById("screenSize").textContent=innerWidth+" × "+innerHeight;
+
+  document.getElementById("screenSize").textContent=
+    innerWidth+" × "+innerHeight;
 
   const ua=navigator.userAgent;
+
   document.getElementById("browserName").textContent=
-    /Edg/.test(ua)?"Edge":/Chrome/.test(ua)?"Chrome":/Firefox/.test(ua)? "Firefox":/Safari/.test(ua)?"Safari":"Navigateur web";
+    /Edg/.test(ua)?"Edge":
+    /CriOS/.test(ua)?"Chrome iOS":
+    /FxiOS/.test(ua)?"Firefox iOS":
+    /Chrome/.test(ua)?"Chrome":
+    /Firefox/.test(ua)?"Firefox":
+    /Safari/.test(ua)?"Safari":
+    "Navigateur web";
 
   if(navigator.getBattery){
     try{
       const b=await navigator.getBattery();
-      document.getElementById("batteryState").textContent=Math.round(b.level*100)+" %";
-    }catch{document.getElementById("batteryState").textContent="Indisponible"}
-  }else{document.getElementById("batteryState").textContent="Indisponible"}
+
+      document.getElementById("batteryState").textContent=
+        Math.round(b.level*100)+" %";
+    }catch{
+      document.getElementById("batteryState").textContent="Indisponible";
+    }
+  }else{
+    document.getElementById("batteryState").textContent="Indisponible";
+  }
 }
+
 
 /* MORSE */
 
 const alphabetMorse={
- A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
- K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
- U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
- 0:"-----",1:".----",2:"..---",3:"...--",4:"....-",5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
- ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--","/":"-..-.","-":"-....-","(":"-.--.",")":"-.--.-"
+  A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",
+  H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",
+  O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
+  U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+  0:"-----",1:".----",2:"..---",3:"...--",4:"....-",
+  5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
+  ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--",
+  "/":"-..-.","-":"-....-","(":"-.--.",")":"-.--.-"
 };
 
-let contexteMorse=null;
-let generationMorse=0;
+function texteVersMorse(texte){
+  return texte
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase()
+    .split("")
+    .map(c=>c===" " ? "/" : alphabetMorse[c]||"?")
+    .join(" ");
+}
 
 function convertirMorse(){
-  const texte=document.getElementById("morseInput").value.toUpperCase();
-  const resultat=[];
-  for(const c of texte){
-    if(c===" ") resultat.push("/");
-    else resultat.push(alphabetMorse[c]||"?");
-  }
-  document.getElementById("morseOutput").textContent=resultat.join(" ");
-  document.getElementById("morseStatus").textContent="? indique un caractère non pris en charge.";
+  const texte=document.getElementById("morseInput").value;
+
+  document.getElementById("morseOutput").textContent=
+    texte.trim()?texteVersMorse(texte):"—";
+
+  document.getElementById("morseStatus").textContent=
+    "? indique un caractère non pris en charge.";
 }
 
 function effacerMorse(){
   arreterMorse();
+
   document.getElementById("morseInput").value="";
   document.getElementById("morseOutput").textContent="—";
 }
 
 function pauseMorse(ms,generation){
   return new Promise(resolve=>{
-    setTimeout(()=>resolve(generation===generationMorse),ms);
+    setTimeout(()=>{
+      resolve(generation===generationMorse);
+    },ms);
   });
 }
-
 
 async function emettreMorse(){
   arreterMorse();
 
-  const texte = document.getElementById("morseInput").value.toUpperCase();
+  const texte=document.getElementById("morseInput").value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase();
 
   if(!texte.trim()){
-    document.getElementById("morseStatus").textContent = "Écris un message.";
+    document.getElementById("morseStatus").textContent="Écris un message.";
     return;
   }
 
   convertirMorse();
 
-  const generation = generationMorse;
-  const unite = 120;
+  const generation=generationMorse;
+  const unite=120;
 
   try{
-    const Audio = window.AudioContext || window.webkitAudioContext;
+    const AudioContextClass=
+      window.AudioContext||window.webkitAudioContext;
 
-    if(!Audio){
-      throw new Error("Audio non pris en charge par ce navigateur.");
+    if(!AudioContextClass){
+      throw new Error("Audio non pris en charge.");
     }
 
-    contexteMorse = new Audio();
+    contexteMorse=new AudioContextClass();
 
-    if(contexteMorse.state === "suspended"){
+    if(contexteMorse.state==="suspended"){
       await contexteMorse.resume();
     }
 
-    document.getElementById("morseStatus").textContent = "Émission sonore en cours...";
+    document.getElementById("morseStatus").textContent=
+      "Émission sonore en cours...";
 
-    for(let i = 0; i < texte.length; i++){
+    for(let i=0;i<texte.length;i++){
+      if(generation!==generationMorse) return;
 
-      if(generation !== generationMorse) return;
+      const c=texte[i];
 
-      const c = texte[i];
-
-      if(c === " "){
-        if(!await pauseMorse(unite * 7, generation)) return;
+      if(c===" "){
+        if(!await pauseMorse(unite*7,generation)) return;
         continue;
       }
 
-      const code = alphabetMorse[c];
+      const code=alphabetMorse[c];
       if(!code) continue;
 
       for(const symbole of code){
+        if(generation!==generationMorse) return;
 
-        if(generation !== generationMorse) return;
+        const osc=contexteMorse.createOscillator();
+        const gain=contexteMorse.createGain();
 
-        const osc = contexteMorse.createOscillator();
-        const gain = contexteMorse.createGain();
+        const debut=contexteMorse.currentTime;
+        const duree=(symbole==="."?unite:unite*3)/1000;
 
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(650, contexteMorse.currentTime);
+        osc.type="sine";
+        osc.frequency.setValueAtTime(650,debut);
 
-        gain.gain.setValueAtTime(0.12, contexteMorse.currentTime);
+        gain.gain.setValueAtTime(0,debut);
+        gain.gain.linearRampToValueAtTime(0.12,debut+0.01);
+        gain.gain.setValueAtTime(0.12,debut+duree-0.01);
+        gain.gain.linearRampToValueAtTime(0,debut+duree);
 
         osc.connect(gain);
         gain.connect(contexteMorse.destination);
 
-        osc.start();
+        osc.start(debut);
+        osc.stop(debut+duree);
 
-        await pauseMorse(
-          symbole === "." ? unite : unite * 3,
+        if(!await pauseMorse(
+          symbole==="."?unite:unite*3,
           generation
-        );
+        )) return;
 
-        osc.stop();
-
-        if(!await pauseMorse(unite, generation)) return;
+        if(!await pauseMorse(unite,generation)) return;
       }
 
-      if(i < texte.length - 1){
-        if(!await pauseMorse(unite * 2, generation)) return;
+      if(i<texte.length-1){
+        if(!await pauseMorse(unite*2,generation)) return;
       }
     }
 
-    if(generation === generationMorse){
-      document.getElementById("morseStatus").textContent = "Émission terminée.";
+    if(generation===generationMorse){
+      document.getElementById("morseStatus").textContent=
+        "Émission terminée.";
     }
 
   }catch(e){
-    document.getElementById("morseStatus").textContent = "Émission impossible : " + e.message;
-
+    document.getElementById("morseStatus").textContent=
+      "Émission impossible : "+e.message;
   }finally{
-    if(contexteMorse && generation === generationMorse){
-      contexteMorse.close().catch(()=>{});
-      contexteMorse = null;
+    if(contexteMorse&&generation===generationMorse){
+      const ancien=contexteMorse;
+      contexteMorse=null;
+
+      try{await ancien.close()}catch(e){}
     }
   }
 }
 
 async function clignoterMorse(){
   arreterMorse();
-  const texte=document.getElementById("morseInput").value.toUpperCase();
-  if(!texte.trim())return;
+
+  const texte=document.getElementById("morseInput").value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase();
+
+  if(!texte.trim()) return;
+
   convertirMorse();
 
   const generation=generationMorse;
   const unite=180;
+
   const status=document.getElementById("morseStatus");
-  status.textContent="Signal lumineux en cours. Évite de regarder directement une lumière intense.";
+
+  status.textContent=
+    "Signal visuel en cours. Évite de regarder directement l'écran.";
 
   for(let i=0;i<texte.length;i++){
-    if(generation!==generationMorse)return;
+    if(generation!==generationMorse) return;
+
     const c=texte[i];
-    if(c===" "){if(!await pauseMorse(unite*7,generation))return;continue}
-    const code=alphabetMorse[c];
-    if(!code)continue;
-    for(const symbole of code){
-      if(generation!==generationMorse)return;
-      document.body.style.background="#ffffff";
-      if(!await pauseMorse(symbole==="."?unite:unite*3,generation))return;
-      document.body.style.background="#060b14";
-      if(!await pauseMorse(unite,generation))return;
+
+    if(c===" "){
+      if(!await pauseMorse(unite*7,generation)) return;
+      continue;
     }
-    if(!await pauseMorse(unite*2,generation))return;
+
+    const code=alphabetMorse[c];
+    if(!code) continue;
+
+    for(const symbole of code){
+      if(generation!==generationMorse) return;
+
+      document.body.style.background="#ffffff";
+
+      if(!await pauseMorse(
+        symbole==="."?unite:unite*3,
+        generation
+      )) return;
+
+      document.body.style.background="#060b14";
+
+      if(!await pauseMorse(unite,generation)) return;
+    }
+
+    if(!await pauseMorse(unite*2,generation)) return;
   }
+
   document.body.style.background="#060b14";
-  status.textContent="Signal lumineux terminé.";
+
+  status.textContent="Signal visuel terminé.";
 }
 
 function arreterMorse(){
   generationMorse++;
+
   if(contexteMorse){
-    contexteMorse.close().catch(()=>{});
+    const ancien=contexteMorse;
     contexteMorse=null;
+    ancien.close().catch(()=>{});
   }
+
   document.body.style.background="#060b14";
+
   const status=document.getElementById("morseStatus");
-  if(status)status.textContent="Signal arrêté.";
+  if(status) status.textContent="Signal arrêté.";
 }
 
-/* RECHERCHE GOOGLE */
+
+/* RECHERCHE */
 
 function rechercheGoogle(images=false,maps=false){
   const q=document.getElementById("searchInput").value.trim();
-  if(!q){document.getElementById("searchInput").focus();return}
+
+  if(!q){
+    document.getElementById("searchInput").focus();
+    return;
+  }
+
   const url=maps
     ?"https://www.google.com/maps/search/"+encodeURIComponent(q)
     :images
       ?"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q)
       :"https://www.google.com/search?q="+encodeURIComponent(q);
+
   window.open(url,"_blank","noopener,noreferrer");
 }
+
 
 /* DIAGNOSTIC */
 
 async function lancerDiagnostic(){
   const zone=document.getElementById("diagnosticResults");
+
   zone.textContent="Analyse en cours...";
+
   const tests=[
     ["Connexion Internet",navigator.onLine,"État de la connexion."],
-    ["Contexte HTTPS",window.isSecureContext,"Certaines fonctions nécessitent une connexion sécurisée."],
+    ["Contexte HTTPS",window.isSecureContext,"Certaines fonctions nécessitent HTTPS."],
     ["Stockage local",!!window.localStorage,"Stockage local du navigateur."],
     ["Synthèse vocale",!!window.speechSynthesis,"Lecture des réponses."],
-    ["Reconnaissance vocale",!!(window.SpeechRecognition||window.webkitSpeechRecognition),"Disponibilité du microphone vocal."],
+    ["Reconnaissance vocale",!!(window.SpeechRecognition||window.webkitSpeechRecognition),"Disponibilité de la reconnaissance vocale."],
     ["Caméra",!!navigator.mediaDevices?.getUserMedia,"Accès caméra sous autorisation."],
-    ["Notifications","Notification" in window,"Notifications du navigateur."]
+    ["Notifications","Notification" in window,"Notifications du navigateur."],
+    ["Service Worker","serviceWorker" in navigator,"Support du mode PWA."]
   ];
 
   try{
     const s=await navigator.storage.estimate();
-    tests.push(["Stockage du site",true,s.usage!=null?(s.usage/1048576).toFixed(1)+" Mo utilisés.":"Estimation indisponible."]);
-  }catch{tests.push(["Stockage du site",false,"Estimation indisponible."])}
+
+    tests.push([
+      "Stockage du site",
+      true,
+      s.usage!=null
+        ?(s.usage/1048576).toFixed(1)+" Mo utilisés."
+        :"Estimation indisponible."
+    ]);
+  }catch{
+    tests.push(["Stockage du site",false,"Estimation indisponible."]);
+  }
 
   zone.innerHTML="";
+
   let alertes=0;
 
   tests.forEach(([nom,ok,detail])=>{
-    if(!ok)alertes++;
+    if(!ok) alertes++;
+
     const item=document.createElement("div");
     item.className="memory-item";
+
     const titre=document.createElement("strong");
     titre.className=ok?"module-success":"module-warning";
     titre.textContent=(ok?"✓ ":"⚠ ")+nom;
+
     const desc=document.createElement("small");
     desc.textContent=detail;
+
     item.append(titre,desc);
     zone.appendChild(item);
   });
 
   const bilan=document.createElement("p");
   bilan.className="muted";
+
   bilan.textContent=alertes
     ?alertes+" fonction(s) indisponible(s) ou à vérifier. Cela ne signifie pas qu'un virus a été détecté."
     :"Tous les contrôles disponibles sont satisfaisants. Ce test ne constitue pas un scan antivirus.";
+
   zone.prepend(bilan);
 }
+
 
 /* AUTOMATISATIONS */
 
 let automatisations=[];
+
 try{
   const a=JSON.parse(localStorage.getItem("jarvis_automations")||"[]");
   automatisations=Array.isArray(a)?a:[];
-}catch{automatisations=[]}
+}catch{
+  automatisations=[];
+}
 
 function sauvegarderAutomatisations(){
-  localStorage.setItem("jarvis_automations",JSON.stringify(automatisations));
+  sauvegarderLocal("jarvis_automations",automatisations);
 }
 
 async function ajouterAutomatisation(){
   const nom=document.getElementById("automationName").value.trim();
   const date=document.getElementById("automationDate").value;
-  if(!nom||!date){alert("Indique un nom et une date.");return}
+
+  if(!nom||!date){
+    alert("Indique un nom et une date.");
+    return;
+  }
+
   const moment=new Date(date);
-  if(Number.isNaN(moment.getTime())||moment<=new Date()){alert("Choisis une date future.");return}
-  if(!("Notification" in window)){alert("Notifications indisponibles.");return}
+
+  if(Number.isNaN(moment.getTime())||moment<=new Date()){
+    alert("Choisis une date future.");
+    return;
+  }
+
+  if(!("Notification" in window)){
+    alert("Notifications indisponibles.");
+    return;
+  }
 
   const permission=await Notification.requestPermission();
-  if(permission!=="granted"){alert("Autorisation de notification refusée.");return}
+
+  if(permission!=="granted"){
+    alert("Autorisation de notification refusée.");
+    return;
+  }
 
   automatisations.push({
-    id:Date.now(),nom,date:moment.getTime(),active:true,terminee:false
+    id:Date.now(),
+    nom,
+    date:moment.getTime(),
+    active:true,
+    terminee:false
   });
+
   sauvegarderAutomatisations();
+
   document.getElementById("automationName").value="";
   document.getElementById("automationDate").value="";
+
   afficherAutomatisations();
 }
 
 function afficherAutomatisations(){
   const zone=document.getElementById("automationList");
+
   zone.innerHTML="";
-  if(!automatisations.length){zone.textContent="Aucun rappel enregistré.";return}
+
+  if(!automatisations.length){
+    zone.textContent="Aucun rappel enregistré.";
+    return;
+  }
 
   automatisations.forEach(a=>{
     const item=document.createElement("div");
     item.className="memory-item";
+
     const titre=document.createElement("strong");
     titre.textContent=a.nom;
+
     const date=document.createElement("small");
-    date.textContent=new Date(a.date).toLocaleString("fr-FR")+
+
+    date.textContent=
+      new Date(a.date).toLocaleString("fr-FR")+
       (a.terminee?" — TERMINÉ":a.active?" — ACTIF":" — EN PAUSE");
 
     const actions=document.createElement("div");
@@ -1705,6 +2256,7 @@ function afficherAutomatisations(){
     const pause=document.createElement("button");
     pause.textContent=a.active?"Mettre en pause":"Réactiver";
     pause.disabled=a.terminee;
+
     pause.onclick=()=>{
       a.active=!a.active;
       sauvegarderAutomatisations();
@@ -1714,6 +2266,7 @@ function afficherAutomatisations(){
     const supprimer=document.createElement("button");
     supprimer.className="danger";
     supprimer.textContent="Supprimer";
+
     supprimer.onclick=()=>{
       automatisations=automatisations.filter(x=>x.id!==a.id);
       sauvegarderAutomatisations();
@@ -1722,6 +2275,7 @@ function afficherAutomatisations(){
 
     actions.append(pause,supprimer);
     item.append(titre,date,actions);
+
     zone.appendChild(item);
   });
 }
@@ -1729,16 +2283,21 @@ function afficherAutomatisations(){
 function verifierAutomatisations(){
   let changement=false;
   const maintenant=Date.now();
+
   automatisations.forEach(a=>{
     if(a.active&&!a.terminee&&maintenant>=a.date){
       if("Notification" in window&&Notification.permission==="granted"){
-        new Notification("J.A.R.V.I.S — Rappel",{body:a.nom});
+        new Notification("J.A.R.V.I.S — Rappel",{
+          body:a.nom
+        });
       }
+
       a.active=false;
       a.terminee=true;
       changement=true;
     }
   });
+
   if(changement){
     sauvegarderAutomatisations();
     afficherAutomatisations();
@@ -1748,97 +2307,143 @@ function verifierAutomatisations(){
 afficherAutomatisations();
 setInterval(verifierAutomatisations,5000);
 
-/* TÉLÉPHONE ET NOTIFICATIONS */
+
+/* TÉLÉPHONE */
 
 function actualiserTelephone(){
   const ua=navigator.userAgent;
+
   document.getElementById("phonePlatform").textContent=
-    /iPhone|iPad|iPod/i.test(ua)?"iOS":/Android/i.test(ua)?"Android":"Ordinateur";
+    /iPhone|iPad|iPod/i.test(ua)?"iOS":
+    /Android/i.test(ua)?"Android":
+    "Ordinateur";
+
   document.getElementById("phoneNotifications").textContent=
     "Notification" in window?"Disponible":"Indisponible";
+
   document.getElementById("phoneMic").textContent=
     navigator.mediaDevices?.getUserMedia?"Disponible":"Indisponible";
+
   document.getElementById("phoneCamera").textContent=
     navigator.mediaDevices?.getUserMedia?"Disponible":"Indisponible";
 }
 
 async function demanderNotifications(){
   if(!("Notification" in window)){
-    document.getElementById("notificationStatus").textContent="Notifications non prises en charge.";
+    document.getElementById("notificationStatus").textContent=
+      "Notifications non prises en charge.";
     return;
   }
+
   const p=await Notification.requestPermission();
-  document.getElementById("notificationStatus").textContent="Autorisation : "+p;
+
+  document.getElementById("notificationStatus").textContent=
+    "Autorisation : "+p;
 }
 
 function testerNotification(){
   if(!("Notification" in window)||Notification.permission!=="granted"){
-    document.getElementById("notificationStatus").textContent="Autorise d'abord les notifications.";
+    document.getElementById("notificationStatus").textContent=
+      "Autorise d'abord les notifications.";
     return;
   }
-  new Notification("J.A.R.V.I.S",{body:"Test de notification réussi, Monsieur."});
-  document.getElementById("notificationStatus").textContent="Notification de test envoyée.";
+
+  new Notification("J.A.R.V.I.S",{
+    body:"Test de notification réussi, Monsieur."
+  });
+
+  document.getElementById("notificationStatus").textContent=
+    "Notification de test envoyée.";
 }
+
 
 /* MAISON CONNECTÉE */
 
 async function testerMaison(){
   const adresse=document.getElementById("haUrl").value.trim();
   const status=document.getElementById("haStatus");
+
   if(!adresse){
     status.textContent="Indique d'abord l'adresse de ton serveur domotique.";
     return;
   }
+
   try{
     const url=new URL(adresse);
-    if(!["https:","http:"].includes(url.protocol))throw new Error("Adresse invalide.");
-    status.textContent="Adresse valide. Le connecteur sécurisé Home Assistant reste à configurer côté serveur.";
+
+    if(!["https:","http:"].includes(url.protocol)){
+      throw new Error("Adresse invalide.");
+    }
+
+    status.textContent=
+      "Adresse valide. Le connecteur sécurisé Home Assistant reste à configurer côté serveur.";
   }catch(e){
     status.textContent="Adresse invalide : "+e.message;
   }
 }
 
+
 /* PERSONNALISATION */
 
 function sauverPersonnalisation(){
   const nom=document.getElementById("assistantName").value.trim();
-  if(!nom){alert("Indique un nom.");return}
+
+  if(!nom){
+    alert("Indique un nom.");
+    return;
+  }
+
   localStorage.setItem("jarvis_assistant_name",nom);
+
   alert("Nom enregistré sur cet appareil.");
 }
 
 const nomSauve=localStorage.getItem("jarvis_assistant_name");
-if(nomSauve)document.getElementById("assistantName").value=nomSauve;
+
+if(nomSauve){
+  document.getElementById("assistantName").value=nomSauve;
+}
+
 
 /* ÉTAT RÉSEAU */
 
-window.addEventListener("online",actualiserPerformances);
-window.addEventListener("offline",actualiserPerformances);
-window.addEventListener("resize",()=>{
-  document.getElementById("screenSize").textContent=innerWidth+" × "+innerHeight;
+window.addEventListener("online",()=>{
+  actualiserPerformances();
+  afficherStatut("CONNEXION RÉTABLIE");
 });
 
-/* DÉMARRAGE */
-  
-  /* MODE HORS LIGNE */
+window.addEventListener("offline",()=>{
+  actualiserPerformances();
+  afficherStatut("MODE HORS LIGNE");
+});
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
+window.addEventListener("resize",()=>{
+  document.getElementById("screenSize").textContent=
+    innerWidth+" × "+innerHeight;
+});
+
+
+/* MODE HORS LIGNE */
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",async()=>{
+    try{
       await navigator.serviceWorker.register("/service-worker.js");
       console.log("J.A.R.V.I.S : mode hors ligne initialisé.");
-    } catch (erreur) {
-      console.error("Erreur Service Worker :", erreur);
+    }catch(erreur){
+      console.error("Erreur Service Worker :",erreur);
     }
   });
 }
 
 
+/* DÉMARRAGE */
 
 actualiserPerformances();
 actualiserTelephone();
 initialiserSupabase();
 mettreAJourEtatVoix();
+
 </script>
 </body>
 </html>
