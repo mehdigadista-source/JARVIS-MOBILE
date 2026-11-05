@@ -1302,9 +1302,29 @@ async function envoyer(){
     ajouterMessage(donnees.reply,"jarvis");
     lireReponse(donnees.reply);
     statusText.textContent="SYSTÈME OPÉRATIONNEL";
-  }catch(e){
-    ajouterMessage("Erreur : "+e.message,"jarvis");
-    statusText.textContent="ERREUR DE CONNEXION";
+}catch(e){
+    if (!navigator.onLine) {
+      const message =
+        "Je fonctionne actuellement en mode hors ligne, Monsieur. " +
+        "Mon interface et ma mémoire locale restent accessibles, " +
+        "mais mon intelligence en ligne et la synchronisation Supabase " +
+        "sont temporairement indisponibles.";
+
+      ajouterMessage(message, "jarvis");
+
+      historique.push({
+        role: "assistant",
+        content: message
+      });
+
+      historique = historique.slice(-12);
+      sauvegarderMemoire();
+
+      statusText.textContent = "MODE HORS LIGNE";
+    } else {
+      ajouterMessage("Erreur : " + e.message, "jarvis");
+      statusText.textContent = "ERREUR DE CONNEXION";
+    }
   }finally{
     sendButton.disabled=false;
     input.focus();
@@ -1755,6 +1775,21 @@ window.addEventListener("resize",()=>{
 });
 
 /* DÉMARRAGE */
+  
+  /* MODE HORS LIGNE */
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("/service-worker.js");
+      console.log("J.A.R.V.I.S : mode hors ligne initialisé.");
+    } catch (erreur) {
+      console.error("Erreur Service Worker :", erreur);
+    }
+  });
+}
+
+
 
 actualiserPerformances();
 actualiserTelephone();
