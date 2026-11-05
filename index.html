@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#050b16">
 <title>J.A.R.V.I.S MOBILE</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root {
   --bg:#050b16; --panel:#091727; --panel2:#0b2032; --line:#126080;
@@ -53,6 +54,19 @@ button:active{transform:scale(.98)}
 #controls input{margin:0;flex:1}
 #controls button{padding:12px}
 #clear{margin-top:10px;width:100%}
+
+#voice-panel{margin-top:12px;padding:10px;background:#04111d;border:1px solid #17435b;border-radius:10px;text-align:center}
+#voice-spectrum{height:42px;display:flex;align-items:center;justify-content:center;gap:4px}
+#voice-spectrum span{display:block;width:4px;height:6px;border-radius:5px;background:var(--cyan);opacity:.45;transition:height .12s ease}
+#voice-spectrum.speaking span{opacity:1;animation:spectrum .55s ease-in-out infinite alternate}
+#voice-spectrum.speaking span:nth-child(2n){animation-delay:.12s}
+#voice-spectrum.speaking span:nth-child(3n){animation-delay:.24s}
+#voice-spectrum.speaking span:nth-child(4n){animation-delay:.32s}
+@keyframes spectrum{from{height:6px}to{height:34px}}
+#voice-status{font-size:10px;color:var(--muted);letter-spacing:1px;margin:5px 0 8px}
+.voice-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.voice-actions button{font-size:11px;padding:8px 11px}
+
 .muted{color:var(--muted);font-size:12px;line-height:1.6}
 .action-row{display:flex;gap:8px;flex-wrap:wrap}
 .action-row button{flex:1}
@@ -68,11 +82,13 @@ hr{border:0;border-top:1px solid #17435b;margin:14px 0}
 @media(min-width:700px){body{padding-bottom:30px}#bottom-nav{position:sticky;bottom:0;max-width:720px;margin:20px auto 0;border:1px solid #126080;border-radius:14px}#messages{height:430px}}
 </style>
 </head>
+
 <body>
 <header>
   <h1>J.A.R.V.I.S</h1>
   <p>STARK INDUSTRIES • MOBILE SYSTEM</p>
 </header>
+
 <div id="status">INITIALISATION DU SYSTÈME...</div>
 
 <main>
@@ -95,16 +111,35 @@ hr{border:0;border-top:1px solid #17435b;margin:14px 0}
       <h2>CENTRE DE COMMANDE</h2>
       <p>Votre assistant personnel est prêt à recevoir vos instructions.</p>
     </div>
+
     <div class="panel">
       <h3 class="section-title">ASSISTANT IA</h3>
       <div id="messages"></div>
+
+      <div id="voice-panel">
+        <div id="voice-spectrum" aria-label="Animation de la voix">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span>
+        </div>
+        <div id="voice-status">VOIX EN ATTENTE</div>
+        <div class="voice-actions">
+          <button id="voiceToggle" onclick="basculerVoix()">🔊 Voix activée</button>
+          <button class="danger" onclick="arreterVoix()">■ Arrêter la voix</button>
+        </div>
+      </div>
+
       <div id="controls">
         <input id="question" type="text" placeholder="Écrivez votre message..." autocomplete="off">
         <button id="send" class="primary" onclick="envoyer()">➤</button>
         <button id="voice" onclick="parler()" aria-label="Parler">🎙️</button>
       </div>
+
       <button id="clear" onclick="effacer()">Effacer la conversation</button>
     </div>
+
     <div class="grid">
       <div class="stat"><small>ÉTAT DU SYSTÈME</small><strong id="homeState">ACTIF</strong></div>
       <div class="stat"><small>MÉMOIRE LONGUE DURÉE</small><strong id="memoryState">—</strong></div>
@@ -153,16 +188,22 @@ hr{border:0;border-top:1px solid #17435b;margin:14px 0}
       <h3 class="section-title">PARAMÈTRES DU SYSTÈME</h3>
       <p class="muted">Compte connecté</p>
       <p id="settingsEmail">Non connecté</p>
+
       <hr>
+
       <h3 class="section-title">MÉMOIRE LONGUE DURÉE</h3>
       <p class="muted">Souvenirs enregistrés dans ton compte Supabase.</p>
       <div id="memoryList"><p class="muted">Connecte-toi pour consulter tes souvenirs.</p></div>
       <button onclick="actualiserSouvenirs()">Actualiser la mémoire</button>
+
       <hr>
+
       <h3 class="section-title">COMMANDES VOCALES</h3>
       <p class="muted">Le bouton microphone utilise la reconnaissance vocale proposée par ton navigateur, si elle est disponible.</p>
       <button onclick="parler()">🎙️ Tester le microphone</button>
+
       <hr>
+
       <button class="danger" onclick="deconnecter()">Déconnexion</button>
     </div>
   </section>
@@ -186,9 +227,14 @@ async function initialiserSupabase() {
   try {
     const reponse = await fetch("/.netlify/functions/config");
     const configuration = await reponse.json();
-    if (!reponse.ok) throw new Error(configuration.error || "Configuration inaccessible");
+
+    if (!reponse.ok) {
+      throw new Error(configuration.error || "Configuration inaccessible");
+    }
+
     client = window.supabase.createClient(configuration.url, configuration.key);
     await verifierSession();
+
     statusText.textContent = "SYSTÈME OPÉRATIONNEL";
     document.getElementById("homeState").textContent = "ACTIF";
   } catch (erreur) {
@@ -205,17 +251,169 @@ const messages = document.getElementById("messages");
 const input = document.getElementById("question");
 const statusText = document.getElementById("status");
 const sendButton = document.getElementById("send");
+
 let historique = [];
 let utilisateur = null;
 let souvenirs = [];
 let fluxCamera = null;
 
+// =====================================
+// SYNTHÈSE VOCALE J.A.R.V.I.S
+// =====================================
+let voixActive = true;
+let voixEnCours = false;
+let voixFrancaise = null;
+
+function choisirVoixFrancaise() {
+  if (!("speechSynthesis" in window)) return;
+
+  const voix = window.speechSynthesis.getVoices();
+
+  voixFrancaise =
+    voix.find(v => v.lang === "fr-FR" && /Google|Microsoft|Thomas|Audrey|Amelie|Hortense/i.test(v.name)) ||
+    voix.find(v => v.lang === "fr-FR") ||
+    voix.find(v => v.lang.toLowerCase().startsWith("fr")) ||
+    null;
+}
+
+if ("speechSynthesis" in window) {
+  choisirVoixFrancaise();
+  window.speechSynthesis.onvoiceschanged = choisirVoixFrancaise;
+}
+
+function mettreAJourEtatVoix() {
+  const spectre = document.getElementById("voice-spectrum");
+  const etiquette = document.getElementById("voice-status");
+  const bouton = document.getElementById("voiceToggle");
+
+  if (spectre) spectre.classList.toggle("speaking", voixEnCours);
+
+  if (etiquette) {
+    etiquette.textContent = voixEnCours
+      ? "J.A.R.V.I.S PARLE..."
+      : (voixActive ? "VOIX EN ATTENTE" : "VOIX DÉSACTIVÉE");
+  }
+
+  if (bouton) {
+    bouton.textContent = voixActive ? "🔊 Voix activée" : "🔇 Voix désactivée";
+  }
+}
+
+function lireReponse(texte) {
+  if (!voixActive || !("speechSynthesis" in window) || !texte) return;
+
+  window.speechSynthesis.cancel();
+  voixEnCours = false;
+
+  const propre = String(texte)
+    .replace(/```[\s\S]*?```/g, " bloc de code omis. ")
+    .replace(/https?:\/\/\S+/g, " lien ")
+    .replace(/[#*_`>|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const morceaux = propre.match(/[\s\S]{1,220}(?:\s|$)/g) || [propre];
+  let index = 0;
+
+  function lireMorceauSuivant() {
+    if (!voixActive || index >= morceaux.length) {
+      voixEnCours = false;
+      mettreAJourEtatVoix();
+      return;
+    }
+
+    const phrase = new SpeechSynthesisUtterance(morceaux[index++].trim());
+
+    phrase.lang = "fr-FR";
+    phrase.rate = 1.05;
+    phrase.pitch = 1;
+    phrase.volume = 1;
+
+    if (voixFrancaise) phrase.voice = voixFrancaise;
+
+    phrase.onstart = () => {
+      voixEnCours = true;
+      mettreAJourEtatVoix();
+    };
+
+    phrase.onend = lireMorceauSuivant;
+
+    phrase.onerror = () => {
+      voixEnCours = false;
+      mettreAJourEtatVoix();
+
+      const etiquette = document.getElementById("voice-status");
+      if (etiquette) etiquette.textContent = "LECTURE VOCALE INDISPONIBLE";
+    };
+
+    window.speechSynthesis.speak(phrase);
+  }
+
+  mettreAJourEtatVoix();
+  lireMorceauSuivant();
+}
+
+function arreterVoix() {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+
+  voixEnCours = false;
+  mettreAJourEtatVoix();
+}
+
+function basculerVoix() {
+  voixActive = !voixActive;
+
+  if (!voixActive) {
+    arreterVoix();
+  } else {
+    if ("speechSynthesis" in window) {
+      choisirVoixFrancaise();
+
+      const test = new SpeechSynthesisUtterance("Voix de J.A.R.V.I.S activée.");
+      test.lang = "fr-FR";
+
+      if (voixFrancaise) test.voice = voixFrancaise;
+
+      test.rate = 1.05;
+
+      test.onstart = () => {
+        voixEnCours = true;
+        mettreAJourEtatVoix();
+      };
+
+      test.onend = () => {
+        voixEnCours = false;
+        mettreAJourEtatVoix();
+      };
+
+      test.onerror = () => {
+        voixEnCours = false;
+        mettreAJourEtatVoix();
+      };
+
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(test);
+    }
+  }
+
+  mettreAJourEtatVoix();
+}
+
+// =====================================
+// NAVIGATION ENTRE LES ONGLETS
+// =====================================
 function ouvrirOnglet(nom, bouton) {
   document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+
   const page = document.getElementById("page-" + nom);
   if (page) page.classList.add("active");
+
   document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+
   if (bouton) bouton.classList.add("active");
+
   if (nom === "performance") actualiserPerformances();
   if (nom === "settings") afficherSouvenirs();
   if (nom !== "camera") arreterCamera();
@@ -227,34 +425,47 @@ function ouvrirOnglet(nom, bouton) {
 function chargerHistorique() {
   try {
     const sauvegarde = JSON.parse(localStorage.getItem("jarvis_memoire") || "[]");
+
     if (Array.isArray(sauvegarde)) {
       historique = sauvegarde.filter(message =>
-        message && ["user", "assistant"].includes(message.role) &&
+        message &&
+        ["user", "assistant"].includes(message.role) &&
         typeof message.content === "string"
       ).slice(-12);
     }
-  } catch { historique = []; }
+  } catch {
+    historique = [];
+  }
 }
+
 function sauvegarderMemoire() {
   localStorage.setItem("jarvis_memoire", JSON.stringify(historique));
 }
+
 chargerHistorique();
 
 function ajouterMessage(texte, type) {
   const div = document.createElement("div");
   div.className = "message " + type;
   div.textContent = texte;
+
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
+
 function chargerConversation() {
   messages.innerHTML = "";
+
   if (historique.length === 0) {
     ajouterMessage("Bonjour Monsieur. J.A.R.V.I.S est opérationnel. Comment puis-je vous aider ?", "jarvis");
     return;
   }
-  historique.forEach(message => ajouterMessage(message.content, message.role === "user" ? "user" : "jarvis"));
+
+  historique.forEach(message => {
+    ajouterMessage(message.content, message.role === "user" ? "user" : "jarvis");
+  });
 }
+
 chargerConversation();
 
 // =====================================
@@ -264,50 +475,76 @@ async function connecter() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
   const error = document.getElementById("loginError");
+
   error.textContent = "";
+
   if (!client) {
     error.textContent = "Le système termine son initialisation. Réessaie dans quelques secondes.";
     return;
   }
+
   if (!email || !password) {
     error.textContent = "Veuillez remplir les deux champs.";
     return;
   }
+
   document.getElementById("loginButton").disabled = true;
   statusText.textContent = "CONNEXION EN COURS...";
+
   try {
-    const { data, error: authError } = await client.auth.signInWithPassword({ email, password });
+    const { data, error: authError } = await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
     if (authError) throw authError;
+
     utilisateur = data.user;
+
     afficherCompte();
     await chargerSouvenirs();
+
     statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
     ajouterMessage("Connexion réussie. Ma mémoire longue durée est activée, Monsieur.", "jarvis");
+
   } catch (erreur) {
     error.textContent = "Connexion impossible : " + erreur.message;
     statusText.textContent = "ERREUR DE CONNEXION";
+
   } finally {
     document.getElementById("loginButton").disabled = false;
   }
 }
+
 function afficherCompte() {
   document.getElementById("login").classList.add("hidden");
   document.getElementById("account").classList.remove("hidden");
+
   const libelle = "Connecté : " + (utilisateur?.email || "");
+
   document.getElementById("accountEmail").textContent = libelle;
   document.getElementById("settingsEmail").textContent = utilisateur?.email || "Non connecté";
   document.getElementById("memoryState").textContent = utilisateur ? "CONNECTÉE" : "—";
 }
+
 async function deconnecter() {
+  arreterVoix();
+
   if (client) await client.auth.signOut();
+
   utilisateur = null;
   souvenirs = [];
+
   document.getElementById("login").classList.remove("hidden");
   document.getElementById("account").classList.add("hidden");
   document.getElementById("settingsEmail").textContent = "Non connecté";
   document.getElementById("memoryState").textContent = "—";
+
   afficherSouvenirs();
+
   statusText.textContent = "DÉCONNECTÉ";
+
   ajouterMessage("Déconnexion effectuée.", "jarvis");
 }
 
@@ -316,88 +553,160 @@ async function deconnecter() {
 // =====================================
 async function chargerSouvenirs() {
   if (!utilisateur || !client) return;
+
   const { data, error } = await client.from("jarvis_memory")
     .select("id, memory, category, created_at")
     .eq("owner_id", utilisateur.id)
-    .order("created_at", { ascending: false }).limit(30);
-  if (error) { console.error(error); throw error; }
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
   souvenirs = data || [];
   afficherSouvenirs();
 }
+
 async function enregistrerSouvenir(texte) {
   if (!utilisateur) {
     ajouterMessage("Veuillez vous connecter pour utiliser la mémoire longue durée.", "jarvis");
     return;
   }
+
   if (!texte || texte.length > 500) {
     ajouterMessage("Ce souvenir est vide ou trop long.", "jarvis");
     return;
   }
+
   const interdit = /mot de passe|password|code bancaire|carte bancaire|adresse exacte|diagnostic médical/i;
+
   if (interdit.test(texte)) {
     ajouterMessage("Je ne peux pas enregistrer ce type d'information sensible.", "jarvis");
     return;
   }
+
   const { error } = await client.from("jarvis_memory").insert({
-    owner_id: utilisateur.id, memory: texte, category: "general"
+    owner_id: utilisateur.id,
+    memory: texte,
+    category: "general"
   });
-  if (error) { ajouterMessage("Erreur de sauvegarde : " + error.message, "jarvis"); return; }
+
+  if (error) {
+    ajouterMessage("Erreur de sauvegarde : " + error.message, "jarvis");
+    return;
+  }
+
   await chargerSouvenirs();
+
   ajouterMessage("Souvenir enregistré dans ma mémoire longue durée, Monsieur.", "jarvis");
 }
+
 async function oublierSouvenir(texte) {
-  if (!utilisateur) { ajouterMessage("Veuillez vous connecter d'abord.", "jarvis"); return; }
+  if (!utilisateur) {
+    ajouterMessage("Veuillez vous connecter d'abord.", "jarvis");
+    return;
+  }
+
   const recherche = texte.toLowerCase();
-  const correspondances = souvenirs.filter(s => s.memory.toLowerCase().includes(recherche));
-  if (correspondances.length === 0) { ajouterMessage("Je n'ai pas trouvé ce souvenir.", "jarvis"); return; }
+
+  const correspondances = souvenirs.filter(s =>
+    s.memory.toLowerCase().includes(recherche)
+  );
+
+  if (correspondances.length === 0) {
+    ajouterMessage("Je n'ai pas trouvé ce souvenir.", "jarvis");
+    return;
+  }
+
   const ids = correspondances.map(s => s.id);
-  const { error } = await client.from("jarvis_memory").delete().in("id", ids).eq("owner_id", utilisateur.id);
-  if (error) { ajouterMessage("Erreur : " + error.message, "jarvis"); return; }
+
+  const { error } = await client.from("jarvis_memory")
+    .delete()
+    .in("id", ids)
+    .eq("owner_id", utilisateur.id);
+
+  if (error) {
+    ajouterMessage("Erreur : " + error.message, "jarvis");
+    return;
+  }
+
   await chargerSouvenirs();
+
   ajouterMessage("Le souvenir demandé a été supprimé de ma mémoire longue durée.", "jarvis");
 }
+
 function afficherSouvenirs() {
   const zone = document.getElementById("memoryList");
+
   if (!utilisateur) {
     zone.innerHTML = '<p class="muted">Connecte-toi pour consulter tes souvenirs.</p>';
     return;
   }
+
   if (!souvenirs.length) {
     zone.innerHTML = '<p class="muted">Aucun souvenir enregistré pour le moment.</p>';
     return;
   }
+
   zone.innerHTML = "";
+
   souvenirs.forEach(s => {
     const item = document.createElement("div");
     item.className = "memory-item";
+
     const contenu = document.createElement("div");
     contenu.textContent = s.memory;
+
     const date = document.createElement("small");
-    date.textContent = s.created_at ? new Date(s.created_at).toLocaleString("fr-FR") : "";
+    date.textContent = s.created_at
+      ? new Date(s.created_at).toLocaleString("fr-FR")
+      : "";
+
     item.append(contenu, date);
     zone.appendChild(item);
   });
 }
+
 async function actualiserSouvenirs() {
-  if (!utilisateur) { afficherSouvenirs(); return; }
-  try { await chargerSouvenirs(); } catch (e) { ajouterMessage("Erreur mémoire : " + e.message, "jarvis"); }
+  if (!utilisateur) {
+    afficherSouvenirs();
+    return;
+  }
+
+  try {
+    await chargerSouvenirs();
+  } catch (e) {
+    ajouterMessage("Erreur mémoire : " + e.message, "jarvis");
+  }
 }
+
 function traiterCommandeMemoire(texte) {
   const minuscule = texte.toLowerCase();
-  const commandesMemoire = ["retiens que ", "souviens-toi que ", "mémorise que "];
+
+  const commandesMemoire = [
+    "retiens que ",
+    "souviens-toi que ",
+    "mémorise que "
+  ];
+
   for (const commande of commandesMemoire) {
     if (minuscule.startsWith(commande)) {
       enregistrerSouvenir(texte.slice(commande.length).trim());
       return true;
     }
   }
+
   const commandesOubli = ["oublie que ", "oublie "];
+
   for (const commande of commandesOubli) {
     if (minuscule.startsWith(commande)) {
       oublierSouvenir(texte.slice(commande.length).trim());
       return true;
     }
   }
+
   return false;
 }
 
@@ -406,70 +715,136 @@ function traiterCommandeMemoire(texte) {
 // =====================================
 async function envoyer() {
   const texte = input.value.trim();
+
   if (!texte || sendButton.disabled) return;
+
   ajouterMessage(texte, "user");
   input.value = "";
+
   if (traiterCommandeMemoire(texte)) return;
-  historique.push({ role: "user", content: texte });
+
+  historique.push({
+    role: "user",
+    content: texte
+  });
+
   sauvegarderMemoire();
+
   sendButton.disabled = true;
   statusText.textContent = "J.A.R.V.I.S RÉFLÉCHIT...";
+
   try {
     const contexteMemoire = souvenirs.length
       ? "Voici les souvenirs enregistrés sur l'utilisateur. Utilise-les uniquement s'ils sont utiles à la question :\n" + souvenirs.map(s => "- " + s.memory).join("\n")
       : "Aucun souvenir longue durée n'est enregistré.";
+
     const messagesIA = [
-      { role: "system", content: "MÉMOIRE LONGUE DURÉE :\n" + contexteMemoire },
+      {
+        role: "system",
+        content: "MÉMOIRE LONGUE DURÉE :\n" + contexteMemoire
+      },
       ...historique.slice(-12)
     ];
+
     const reponse = await fetch("/.netlify/functions/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: messagesIA })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: messagesIA
+      })
     });
+
     const donnees = await reponse.json();
-    if (!reponse.ok) throw new Error(donnees.details || donnees.error || "Erreur du serveur");
-    if (!donnees.reply) throw new Error("Aucune réponse reçue.");
-    historique.push({ role: "assistant", content: donnees.reply });
+
+    if (!reponse.ok) {
+      throw new Error(donnees.details || donnees.error || "Erreur du serveur");
+    }
+
+    if (!donnees.reply) {
+      throw new Error("Aucune réponse reçue.");
+    }
+
+    historique.push({
+      role: "assistant",
+      content: donnees.reply
+    });
+
     historique = historique.slice(-12);
+
     sauvegarderMemoire();
+
     ajouterMessage(donnees.reply, "jarvis");
+
+    // Lecture automatique de la réponse
+    lireReponse(donnees.reply);
+
     statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
   } catch (erreur) {
     ajouterMessage("Erreur : " + erreur.message, "jarvis");
     statusText.textContent = "ERREUR DE CONNEXION";
+
   } finally {
     sendButton.disabled = false;
     input.focus();
   }
 }
-input.addEventListener("keydown", event => { if (event.key === "Enter") envoyer(); });
+
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter") envoyer();
+});
+
 function effacer() {
+  arreterVoix();
+
   historique = [];
+
   sauvegarderMemoire();
+
   messages.innerHTML = "";
+
   ajouterMessage("Conversation effacée. Mes souvenirs longue durée sont conservés.", "jarvis");
+
   statusText.textContent = "SYSTÈME EN ATTENTE";
 }
 
 // =====================================
-// RECONNAISSANCE VOCALE
+// RECONNAISSANCE VOCALE DU MICROPHONE
 // =====================================
 function parler() {
   const Reconnaissance = window.SpeechRecognition || window.webkitSpeechRecognition;
+
   if (!Reconnaissance) {
     ajouterMessage("La reconnaissance vocale n'est pas disponible sur ce navigateur.", "jarvis");
     return;
   }
+
   const reconnaissance = new Reconnaissance();
+
   reconnaissance.lang = "fr-FR";
   reconnaissance.interimResults = false;
-  reconnaissance.onstart = () => { statusText.textContent = "JE VOUS ÉCOUTE..."; };
-  reconnaissance.onresult = event => { input.value = event.results[0][0].transcript; envoyer(); };
-  reconnaissance.onerror = () => { statusText.textContent = "ERREUR MICRO"; };
-  reconnaissance.onend = () => {
-    if (statusText.textContent === "JE VOUS ÉCOUTE...") statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+
+  reconnaissance.onstart = () => {
+    statusText.textContent = "JE VOUS ÉCOUTE...";
   };
+
+  reconnaissance.onresult = event => {
+    input.value = event.results[0][0].transcript;
+    envoyer();
+  };
+
+  reconnaissance.onerror = () => {
+    statusText.textContent = "ERREUR MICRO";
+  };
+
+  reconnaissance.onend = () => {
+    if (statusText.textContent === "JE VOUS ÉCOUTE...") {
+      statusText.textContent = "SYSTÈME OPÉRATIONNEL";
+    }
+  };
+
   reconnaissance.start();
 }
 
@@ -479,47 +854,73 @@ function parler() {
 async function demarrerCamera() {
   const video = document.getElementById("cameraPreview");
   const info = document.getElementById("cameraStatus");
+
   if (!navigator.mediaDevices?.getUserMedia) {
     info.textContent = "Caméra indisponible sur ce navigateur.";
     return;
   }
+
   try {
-    fluxCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+    fluxCamera = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "environment"
+      },
+      audio: false
+    });
+
     video.srcObject = fluxCamera;
+
     info.textContent = "Caméra activée. Le flux reste sur cet appareil.";
+
   } catch (erreur) {
     info.textContent = "Accès caméra refusé ou indisponible : " + erreur.message;
   }
 }
+
 function arreterCamera() {
   if (fluxCamera) {
     fluxCamera.getTracks().forEach(track => track.stop());
     fluxCamera = null;
   }
+
   const video = document.getElementById("cameraPreview");
+
   if (video) video.srcObject = null;
+
   const info = document.getElementById("cameraStatus");
+
   if (info) info.textContent = "La caméra est arrêtée.";
 }
 
 // =====================================
-// INFORMATIONS DE PERFORMANCE DU NAVIGATEUR
+// INFORMATIONS DE PERFORMANCE
 // =====================================
 async function actualiserPerformances() {
   const mem = document.getElementById("browserMemory");
   const stock = document.getElementById("siteStorage");
   const reseau = document.getElementById("networkState");
   const ecran = document.getElementById("screenSize");
+
   if (performance.memory?.usedJSHeapSize) {
-    mem.textContent = (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " Mo";
+    mem.textContent =
+      (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " Mo";
   } else {
     mem.textContent = "Indisponible";
   }
+
   try {
     const estimation = await navigator.storage.estimate();
-    stock.textContent = estimation.usage != null ? (estimation.usage / 1048576).toFixed(1) + " Mo" : "Indisponible";
-  } catch { stock.textContent = "Indisponible"; }
+
+    stock.textContent = estimation.usage != null
+      ? (estimation.usage / 1048576).toFixed(1) + " Mo"
+      : "Indisponible";
+
+  } catch {
+    stock.textContent = "Indisponible";
+  }
+
   reseau.textContent = navigator.onLine ? "EN LIGNE" : "HORS LIGNE";
+
   ecran.textContent = window.innerWidth + " × " + window.innerHeight;
 }
 
@@ -528,10 +929,17 @@ async function actualiserPerformances() {
 // =====================================
 async function verifierSession() {
   const { data, error } = await client.auth.getSession();
-  if (error) { console.error(error); return; }
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
   if (data.session) {
     utilisateur = data.session.user;
+
     afficherCompte();
+
     try {
       await chargerSouvenirs();
       statusText.textContent = "SYSTÈME OPÉRATIONNEL";
@@ -541,17 +949,25 @@ async function verifierSession() {
   }
 }
 
+// =====================================
+// ÉTAT DE LA CONNEXION
+// =====================================
 window.addEventListener("online", () => {
   const el = document.getElementById("networkState");
   if (el) el.textContent = "EN LIGNE";
 });
+
 window.addEventListener("offline", () => {
   const el = document.getElementById("networkState");
   if (el) el.textContent = "HORS LIGNE";
 });
 
+// =====================================
+// DÉMARRAGE
+// =====================================
 actualiserPerformances();
 initialiserSupabase();
+
 </script>
 </body>
 </html>
