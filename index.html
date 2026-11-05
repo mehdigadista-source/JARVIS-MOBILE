@@ -966,7 +966,7 @@ function ouvrirOnglet(nom){
 
 async function initialiserSupabase(){
   try{
-    const reponse=await fetch("/.netlify/functions/config");
+    const reponse=await fetch("/api/config");
     const configuration=await reponse.json();
     if(!reponse.ok) throw new Error(configuration.error||"Configuration inaccessible");
 
@@ -1256,7 +1256,7 @@ async function envoyer(){
       ...historique.slice(-12)
     ];
 
-    const reponse=await fetch("/.netlify/functions/chat",{
+    const reponse=await fetch("/api/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({messages:messagesIA})
