@@ -1,6 +1,5 @@
 
 export default async (request) => {
-    // Autoriser uniquement les requêtes POST
     if (request.method !== "POST") {
         return Response.json(
             { error: "Méthode non autorisée." },
@@ -9,22 +8,15 @@ export default async (request) => {
     }
 
     try {
-        // Récupération de la clé API depuis Netlify
         const apiKey = Netlify.env.get("GROQ_API_KEY");
-
-        console.log(
-            "GROQ_API_KEY présente :",
-            Boolean(apiKey)
-        );
 
         if (!apiKey) {
             return Response.json(
-                { error: "Clé API Groq introuvable dans Netlify." },
+                { error: "Clé API Groq introuvable." },
                 { status: 500 }
             );
         }
 
-        // Lecture des messages
         const body = await request.json();
         const messages = body.messages;
 
@@ -35,14 +27,13 @@ export default async (request) => {
             );
         }
 
-        // Vérification des messages
         const messagesValides = messages
             .filter(message =>
                 message &&
                 ["user", "assistant"].includes(message.role) &&
                 typeof message.content === "string"
             )
-            .slice(-12);
+            .slice(-10);
 
         if (messagesValides.length === 0) {
             return Response.json(
@@ -51,7 +42,22 @@ export default async (request) => {
             );
         }
 
-        // Appel à Groq
+        const systemPrompt = `
+Tu es J.A.R.V.I.S, l'assistant personnel de Monsieur.
+
+Tu réponds toujours en français.
+Tu es poli, intelligent, précis et naturel.
+Tu appelles ton utilisateur Monsieur.
+Tu aides en informatique, technologie,
+automobile, sciences et culture générale.
+
+Tu privilégies les réponses directes et fluides.
+Tu évites les répétitions et les introductions inutiles.
+Tu adaptes la longueur de tes réponses à la question.
+Tu ne prétends jamais avoir effectué une action
+si tu ne l'as pas réellement effectuée.
+        `;
+
         const reponse = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
             {
@@ -65,29 +71,19 @@ export default async (request) => {
                     messages: [
                         {
                             role: "system",
-                            content: `
-Tu es J.A.R.V.I.S, l'assistant personnel de Monsieur.
-
-Tu réponds toujours en français.
-Tu es poli, intelligent, précis et naturel.
-Tu appelles ton utilisateur Monsieur.
-Tu aides en informatique, technologie,
-automobile, sciences et culture générale.
-
-Tu évites les réponses inutilement longues.
-                            `
+                            content: systemPrompt
                         },
                         ...messagesValides
                     ],
-                    temperature: 0.7,
-                    max_tokens: 1024
+                    temperature: 0.6,
+                    max_tokens: 700,
+                    stream: false
                 })
             }
         );
 
         const donnees = await reponse.json();
 
-        // Gestion des erreurs Groq
         if (!reponse.ok) {
             console.error("Erreur Groq :", donnees);
 
@@ -103,12 +99,22 @@ Tu évites les réponses inutilement longues.
         const texte = donnees.choices?.[0]?.message?.content;
 
         if (!texte) {
-            throw new Error("Groq n'a renvoyé aucune réponse.");
+            throw new Error("Aucune réponse reçue de Groq.");
         }
 
-        return Response.json({
-            reply: texte
-        });
+        return Response.json(
+            {
+                reply: texte,
+                usage: donnees.usage || null
+            },
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Cache-Control": "no-store"
+                }
+            }
+        );
 
     } catch (erreur) {
         console.error("Erreur JARVIS :", erreur);
