@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,1430 +8,1115 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>J.A.R.V.I.S — Stark Industries</title>
+<title>J.A.R.V.I.S — STARK INDUSTRIES</title>
+
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
-  --bg:#060b14;
-  --panel:#0b1626;
-  --blue:#00c8ff;
-  --text:#e9f7ff;
-  --muted:#8299ad;
-  --green:#00e0a4;
-  --red:#ff5268;
-  --border:rgba(0,200,255,.2);
+ --bg:#060b14;--panel:#0b1525;--panel2:#101e31;
+ --blue:#00bfff;--cyan:#49eaff;--text:#e8f7ff;
+ --muted:#8299ad;--line:#17344c;--green:#35e6a0;
+ --red:#ff5470;--orange:#ffb454;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:radial-gradient(circle at top,#10243a 0,#060b14 55%);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
-  min-height:100vh;
+ margin:0;background:radial-gradient(circle at 50% -20%,#123456 0,#060b14 48%);
+ color:var(--text);font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;padding-bottom:90px;
 }
-button,input,textarea{font:inherit}
-button{
-  border:1px solid var(--border);
-  color:var(--blue);
-  background:#0b1a2b;
-  border-radius:10px;
-  padding:11px 14px;
-  cursor:pointer;
-  transition:.2s;
-}
-button:hover{background:#12304a;border-color:var(--blue)}
-button:disabled{opacity:.4;cursor:not-allowed}
-input,textarea{
-  width:100%;
-  padding:13px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#07111e;
-  color:var(--text);
-  outline:none;
-}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
 header{
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
-  background:rgba(4,12,23,.85);
+ position:sticky;top:0;z-index:20;padding:14px 16px;
+ background:rgba(5,12,23,.94);backdrop-filter:blur(15px);
+ border-bottom:1px solid var(--line);
 }
-.logo{color:var(--blue);font-size:25px;font-weight:bold;letter-spacing:4px}
-.subtitle{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:5px}
-.status{font-size:12px;color:var(--green)}
-nav{
-  display:flex;gap:7px;padding:12px;overflow-x:auto;
-  border-bottom:1px solid var(--border);background:#07111e;
-}
-nav button{white-space:nowrap;font-size:12px}
-nav button.active{background:#07334b;border-color:var(--blue);color:white}
-main{max-width:1150px;margin:auto;padding:18px}
-.page{display:none}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--cyan)}
+.version{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}
+.status{font-size:10px;color:var(--green);letter-spacing:1px}
+main{max-width:900px;margin:auto;padding:16px}
+.page{display:none;animation:appear .25s ease}
 .page.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .panel{
-  background:linear-gradient(145deg,rgba(15,32,51,.96),rgba(7,16,29,.96));
-  border:1px solid var(--border);
-  border-radius:16px;padding:18px;margin-bottom:16px;
-  box-shadow:0 8px 30px #0004;
+ background:linear-gradient(145deg,rgba(16,30,49,.96),rgba(7,16,29,.96));
+ border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px;
+ box-shadow:0 8px 30px #0003;
 }
-h2{font-size:17px;color:var(--blue);letter-spacing:2px;margin:0 0 15px}
-h3{font-size:14px;color:var(--blue)}
-.muted{color:var(--muted);font-size:12px;line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.stat{padding:16px;background:#071321;border:1px solid var(--border);border-radius:12px;min-height:90px}
-.stat strong{display:block;color:var(--blue);font-size:19px;margin-bottom:8px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.primary{background:#075477;color:white;border-color:var(--blue)}
-.danger{color:var(--red);border-color:#ff526855}
+h1,h2,h3{margin:0 0 12px}
+h1{font-size:21px;letter-spacing:2px}
+h2{font-size:15px;letter-spacing:1.5px;color:var(--cyan)}
+h3{font-size:13px;color:var(--cyan)}
+p{line-height:1.5;color:#c5d8e8}
+.muted{color:var(--muted);font-size:12px}
+.small{font-size:11px;color:var(--muted)}
+button,.btn{
+ border:1px solid #17618a;background:#0b2942;color:var(--cyan);
+ padding:11px 13px;border-radius:10px;font-weight:700;
+}
+button:active{transform:scale(.98)}
+button.primary{background:linear-gradient(135deg,#0876a8,#06466e);color:white}
+button.danger{border-color:#803246;background:#351421;color:#ff8da1}
+button.secondary{background:#101d2d;border-color:var(--line);color:#c7d8e8}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,textarea,select{
+ width:100%;background:#071321;color:var(--text);
+ border:1px solid var(--line);border-radius:10px;padding:12px;outline:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--blue)}
+textarea{resize:vertical;min-height:85px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{
+ padding:13px;background:#071321;border:1px solid var(--line);
+ border-radius:12px;min-width:0;
+}
+.stat strong{display:block;font-size:18px;color:var(--cyan);margin-top:7px}
+.stat span{font-size:10px;color:var(--muted);letter-spacing:1px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions button{flex:1;min-width:110px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+#reactor-wrap{display:flex;justify-content:center;padding:20px 0}
+#reactor{
+ width:180px;height:180px;border-radius:50%;position:relative;
+ display:grid;place-items:center;
+ border:2px solid #147ca8;
+ background:radial-gradient(circle,#163b54 0,#071321 55%,#02060c 72%);
+ box-shadow:0 0 20px #00bfff55,inset 0 0 30px #00bfff33;
+ animation:reactorPulse 3s infinite ease-in-out;
+}
+#reactor:before,#reactor:after{
+ content:"";position:absolute;border-radius:50%;inset:10px;
+ border:2px dashed #36dfff88;animation:spin 18s linear infinite;
+}
+#reactor:after{inset:23px;border:2px solid #00bfff55;animation:spin 12s linear infinite reverse}
+#reactor-core{
+ width:70px;height:70px;border-radius:50%;z-index:1;
+ background:radial-gradient(circle,#fff 0,#62eaff 18%,#087cb9 55%,#061b31 75%);
+ box-shadow:0 0 30px #00cfff;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes reactorPulse{50%{box-shadow:0 0 38px #00bfff99,inset 0 0 35px #00bfff66}}
 #messages{
-  height:340px;overflow-y:auto;padding:12px;
-  background:#050d18;border:1px solid var(--border);border-radius:12px;
+ height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+ padding:5px;margin-bottom:12px;
 }
-.message{padding:11px;margin:8px 0;border-radius:10px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
-.message.jarvis{background:#10263a;border-left:3px solid var(--blue)}
-.message.user{background:#14251f;border-left:3px solid var(--green)}
-.message.system{background:#281b24;border-left:3px solid var(--red);font-size:13px}
-.chat-input{display:flex;gap:8px;margin-top:10px}
+.message{padding:11px 13px;border-radius:12px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;font-size:14px}
+.message.user{align-self:flex-end;background:#0b4262;border:1px solid #1677a4}
+.message.jarvis{align-self:flex-start;background:#101e30;border:1px solid #1a3c55}
+.message.system{align-self:center;background:#171e29;color:var(--muted);font-size:11px}
+.chat-input{display:flex;gap:8px;align-items:flex-end}
 .chat-input input{flex:1;min-width:0}
-.card-memory{background:#081523;border:1px solid var(--border);border-radius:10px;padding:12px;margin:9px 0}
-.card-memory p{white-space:pre-wrap;overflow-wrap:anywhere}
-footer{text-align:center;color:var(--muted);font-size:10px;padding:25px}
-video{width:100%;max-height:350px;background:#000;border-radius:12px}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--green);font-size:12px}
-
-/* BOUTON DU MODE VOCAL */
-
-.voice-launch{
-  width:100%;padding:16px;margin-bottom:14px;
-  background:linear-gradient(90deg,#075477,#07304c);
-  color:white;font-weight:bold;letter-spacing:1px;
+.chat-input button{flex-shrink:0}
+.bottom-nav{
+ position:fixed;bottom:0;left:0;right:0;z-index:30;
+ display:flex;justify-content:space-around;gap:2px;
+ padding:9px 3px calc(9px + env(safe-area-inset-bottom));
+ background:rgba(4,11,20,.97);border-top:1px solid var(--line);
+ backdrop-filter:blur(15px);
 }
-
-/* INTERFACE DE CONVERSATION VOCALE */
-
-#voice-call{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:space-between;
-  padding:calc(25px + env(safe-area-inset-top)) 22px calc(25px + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(ellipse at center,#102e49 0%,#081727 42%,#030811 100%);
-  overflow:hidden;
+.nav-btn{
+ border:0;background:transparent;color:#7f9aae;padding:8px 5px;
+ font-size:10px;min-width:0;flex:1;display:flex;flex-direction:column;
+ align-items:center;gap:5px;
 }
-#voice-call.open{display:flex}
-.call-header{text-align:center}
-.call-header h2{
-  font-size:25px;letter-spacing:5px;margin:0;color:var(--blue);
+.nav-btn b{font-size:17px}
+.nav-btn.active{color:var(--cyan);background:#0b2942;border-radius:10px}
+.list-item{
+ padding:12px 0;border-bottom:1px solid var(--line);
+ display:flex;justify-content:space-between;align-items:center;gap:10px;
 }
-.call-header p{font-size:10px;letter-spacing:2px;color:var(--muted)}
-.call-center{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;width:100%;flex:1;gap:24px;
+.list-item:last-child{border-bottom:0}
+.list-item button{padding:7px 10px;font-size:11px}
+.tag{font-size:10px;padding:5px 8px;border-radius:20px;background:#123149;color:var(--cyan)}
+.good{color:var(--green)}.warn{color:var(--orange)}.bad{color:var(--red)}
+#voice-orb{
+ width:130px;height:130px;border-radius:50%;margin:20px auto;
+ display:grid;place-items:center;font-size:35px;
+ background:radial-gradient(circle,#54eaff,#0874a5 45%,#071321 72%);
+ box-shadow:0 0 35px #00bfff77;
 }
-.jarvis-orb{
-  width:220px;height:220px;border-radius:50%;
-  position:relative;display:grid;place-items:center;
-  background:radial-gradient(circle,#0b5279 0%,#06304e 40%,#031321 72%);
-  border:2px solid #00c8ff;
-  box-shadow:0 0 35px #00c8ff66,inset 0 0 35px #00c8ff44;
-  transition:transform .35s,box-shadow .35s;
-}
-.jarvis-orb:before,.jarvis-orb:after{
-  content:"";position:absolute;inset:-15px;border-radius:50%;
-  border:1px solid #00c8ff66;animation:orbRing 3s infinite;
-}
-.jarvis-orb:after{inset:-30px;animation-delay:1.5s}
-@keyframes orbRing{
-  0%{transform:scale(.88);opacity:.7}
-  100%{transform:scale(1.15);opacity:0}
-}
-.jarvis-orb.listening{animation:listenPulse 2s infinite}
-@keyframes listenPulse{
-  50%{transform:scale(1.06);box-shadow:0 0 55px #00c8ffbb,inset 0 0 45px #00c8ff77}
-}
-.jarvis-orb.speaking{
-  transform:scale(1.17);
-  box-shadow:0 0 75px #00c8ff,inset 0 0 55px #00c8ff99;
-  animation:speakPulse .55s infinite alternate;
-}
-@keyframes speakPulse{
-  from{transform:scale(1.1)}
-  to{transform:scale(1.22)}
-}
-.jarvis-orb.muted{
-  border-color:#63798b;
-  box-shadow:0 0 20px #63798b44;
-  filter:saturate(.4);
-}
-.orb-core{
-  width:100px;height:100px;border-radius:50%;
-  background:radial-gradient(circle,#8eeaff 0%,#00aeea 25%,#075477 65%,transparent 70%);
-  box-shadow:0 0 40px #00c8ff;
-}
-#call-spectrum{
-  position:absolute;display:flex;align-items:center;
-  justify-content:center;gap:4px;height:75px;width:155px;
-}
-#call-spectrum span{
-  width:4px;height:12px;border-radius:5px;
-  background:#d9faff;box-shadow:0 0 8px #00c8ff;
-  animation:spectrum 1s infinite ease-in-out;
-  animation-play-state:paused;
-}
-#call-spectrum span:nth-child(3n){animation-delay:.2s}
-#call-spectrum span:nth-child(3n+1){animation-delay:.4s}
-#call-spectrum span:nth-child(4n){animation-delay:.1s}
-.jarvis-orb.listening #call-spectrum span,
-.jarvis-orb.speaking #call-spectrum span{animation-play-state:running}
-@keyframes spectrum{
-  0%,100%{height:9px}
-  50%{height:42px}
-}
-#call-state{
-  color:var(--blue);font-size:13px;
-  font-weight:bold;letter-spacing:3px;text-align:center;
-}
-#call-transcript{
-  width:100%;max-width:500px;min-height:65px;
-  text-align:center;color:#d9eefa;
-  font-size:15px;line-height:1.6;
-  overflow-wrap:anywhere;
-}
-.call-controls{display:flex;gap:35px;justify-content:center;align-items:center}
-.call-control{
-  width:65px;height:65px;border-radius:50%;
-  font-size:24px;background:#10283e;
-  border:1px solid #00c8ff88;color:white;
-  display:grid;place-items:center;
-}
-.call-control.hangup{background:#a82239;border-color:#ff5268}
-.call-control.muted-button{background:#4b5360}
-.call-hint{
-  text-align:center;color:var(--muted);
-  font-size:10px;letter-spacing:2px;margin-top:15px;
-}
-@media(max-width:600px){
-  main{padding:10px}
-  header{padding:15px}
-  .chat-input{flex-wrap:wrap}
-  .chat-input button{flex:1}
-  #messages{height:300px}
-  .jarvis-orb{width:190px;height:190px}
+#voice-orb.listening{animation:voicePulse 1s infinite}
+@keyframes voicePulse{50%{transform:scale(1.08);box-shadow:0 0 55px #00bfff}}
+#camera-preview{width:100%;max-height:300px;background:#02060c;border-radius:12px;object-fit:cover}
+#file-preview{max-width:100%;max-height:220px;border-radius:10px;display:none}
+.morse-output{font-size:19px;letter-spacing:2px;overflow-wrap:anywhere;color:var(--cyan)}
+footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
+@media(min-width:700px){
+ main{padding:24px}
+ #messages{height:420px}
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 </style>
 </head>
 
 <body>
-
 <header>
+ <div class="topline">
   <div>
-    <div class="logo">J.A.R.V.I.S</div>
-    <div class="subtitle">STARK INDUSTRIES // PERSONAL AI SYSTEM // MK-3000</div>
+   <div class="brand">J.A.R.V.I.S</div>
+   <div class="version">STARK INDUSTRIES // MK-3000 // VERSION 7.0</div>
   </div>
-  <div class="status" id="status">● INITIALISATION...</div>
+  <div style="text-align:right">
+   <div class="status" id="global-status">● SYSTEM ONLINE</div>
+   <div class="small" id="network-status">Connexion en vérification</div>
+  </div>
+ </div>
 </header>
-
-<nav>
-  <button class="active" onclick="ouvrirOnglet('accueil',this)">ACCUEIL</button>
-  <button onclick="ouvrirOnglet('ordinateur',this)">ORDINATEUR</button>
-  <button onclick="ouvrirOnglet('camera',this)">CAMÉRA</button>
-  <button onclick="ouvrirOnglet('performances',this)">PERFORMANCES</button>
-  <button onclick="ouvrirOnglet('morse',this)">MORSE</button>
-  <button onclick="ouvrirOnglet('recherche',this)">RECHERCHE</button>
-  <button onclick="ouvrirOnglet('diagnostic',this)">DIAGNOSTIC</button>
-  <button onclick="ouvrirOnglet('automatisations',this)">RAPPELS</button>
-  <button onclick="ouvrirOnglet('telephone',this)">TÉLÉPHONE</button>
-  <button onclick="ouvrirOnglet('parametres',this)">PARAMÈTRES</button>
-</nav>
 
 <main>
 
-<section class="page active" id="accueil">
-  <div class="panel" style="text-align:center;padding:25px">
-    <div class="core-wrap">
-      <div class="core" style="width:150px;height:150px;border-radius:50%;margin:auto;display:grid;place-items:center;border:3px solid var(--blue);box-shadow:0 0 25px #00c8ff66,inset 0 0 25px #00c8ff44;color:var(--blue);font-weight:bold;letter-spacing:2px;animation:pulse 3s infinite">STARK<br>CORE</div>
-    </div>
-    <h2 style="margin-top:22px">SYSTÈME J.A.R.V.I.S</h2>
-    <p class="muted" id="systemState">Système prêt à fonctionner.</p>
-    <button class="voice-launch" onclick="ouvrirModeVocal()">◉ OUVRIR LE MODE CONVERSATION VOCALE</button>
-    <div class="actions" style="justify-content:center">
-      <button onclick="basculerVoix()" id="voiceToggle">LECTURE VOCALE : OFF</button>
-      <button onclick="arreterVoix()">ARRÊTER LA VOIX</button>
-    </div>
+<!-- ACCUEIL -->
+<section class="page active" id="page-home">
+ <div class="panel" style="text-align:center">
+  <div class="small">STARK INDUSTRIES PERSONAL AI SYSTEM</div>
+  <div id="reactor-wrap"><div id="reactor"><div id="reactor-core"></div></div></div>
+  <h1>BIENVENUE, MONSIEUR</h1>
+  <p id="home-greeting">Système Stark opérationnel. En attente de vos instructions.</p>
+  <div class="actions">
+   <button class="primary" onclick="allerPage('assistant')">OUVRIR J.A.R.V.I.S</button>
+   <button onclick="ouvrirModeVocal()">MODE CONVERSATION VOCALE</button>
   </div>
+ </div>
 
+ <div class="grid">
+  <div class="stat"><span>HEURE LOCALE</span><strong id="clock">--:--:--</strong></div>
+  <div class="stat"><span>DATE</span><strong id="date">--/--/----</strong></div>
+  <div class="stat"><span>BATTERIE</span><strong id="battery">--</strong></div>
+  <div class="stat"><span>CONNEXION</span><strong id="connection">--</strong></div>
+ </div>
+
+ <div class="panel">
+  <div class="section-title"><h2>ACCÈS RAPIDES</h2><span class="tag">MK-3000</span></div>
   <div class="grid">
-    <div class="stat"><strong id="clock">--:--:--</strong><span class="muted">HEURE</span></div>
-    <div class="stat"><strong id="date">--/--/----</strong><span class="muted">DATE</span></div>
-    <div class="stat"><strong id="networkState">--</strong><span class="muted">CONNEXION INTERNET</span></div>
-    <div class="stat"><strong id="memoryState">--</strong><span class="muted">MÉMOIRE LONG TERME</span></div>
+   <button onclick="ouvrirLien('https://www.google.com')">GOOGLE</button>
+   <button onclick="ouvrirLien('https://www.youtube.com')">YOUTUBE</button>
+   <button onclick="ouvrirLien('https://www.wikipedia.org')">WIKIPÉDIA</button>
+   <button onclick="allerPage('agenda')">AGENDA</button>
+   <button onclick="allerPage('meteo')">MÉTÉO</button>
+   <button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
   </div>
+ </div>
 
-  <div class="panel" style="margin-top:16px">
-    <h2>ASSISTANT PERSONNEL — CHAT ÉCRIT</h2>
-    <div id="messages">
-      <div class="message jarvis">Système Stark opérationnel. Code JARVIS-3000 accepté. Comment puis-je vous aider, Monsieur ?</div>
-    </div>
-    <div class="chat-input">
-      <input id="question" placeholder="Écrivez votre demande..." onkeydown="if(event.key==='Enter')envoyer()">
-      <button class="primary" id="send" onclick="envoyer()">ENVOYER</button>
-      <button id="voice" onclick="parler()">🎙</button>
-    </div>
-    <div class="actions">
-      <button onclick="effacer()">EFFACER LA CONVERSATION</button>
-      <button onclick="actualiserSouvenirs()">ACTUALISER LA MÉMOIRE</button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2>COMMANDES RAPIDES</h2>
-    <div class="actions">
-      <button onclick="rechercheGoogle('YouTube')">YOUTUBE</button>
-      <button onclick="rechercheGoogle('Google')">GOOGLE</button>
-      <button onclick="rechercheGoogle('Discord')">DISCORD</button>
-      <button onclick="envoyerTexte('Quelle heure est-il ?')">HEURE</button>
-      <button onclick="envoyerTexte('Donne-moi la date du jour.')">DATE</button>
-      <button onclick="envoyerTexte('Explique-moi tes capacités.')">CAPACITÉS</button>
-    </div>
-  </div>
+ <div class="panel">
+  <h2>ÉTAT DU SYSTÈME</h2>
+  <div class="list-item"><span>Intelligence artificielle</span><span id="ia-state" class="tag">Vérification</span></div>
+  <div class="list-item"><span>Mémoire locale</span><span class="tag good">Disponible</span></div>
+  <div class="list-item"><span>Supabase</span><span id="supabase-state" class="tag">Vérification</span></div>
+  <div class="list-item"><span>Reconnaissance vocale</span><span id="speech-state" class="tag">Vérification</span></div>
+ </div>
 </section>
 
-<section class="page" id="ordinateur">
-  <div class="panel">
-    <h2>CONTRÔLE DE L'ORDINATEUR</h2>
-    <p class="muted">Le contrôle direct de Windows nécessite un programme compagnon installé sur le PC. Cette interface web ne peut pas exécuter librement des commandes système.</p>
-    <div class="stat"><strong>NON CONNECTÉ</strong><span class="muted">Programme compagnon Windows</span></div>
+<!-- ASSISTANT -->
+<section class="page" id="page-assistant">
+ <div class="panel">
+  <div class="section-title"><h2>CONSOLE J.A.R.V.I.S</h2><span class="tag">IA</span></div>
+  <div id="messages">
+   <div class="message jarvis">Bonjour, Monsieur. Système Stark opérationnel. Comment puis-je vous assister ?</div>
   </div>
+  <div class="chat-input">
+   <input id="chat-input" placeholder="Écrivez votre instruction..." autocomplete="off">
+   <button onclick="envoyer()">ENVOYER</button>
+  </div>
+  <div class="actions" style="margin-top:10px">
+   <button class="secondary" onclick="demarrerMicro()">🎙 DICTER</button>
+   <button class="secondary" onclick="lireDerniereReponse()">🔊 RELIRE</button>
+   <button class="secondary" onclick="effacerChat()">EFFACER</button>
+  </div>
+  <div class="small" style="margin-top:10px">Les conversations sont conservées localement sur cet appareil.</div>
+ </div>
+ <div class="panel">
+  <h2>COMMANDES RAPIDES</h2>
+  <div class="actions">
+   <button onclick="commandeRapide('Quelle heure est-il ?')">HEURE</button>
+   <button onclick="commandeRapide('Donne-moi la date du jour.')">DATE</button>
+   <button onclick="commandeRapide('Résume les tâches de mon agenda.')">MES TÂCHES</button>
+   <button onclick="commandeRapide('Comment économiser la batterie de mon iPhone ?')">BATTERIE</button>
+  </div>
+ </div>
 </section>
 
-<section class="page" id="camera">
-  <div class="panel">
-    <h2>CAMÉRA EN DIRECT</h2>
-    <video id="cameraPreview" autoplay playsinline muted></video>
-    <p class="muted" id="cameraStatus">Caméra inactive.</p>
-    <div class="actions">
-      <button class="primary" onclick="demarrerCamera()">ACTIVER LA CAMÉRA</button>
-      <button onclick="arreterCamera()">ARRÊTER</button>
-      <button onclick="analyserCamera()">ANALYSER L'IMAGE</button>
-    </div>
-    <p class="muted" id="visionResult">L'analyse visuelle par IA nécessite une intégration supplémentaire.</p>
+<!-- MODE VOCAL -->
+<section class="page" id="page-vocal">
+ <div class="panel" style="text-align:center">
+  <div class="small">STARK VOICE INTERFACE</div>
+  <h1>CONVERSATION VOCALE</h1>
+  <div id="voice-orb">◉</div>
+  <h2 id="voice-status">MODE VOCAL EN ATTENTE</h2>
+  <p id="voice-caption">Activez le microphone pour commencer une conversation.</p>
+  <div class="actions">
+   <button class="primary" id="voice-start" onclick="demarrerConversationVocale()">ACTIVER MICRO</button>
+   <button class="danger" onclick="arreterConversationVocale()">TERMINER</button>
   </div>
+  <div style="margin-top:15px">
+   <label class="small"><input type="checkbox" id="voice-auto" checked style="width:auto"> Reprendre l'écoute après chaque réponse</label>
+  </div>
+  <div style="margin-top:12px">
+   <label class="small"><input type="checkbox" id="voice-tts" checked style="width:auto"> Lire les réponses à voix haute</label>
+  </div>
+ </div>
 </section>
 
-<section class="page" id="performances">
-  <div class="panel">
-    <h2>PERFORMANCES DU NAVIGATEUR</h2>
-    <div class="grid">
-      <div class="stat"><strong id="browserMemory">--</strong><span class="muted">MÉMOIRE ESTIMÉE</span></div>
-      <div class="stat"><strong id="siteStorage">--</strong><span class="muted">STOCKAGE DU SITE</span></div>
-      <div class="stat"><strong id="screenSize">--</strong><span class="muted">ÉCRAN</span></div>
-      <div class="stat"><strong id="browserName">--</strong><span class="muted">NAVIGATEUR</span></div>
-      <div class="stat"><strong id="batteryState">--</strong><span class="muted">BATTERIE</span></div>
-    </div>
-    <button class="primary" onclick="actualiserPerformances()">ACTUALISER</button>
-    <p class="muted">Ces données concernent le navigateur, pas une analyse complète de l'appareil.</p>
-  </div>
+<!-- AGENDA -->
+<section class="page" id="page-agenda">
+ <div class="panel">
+  <h1>AGENDA INTELLIGENT</h1>
+  <p class="muted">Les rappels sont enregistrés sur cet appareil. Les notifications nécessitent votre autorisation.</p>
+  <input id="reminder-title" placeholder="Nom du rappel">
+  <input id="reminder-date" type="datetime-local" style="margin-top:9px">
+  <button class="primary" style="width:100%;margin-top:9px" onclick="ajouterRappel()">AJOUTER UN RAPPEL</button>
+ </div>
+ <div class="panel">
+  <div class="section-title"><h2>MES RAPPELS</h2><button class="secondary" onclick="demanderNotifications()">AUTORISER NOTIFICATIONS</button></div>
+  <div id="reminder-list"></div>
+ </div>
 </section>
 
-<section class="page" id="morse">
-  <div class="panel">
-    <h2>TRADUCTEUR MORSE</h2>
-    <textarea id="morseInput" rows="4" placeholder="Écrivez un texte ou un code Morse..."></textarea>
-    <div class="actions">
-      <button class="primary" onclick="convertirMorse()">CONVERTIR</button>
-      <button onclick="effacerMorse()">EFFACER</button>
-    </div>
-    <textarea id="morseOutput" rows="4" readonly placeholder="Résultat..."></textarea>
-    <p class="muted" id="morseStatus">Prêt.</p>
-    <h3>ÉMISSION SONORE</h3>
-    <div class="actions">
-      <button class="primary" onclick="emettreMorse()">ÉMETTRE LE MORSE</button>
-      <button onclick="arreterMorse()">ARRÊTER</button>
-    </div>
-  </div>
+<!-- METEO ET RECHERCHE -->
+<section class="page" id="page-meteo">
+ <div class="panel">
+  <h1>MÉTÉO</h1>
+  <p class="muted">Prévisions via Open-Meteo. Votre position ne sera demandée qu'avec votre autorisation.</p>
+  <button class="primary" onclick="chargerMeteo()">DÉTECTER MA POSITION</button>
+  <div id="weather-result" style="margin-top:15px">Aucune donnée météo chargée.</div>
+ </div>
+ <div class="panel">
+  <h2>RECHERCHE INTERNET</h2>
+  <input id="search-input" placeholder="Que souhaitez-vous rechercher ?">
+  <button class="primary" style="width:100%;margin-top:9px" onclick="rechercherInternet()">LANCER LA RECHERCHE</button>
+  <div class="small" style="margin-top:8px">La recherche s'ouvre dans votre navigateur.</div>
+ </div>
+ <div class="panel">
+  <h2>ACTUALITÉS</h2>
+  <p>Consultez les dernières actualités dans votre navigateur.</p>
+  <button onclick="ouvrirLien('https://news.google.com/home?hl=fr&gl=FR&ceid=FR:fr')">OUVRIR LES ACTUALITÉS</button>
+ </div>
 </section>
 
-<section class="page" id="recherche">
-  <div class="panel">
-    <h2>RECHERCHE INTERNET</h2>
-    <input id="searchInput" placeholder="Que souhaitez-vous rechercher ?" onkeydown="if(event.key==='Enter')rechercheGoogle()">
-    <button class="primary" onclick="rechercheGoogle()">RECHERCHER</button>
+<!-- CAMÉRA ET DOCUMENTS -->
+<section class="page" id="page-camera">
+ <div class="panel">
+  <h1>MODULE CAMÉRA</h1>
+  <p class="muted">La caméra fonctionne uniquement après autorisation du navigateur.</p>
+  <video id="camera-preview" autoplay playsinline muted></video>
+  <div class="actions" style="margin-top:10px">
+   <button class="primary" onclick="demarrerCamera()">ACTIVER CAMÉRA</button>
+   <button class="danger" onclick="arreterCamera()">ARRÊTER</button>
+   <button onclick="prendrePhoto()">CAPTURER</button>
   </div>
+  <canvas id="camera-canvas" style="display:none"></canvas>
+  <img id="photo-result" style="display:none;width:100%;margin-top:12px;border-radius:12px">
+  <a id="photo-download" style="display:none;color:var(--cyan);margin-top:10px">Enregistrer la capture</a>
+ </div>
+ <div class="panel">
+  <h2>LECTEUR DE DOCUMENTS</h2>
+  <input type="file" id="document-file" accept=".txt,.csv,.json,.md,.html,.log,image/*">
+  <div id="document-result" class="small" style="margin-top:12px">Sélectionnez un fichier texte ou une image.</div>
+  <img id="file-preview" alt="Aperçu du fichier">
+  <button id="send-document" style="display:none;margin-top:10px" onclick="envoyerDocumentIA()">ENVOYER LE TEXTE À JARVIS</button>
+  <p class="small">Les fichiers texte peuvent être lus et résumés par l'IA. Les images sont affichées en aperçu, mais leur analyse nécessite un modèle et un service compatibles avec les images.</p>
+ </div>
 </section>
 
-<section class="page" id="diagnostic">
-  <div class="panel">
-    <h2>DIAGNOSTIC DU NAVIGATEUR</h2>
-    <p class="muted">Ce diagnostic vérifie les fonctions accessibles au navigateur. Il ne constitue pas un antivirus.</p>
-    <button class="primary" onclick="lancerDiagnostic()">LANCER LE DIAGNOSTIC</button>
-    <pre id="diagnosticResults">En attente...</pre>
+<!-- MORSE -->
+<section class="page" id="page-morse">
+ <div class="panel">
+  <h1>TRADUCTEUR MORSE</h1>
+  <textarea id="morse-input" placeholder="Écrivez votre message ou votre code Morse..."></textarea>
+  <div class="actions" style="margin-top:10px">
+   <button class="primary" onclick="traduireMorse()">TRADUIRE</button>
+   <button onclick="emettreMorse()">ÉMETTRE LE MORSE</button>
   </div>
+  <div class="stat" style="margin-top:12px">
+   <span>RÉSULTAT</span>
+   <div class="morse-output" id="morse-output">---</div>
+  </div>
+  <button class="secondary" style="margin-top:10px" onclick="arreterMorse()">ARRÊTER LE SIGNAL</button>
+ </div>
 </section>
 
-<section class="page" id="automatisations">
-  <div class="panel">
-    <h2>RAPPELS PERSONNELS</h2>
-    <input id="automationName" placeholder="Nom du rappel">
-    <input id="automationDate" type="datetime-local" style="margin-top:10px">
-    <button class="primary" onclick="ajouterAutomatisation()">AJOUTER LE RAPPEL</button>
-    <div id="automationList"></div>
-    <p class="muted">Les rappels fonctionnent lorsque l'application reste ouverte.</p>
-  </div>
+<!-- DIAGNOSTIC -->
+<section class="page" id="page-diagnostic">
+ <div class="panel">
+  <h1>DIAGNOSTIC SYSTÈME</h1>
+  <p class="muted">Contrôle des fonctions accessibles à l'application web. Ce diagnostic n'est pas un antivirus.</p>
+  <button class="primary" style="width:100%" onclick="lancerDiagnostic()">LANCER LE DIAGNOSTIC</button>
+  <div id="diagnostic-results" style="margin-top:15px"></div>
+ </div>
+ <div class="panel">
+  <h2>CONSEILS DE PERFORMANCE</h2>
+  <div id="performance-tips" class="muted">Lancez un diagnostic pour obtenir des conseils.</div>
+ </div>
 </section>
 
-<section class="page" id="telephone">
-  <div class="panel">
-    <h2>CAPACITÉS DU TÉLÉPHONE</h2>
-    <div class="stat"><strong id="phonePlatform">--</strong><span class="muted">APPAREIL</span></div>
-    <div class="stat"><strong id="phoneMic">--</strong><span class="muted">MICROPHONE</span></div>
-    <div class="actions">
-      <button class="primary" onclick="demanderNotifications()">AUTORISER LES NOTIFICATIONS</button>
-      <button onclick="testerNotification()">TESTER</button>
-    </div>
-    <p class="muted" id="notificationStatus">Une application web ne peut pas lire librement les SMS ou les notifications des autres applications.</p>
+<!-- PARAMÈTRES -->
+<section class="page" id="page-settings">
+ <div class="panel">
+  <h1>PARAMÈTRES</h1>
+  <label class="small">Nom de l'assistant</label>
+  <input id="assistant-name" value="J.A.R.V.I.S" style="margin:7px 0">
+  <button onclick="sauverParametres()">ENREGISTRER</button>
+  <div class="list-item"><span>Lecture vocale</span><button class="secondary" onclick="basculerLecture()">ACTIVER / DÉSACTIVER</button></div>
+  <div class="list-item"><span>Mode sombre</span><span class="tag good">ACTIF</span></div>
+  <div class="list-item"><span>Connexion Supabase</span><span id="settings-supabase" class="tag">Vérification</span></div>
+ </div>
+ <div class="panel">
+  <h2>COMPTE SUPABASE</h2>
+  <p class="small">Connexion facultative pour synchroniser la mémoire entre vos appareils.</p>
+  <input id="account-email" type="email" placeholder="Adresse e-mail">
+  <div class="actions" style="margin-top:9px">
+   <button onclick="connexionSupabase()">ENVOYER LE LIEN DE CONNEXION</button>
+   <button class="secondary" onclick="deconnexionSupabase()">DÉCONNEXION</button>
   </div>
-</section>
-
-<section class="page" id="parametres">
-  <div class="panel">
-    <h2>PERSONNALISATION</h2>
-    <input id="assistantName" value="J.A.R.V.I.S">
-    <button onclick="sauverPersonnalisation()">ENREGISTRER</button>
-  </div>
-  <div class="panel">
-    <h2>COMPTE ET MÉMOIRE CLOUD</h2>
-    <div id="login">
-      <input id="email" type="email" placeholder="Adresse e-mail">
-      <input id="password" type="password" placeholder="Mot de passe" style="margin-top:10px">
-      <button class="primary" id="loginButton" onclick="connecter()">SE CONNECTER</button>
-      <p id="loginError" class="muted"></p>
-    </div>
-    <div id="account" style="display:none">
-      <p>Connecté : <strong id="accountEmail"></strong></p>
-      <button onclick="deconnecter()">SE DÉCONNECTER</button>
-    </div>
-    <hr>
-    <h3>SOUVENIRS ENREGISTRÉS</h3>
-    <div id="memoryList"><p class="muted">Chargement...</p></div>
-    <button onclick="actualiserSouvenirs()">ACTUALISER</button>
-  </div>
+  <div id="account-status" class="small" style="margin-top:9px">Compte non vérifié.</div>
+ </div>
+ <div class="panel">
+  <h2>MÉMOIRE</h2>
+  <div id="memory-count" class="muted">0 souvenir local</div>
+  <button class="secondary" onclick="afficherSouvenirs()">AFFICHER LES SOUVENIRS</button>
+  <button class="danger" onclick="effacerSouvenirs()" style="margin-top:8px">EFFACER LA MÉMOIRE LOCALE</button>
+  <div id="memory-list" style="margin-top:10px"></div>
+ </div>
+ <div class="panel">
+  <h2>À PROPOS</h2>
+  <p>J.A.R.V.I.S — STARK INDUSTRIES<br>Version 7.0 — MK-3000<br>Interface personnelle expérimentale.</p>
+  <p class="small">Les données locales restent dans le stockage du navigateur. Les échanges avec l'IA nécessitent une connexion Internet.</p>
+ </div>
 </section>
 
 </main>
 
-<footer>J.A.R.V.I.S // STARK INDUSTRIES // SYSTEM VERSION 6.1</footer>
+<nav class="bottom-nav">
+ <button class="nav-btn active" data-page="home" onclick="allerPage('home')"><b>⌂</b>ACCUEIL</button>
+ <button class="nav-btn" data-page="assistant" onclick="allerPage('assistant')"><b>◉</b>ASSISTANT</button>
+ <button class="nav-btn" data-page="vocal" onclick="allerPage('vocal')"><b>🎙</b>VOCAL</button>
+ <button class="nav-btn" data-page="agenda" onclick="allerPage('agenda')"><b>▦</b>AGENDA</button>
+ <button class="nav-btn" data-page="settings" onclick="allerPage('settings')"><b>⚙</b>OPTIONS</button>
+</nav>
 
-<!-- NOUVELLE PAGE DE CONVERSATION VOCALE -->
-
-<div id="voice-call" aria-hidden="true">
-  <div class="call-header">
-    <h2>J.A.R.V.I.S</h2>
-    <p>STARK INDUSTRIES // VOICE LINK</p>
-  </div>
-
-  <div class="call-center">
-    <div id="jarvis-orb" class="jarvis-orb listening">
-      <div id="call-spectrum">
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <div class="orb-core"></div>
-    </div>
-
-    <div id="call-state">INITIALISATION...</div>
-    <div id="call-transcript">J.A.R.V.I.S est prêt à vous écouter, Monsieur.</div>
-  </div>
-
-  <div style="width:100%">
-    <div class="call-controls">
-      <button id="call-mic" class="call-control" onclick="basculerMicroVocal()" aria-label="Couper ou activer le microphone">🎙️</button>
-      <button class="call-control hangup" onclick="quitterModeVocal()" aria-label="Quitter la conversation">☎</button>
-    </div>
-    <div class="call-hint">MICROPHONE · QUITTER LA CONVERSATION</div>
-  </div>
-</div>
+<footer>STARK INDUSTRIES // J.A.R.V.I.S MK-3000 // VERSION 7.0</footer>
 
 <script>
 "use strict";
 
-/* CONFIGURATION */
+/* =========================================================
+   CONFIGURATION ET STOCKAGE
+========================================================= */
 
-let client=null;
-let utilisateur=null;
-let voixActive=localStorage.getItem("jarvis_voice")==="true";
-let reconnaissance=null;
-let cameraStream=null;
-let contexteMorse=null;
-let generationMorse=0;
-let messagesConversation=[];
-let envoiEnCours=false;
-let voixFrancaise=null;
-
-const CLE_CONVERSATION="jarvis_memoire";
+const CLE_MEMOIRE="jarvis_memoire";
+const CLE_CHAT="jarvis_chat_v7";
 const CLE_RAPPELS="jarvis_automations";
 const CLE_NOM="jarvis_assistant_name";
+const CLE_TTS="jarvis_tts_v7";
 
-const nomSauvegarde=localStorage.getItem(CLE_NOM);
-if(nomSauvegarde)document.getElementById("assistantName").value=nomSauvegarde;
+let clientSupabase=null;
+let utilisateur=null;
+let lectureActive=localStorage.getItem(CLE_TTS)!=="false";
+let historique=[];
+let dernierTexte="";
+let fluxCamera=null;
+let reconnaissance=null;
+let vocalActif=false;
+let audioMorse=null;
+let contexteDocument="";
+let minuterieRappels=null;
 
-try{
-  messagesConversation=JSON.parse(localStorage.getItem(CLE_CONVERSATION)||"[]");
-  if(!Array.isArray(messagesConversation))messagesConversation=[];
-}catch(e){messagesConversation=[]}
+const $=id=>document.getElementById(id);
+const lireJSON=(cle,defaut)=>{
+ try{return JSON.parse(localStorage.getItem(cle))??defaut}
+ catch{return defaut}
+};
+const memoireLocale=lireJSON(CLE_MEMOIRE,[]);
+const rappels=lireJSON(CLE_RAPPELS,[]);
+historique=lireJSON(CLE_CHAT,[]);
 
-function element(id){return document.getElementById(id)}
-
-function ajouterMessage(texte,type="jarvis"){
-  const zone=element("messages");
-  const div=document.createElement("div");
-  div.className="message "+type;
-  div.textContent=texte;
-  zone.appendChild(div);
-  zone.scrollTop=zone.scrollHeight;
+function sauvegarderChat(){
+ localStorage.setItem(CLE_CHAT,JSON.stringify(historique.slice(-40)));
+}
+function sauvegarderMemoire(){
+ localStorage.setItem(CLE_MEMOIRE,JSON.stringify(memoireLocale));
+ actualiserCompteurMemoire();
+}
+function actualiserCompteurMemoire(){
+ $("memory-count").textContent=memoireLocale.length+" souvenir(s) local(aux)";
 }
 
-function ouvrirOnglet(id,bouton){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  element(id).classList.add("active");
-  if(bouton)bouton.classList.add("active");
-  if(id==="performances")actualiserPerformances();
-  if(id==="automatisations")afficherAutomatisations();
-  if(id==="telephone")actualiserTelephone();
-  if(id==="parametres")actualiserSouvenirs();
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function allerPage(nom){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+ const page=$("page-"+nom);
+ if(page)page.classList.add("active");
+ const bouton=document.querySelector('[data-page="'+nom+'"]');
+ if(bouton)bouton.classList.add("active");
+ if(nom==="agenda")afficherRappels();
+ if(nom==="settings")actualiserCompteurMemoire();
+ if(nom==="assistant")setTimeout(()=>$("chat-input").focus(),100);
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function envoyerTexte(texte){
-  element("question").value=texte;
-  envoyer();
+function ouvrirLien(url){
+ window.open(url,"_blank","noopener,noreferrer");
 }
 
-/* HORLOGE */
+/* =========================================================
+   TABLEAU DE BORD
+========================================================= */
 
 function actualiserHorloge(){
-  const maintenant=new Date();
-  element("clock").textContent=maintenant.toLocaleTimeString("fr-FR");
-  element("date").textContent=maintenant.toLocaleDateString("fr-FR");
+ const d=new Date();
+ $("clock").textContent=d.toLocaleTimeString("fr-FR");
+ $("date").textContent=d.toLocaleDateString("fr-FR");
 }
 setInterval(actualiserHorloge,1000);
 actualiserHorloge();
 
-/* SUPABASE */
+if(navigator.getBattery){
+ navigator.getBattery().then(b=>{
+  const maj=()=>{$("battery").textContent=Math.round(b.level*100)+" %"};
+  maj();b.addEventListener("levelchange",maj);
+ }).catch(()=>$("battery").textContent="Indisponible");
+}else $("battery").textContent="Indisponible";
 
-async function initialiserSupabase(){
-  try{
-    const r=await fetch("/api/config");
-    if(!r.ok)throw new Error("Configuration serveur indisponible.");
-    const config=await r.json();
-    if(!config.url||!config.key)throw new Error("Configuration Supabase incomplète.");
-    if(!window.supabase)throw new Error("Bibliothèque Supabase indisponible.");
-    client=window.supabase.createClient(config.url,config.key);
-    await verifierSession();
-    element("memoryState").textContent=utilisateur?"CONNECTÉ":"LOCAL";
-  }catch(e){
-    element("memoryState").textContent="LOCAL";
-    console.warn("Supabase :",e.message);
-  }
+function actualiserConnexion(){
+ const enLigne=navigator.onLine;
+ $("connection").textContent=enLigne?"EN LIGNE":"HORS LIGNE";
+ $("network-status").textContent=enLigne?"Internet disponible":"Connexion absente";
+ $("network-status").style.color=enLigne?"var(--green)":"var(--red)";
+}
+window.addEventListener("online",actualiserConnexion);
+window.addEventListener("offline",actualiserConnexion);
+actualiserConnexion();
+
+/* =========================================================
+   CONNEXION API ET SUPABASE
+========================================================= */
+
+async function initialiserServices(){
+ try{
+  const r=await fetch("/api/config",{cache:"no-store"});
+  if(!r.ok)throw new Error("Configuration serveur indisponible");
+  const config=await r.json();
+  if(config.url&&config.key&&window.supabase){
+   clientSupabase=window.supabase.createClient(config.url,config.key);
+   $("supabase-state").textContent="CONFIGURÉ";
+   $("supabase-state").className="tag good";
+   $("settings-supabase").textContent="CONFIGURÉ";
+   const {data}=await clientSupabase.auth.getSession();
+   utilisateur=data.session?.user||null;
+   actualiserCompte();
+   if(utilisateur)await chargerSouvenirsDistants();
+  }else throw new Error("Configuration Supabase incomplète");
+ }catch(e){
+  $("supabase-state").textContent="NON CONNECTÉ";
+  $("supabase-state").className="tag warn";
+  $("settings-supabase").textContent="NON CONNECTÉ";
+ }
+ $("ia-state").textContent=navigator.onLine?"PRÊTE À TESTER":"HORS LIGNE";
+ $("ia-state").className="tag";
+}
+initialiserServices();
+
+async function connexionSupabase(){
+ if(!clientSupabase){alerte("Supabase n'est pas configuré.");return}
+ const email=$("account-email").value.trim();
+ if(!email||!email.includes("@")){alerte("Entrez une adresse e-mail valide.");return}
+ try{
+  const {error}=await clientSupabase.auth.signInWithOtp({
+   email,
+   options:{emailRedirectTo:location.origin}
+  });
+  if(error)throw error;
+  $("account-status").textContent="Lien de connexion envoyé. Consultez votre boîte e-mail.";
+ }catch(e){$("account-status").textContent="Erreur : "+e.message}
 }
 
-async function verifierSession(){
-  if(!client)return;
-  const {data,error}=await client.auth.getSession();
-  if(error)throw error;
-  utilisateur=data.session?.user||null;
-  actualiserCompte();
-  if(utilisateur)await actualiserSouvenirs();
+async function deconnexionSupabase(){
+ if(!clientSupabase)return;
+ await clientSupabase.auth.signOut();
+ utilisateur=null;
+ $("account-status").textContent="Déconnecté.";
 }
 
 function actualiserCompte(){
-  element("login").style.display=utilisateur?"none":"block";
-  element("account").style.display=utilisateur?"block":"none";
-  element("accountEmail").textContent=utilisateur?.email||"";
-  element("memoryState").textContent=utilisateur?"CONNECTÉ":"LOCAL";
+ $("account-status").textContent=utilisateur?
+ "Connecté : "+utilisateur.email:"Compte non connecté.";
 }
 
-async function connecter(){
-  if(!client){element("loginError").textContent="Service mémoire indisponible.";return}
-  const email=element("email").value.trim();
-  const password=element("password").value;
-  if(!email||!password){element("loginError").textContent="Remplissez les deux champs.";return}
-  element("loginButton").disabled=true;
-  try{
-    const {data,error}=await client.auth.signInWithPassword({email,password});
-    if(error)throw error;
-    utilisateur=data.user;
-    actualiserCompte();
-    await actualiserSouvenirs();
-    element("loginError").textContent="";
-  }catch(e){element("loginError").textContent=e.message}
-  finally{element("loginButton").disabled=false}
-}
-
-async function deconnecter(){
-  if(!client)return;
-  const {error}=await client.auth.signOut();
-  if(error){ajouterMessage(error.message,"system");return}
-  utilisateur=null;
-  actualiserCompte();
-  element("memoryList").textContent="Connectez-vous pour consulter vos souvenirs.";
-}
-
-async function actualiserSouvenirs(){
-  if(!client||!utilisateur){
-    element("memoryList").textContent="Connectez-vous pour consulter la mémoire cloud.";
-    return;
-  }
-  try{
-    const {data,error}=await client.from("jarvis_memory")
-      .select("id,memory,category,created_at")
-      .eq("owner_id",utilisateur.id)
-      .order("created_at",{ascending:false})
-      .limit(50);
-    if(error)throw error;
-    const zone=element("memoryList");
-    zone.replaceChildren();
-    if(!data?.length){zone.textContent="Aucun souvenir enregistré.";return}
-    data.forEach(s=>{
-      const carte=document.createElement("div");
-      carte.className="card-memory";
-      const contenu=document.createElement("p");
-      contenu.textContent=s.memory;
-      const categorie=document.createElement("small");
-      categorie.className="muted";
-      categorie.textContent=s.category||"Général";
-      const actions=document.createElement("div");
-      actions.className="actions";
-      const modifier=document.createElement("button");
-      modifier.textContent="MODIFIER";
-      modifier.onclick=()=>modifierSouvenir(s);
-      const supprimer=document.createElement("button");
-      supprimer.textContent="SUPPRIMER";
-      supprimer.className="danger";
-      supprimer.onclick=()=>supprimerSouvenir(s.id);
-      actions.append(modifier,supprimer);
-      carte.append(contenu,categorie,actions);
-      zone.appendChild(carte);
-    });
-  }catch(e){element("memoryList").textContent="Erreur mémoire : "+e.message}
+async function chargerSouvenirsDistants(){
+ if(!clientSupabase||!utilisateur)return;
+ try{
+  const {data,error}=await clientSupabase.from("jarvis_memory")
+   .select("id,memory,category,created_at")
+   .eq("owner_id",utilisateur.id)
+   .order("created_at",{ascending:false}).limit(50);
+  if(error)throw error;
+  data.forEach(item=>{
+   if(!memoireLocale.some(m=>m.texte===item.memory)){
+    memoireLocale.push({texte:item.memory,source:"supabase",date:item.created_at});
+   }
+  });
+  sauvegarderMemoire();
+ }catch(e){console.warn("Mémoire distante :",e.message)}
 }
 
 async function enregistrerSouvenir(texte){
-  if(!client||!utilisateur){
-    ajouterMessage("Connectez-vous pour enregistrer un souvenir permanent, Monsieur.","jarvis");
-    return;
-  }
-  const {error}=await client.from("jarvis_memory").insert({
-    owner_id:utilisateur.id,memory:texte,category:"general"
-  });
-  if(error)throw error;
-  ajouterMessage("Souvenir enregistré dans ma mémoire, Monsieur.","jarvis");
-  await actualiserSouvenirs();
+ const propre=texte.trim();
+ if(!propre)return;
+ if(memoireLocale.some(m=>m.texte.toLowerCase()===propre.toLowerCase())){
+  ajouterMessage("Cette information est déjà dans ma mémoire.","jarvis");return;
+ }
+ memoireLocale.unshift({texte:propre,date:new Date().toISOString()});
+ sauvegarderMemoire();
+ if(clientSupabase&&utilisateur){
+  try{
+   const {error}=await clientSupabase.from("jarvis_memory").insert({
+    memory:propre,category:"personnel",owner_id:utilisateur.id
+   });
+   if(error)console.warn("Synchronisation mémoire :",error.message);
+  }catch(e){console.warn(e)}
+ }
+ ajouterMessage("Information enregistrée dans ma mémoire, Monsieur.","jarvis");
 }
 
-async function modifierSouvenir(s){
-  const nouveau=prompt("Modifier ce souvenir :",s.memory);
-  if(nouveau===null)return;
-  if(!nouveau.trim())return alert("Le souvenir ne peut pas être vide.");
-  const {error}=await client.from("jarvis_memory").update({memory:nouveau.trim()})
-    .eq("id",s.id).eq("owner_id",utilisateur.id);
-  if(error){alert("Erreur : "+error.message);return}
-  await actualiserSouvenirs();
+function chercherSouvenir(question){
+ const mots=question.toLowerCase().split(/\W+/).filter(m=>m.length>3);
+ return memoireLocale.filter(s=>
+  mots.some(m=>s.texte.toLowerCase().includes(m))
+ ).slice(0,5);
 }
 
-async function supprimerSouvenir(id){
-  if(!confirm("Supprimer définitivement ce souvenir ?"))return;
-  const {error}=await client.from("jarvis_memory").delete()
-    .eq("id",id).eq("owner_id",utilisateur.id);
-  if(error){alert("Erreur : "+error.message);return}
-  await actualiserSouvenirs();
+function afficherSouvenirs(){
+ const zone=$("memory-list");
+ zone.innerHTML="";
+ if(!memoireLocale.length){zone.textContent="Aucun souvenir enregistré.";return}
+ memoireLocale.forEach((m,i)=>{
+  const div=document.createElement("div");div.className="list-item";
+  const span=document.createElement("span");span.textContent=m.texte;
+  const btn=document.createElement("button");btn.className="danger";btn.textContent="×";
+  btn.onclick=()=>{memoireLocale.splice(i,1);sauvegarderMemoire();afficherSouvenirs()};
+  div.append(span,btn);zone.appendChild(div);
+ });
+}
+async function effacerSouvenirs(){
+ if(!confirm("Effacer les souvenirs enregistrés localement ?"))return;
+ memoireLocale.splice(0,memoireLocale.length);
+ sauvegarderMemoire();afficherSouvenirs();
 }
 
-/* MÉMOIRE PAR COMMANDE */
+/* =========================================================
+   CHAT ET INTELLIGENCE ARTIFICIELLE
+========================================================= */
+
+function ajouterMessage(texte,type="jarvis"){
+ const zone=$("messages");
+ const div=document.createElement("div");
+ div.className="message "+type;
+ div.textContent=texte;
+ zone.appendChild(div);
+ zone.scrollTop=zone.scrollHeight;
+ if(type==="jarvis")dernierTexte=texte;
+}
+
+function systemePrompt(){
+ const souvenirs=memoireLocale.slice(0,30).map(m=>"- "+m.texte).join("\n");
+ const nom=localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S";
+ return `Tu es ${nom}, un assistant personnel inspiré d'une interface futuriste Stark Industries.
+Tu réponds toujours en français, avec politesse et précision. Tu appelles l'utilisateur "Monsieur".
+Tu comprends les fautes de frappe. Tu ne prétends jamais avoir effectué une action que tu ne peux pas faire.
+Tu expliques clairement les limites d'une application web sur iPhone.
+Tu ne prétends pas lire les SMS, contrôler les autres applications ou effectuer un scan antivirus.
+Si l'utilisateur dit "Jarvis ?", réponds exactement : "Système Stark opérationnel. Code JARVIS-3000 accepté."
+Souvenirs disponibles :
+${souvenirs||"Aucun souvenir enregistré."}`;
+}
 
 function traiterCommandeMemoire(texte){
-  const t=texte.trim();
-  const commandes=["retiens que ","souviens-toi que ","mémorise que ","memorise que "];
-  for(const cmd of commandes){
-    if(t.toLowerCase().startsWith(cmd)){
-      const souvenir=t.slice(cmd.length).trim();
-      if(!souvenir)return true;
-      if(/mot de passe|code bancaire|numéro de carte|adresse exacte|diagnostic médical/i.test(souvenir)){
-        ajouterMessage("Je ne peux pas enregistrer ce type d'information sensible, Monsieur.","jarvis");
-        return true;
-      }
-      enregistrerSouvenir(souvenir).catch(e=>ajouterMessage("Erreur mémoire : "+e.message,"system"));
-      return true;
-    }
+ const t=texte.trim();
+ const commandes=["retiens que ","souviens-toi que ","mémorise que ","memorise que "];
+ const bas=t.toLowerCase();
+ for(const cmd of commandes){
+  if(bas.startsWith(cmd)){
+   enregistrerSouvenir(t.slice(cmd.length));return true;
   }
-  if(t.toLowerCase().startsWith("oublie ")){
-    ajouterMessage("Pour supprimer un souvenir, ouvrez Paramètres puis Mémoire et utilisez SUPPRIMER.","jarvis");
-    return true;
-  }
-  return false;
+ }
+ if(bas==="que sais-tu de moi ?"||bas==="qu'est-ce que tu sais de moi ?"){
+  const liste=memoireLocale.slice(0,20).map(m=>"• "+m.texte).join("\n");
+  ajouterMessage(liste||"Je n'ai pas encore de souvenirs enregistrés.", "jarvis");
+  return true;
+ }
+ return false;
 }
 
-/* CHAT ÉCRIT */
-
-async function recupererSouvenirsPourIA(){
-  if(!client||!utilisateur)return "Aucun souvenir cloud disponible.";
-  try{
-    const {data,error}=await client.from("jarvis_memory").select("memory")
-      .eq("owner_id",utilisateur.id)
-      .order("created_at",{ascending:false}).limit(15);
-    if(error)throw error;
-    return (data||[]).map(x=>x.memory).join(" ; ")||"Aucun souvenir.";
-  }catch(e){return "Mémoire temporairement indisponible."}
-}
-
-function construireSysteme(souvenirs){
-  return {
-    role:"system",
-    content:
-      "Tu es J.A.R.V.I.S, assistant personnel inspiré de l'univers Stark. "+
-      "Tu réponds toujours en français, avec politesse et précision. "+
-      "Tu appelles l'utilisateur Monsieur. "+
-      "Tu es honnête sur tes capacités et tu ne prétends jamais contrôler un appareil, "+
-      "lire des SMS ou analyser des fichiers sans intégration réelle. "+
-      "Tu comprends les fautes d'orthographe. "+
-      "Souvenirs connus : "+souvenirs
-  };
-}
-
-async function appelerIA(messages){
-  const reponse=await fetch("/api/chat",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({messages})
-  });
-  const donnees=await reponse.json();
-  if(!reponse.ok)throw new Error(donnees.details||donnees.error||"Erreur serveur.");
-  if(!donnees.reply)throw new Error("Aucune réponse reçue.");
-  return String(donnees.reply);
+async function appelerIA(texte,contexte=[]){
+ if(!navigator.onLine)throw new Error("Connexion Internet nécessaire.");
+ const messagesIA=[
+  {role:"system",content:systemePrompt()},
+  ...contexte.slice(-12),
+  {role:"user",content:texte}
+ ];
+ const reponse=await fetch("/api/chat",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({messages:messagesIA})
+ });
+ const donnees=await reponse.json();
+ if(!reponse.ok)throw new Error(donnees.details||donnees.error||"Erreur serveur");
+ if(!donnees.reply)throw new Error("Aucune réponse reçue.");
+ return donnees.reply;
 }
 
 async function envoyer(){
-  if(envoiEnCours)return;
-  const champ=element("question");
-  const texte=champ.value.trim();
-  if(!texte)return;
-  champ.value="";
-  ajouterMessage(texte,"user");
-  if(traiterCommandeMemoire(texte))return;
+ const champ=$("chat-input");
+ const texte=champ.value.trim();
+ if(!texte)return;
+ champ.value="";
+ ajouterMessage(texte,"user");
+ if(traiterCommandeMemoire(texte))return;
+ const contexte=historique.slice(-12);
+ ajouterMessage("Analyse en cours...","system");
+ try{
+  const reponse=await appelerIA(texte,contexte);
+  const dernier=$("messages").lastElementChild;
+  if(dernier?.classList.contains("system"))dernier.remove();
+  ajouterMessage(reponse,"jarvis");
+  historique.push({role:"user",content:texte},{role:"assistant",content:reponse});
+  sauvegarderChat();
+  if(lectureActive)parler(reponse);
+ }catch(e){
+  const dernier=$("messages").lastElementChild;
+  if(dernier?.classList.contains("system"))dernier.remove();
+  ajouterMessage("Erreur : "+e.message,"jarvis");
+ }
+}
+$("chat-input").addEventListener("keydown",e=>{
+ if(e.key==="Enter")envoyer();
+});
+function commandeRapide(t){$("chat-input").value=t;envoyer()}
+function effacerChat(){
+ if(!confirm("Effacer l'historique de cette conversation ?"))return;
+ historique=[];sauvegarderChat();
+ $("messages").innerHTML="";
+ ajouterMessage("Historique effacé. Je suis prêt, Monsieur.","jarvis");
+}
 
-  envoiEnCours=true;
-  element("send").disabled=true;
-  element("systemState").textContent="TRAITEMENT DE LA DEMANDE...";
+/* =========================================================
+   SYNTHÈSE VOCALE ET RECONNAISSANCE
+========================================================= */
+
+function parler(texte){
+ if(!lectureActive||!window.speechSynthesis)return;
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(texte);
+ u.lang="fr-FR";u.rate=1;u.pitch=1;
+ const voix=speechSynthesis.getVoices();
+ const fr=voix.find(v=>v.lang==="fr-FR");
+ if(fr)u.voice=fr;
+ speechSynthesis.speak(u);
+}
+function lireDerniereReponse(){
+ if(dernierTexte)parler(dernierTexte);
+}
+function basculerLecture(){
+ lectureActive=!lectureActive;
+ localStorage.setItem(CLE_TTS,String(lectureActive));
+ if(!lectureActive&&speechSynthesis)speechSynthesis.cancel();
+ alerte("Lecture vocale "+(lectureActive?"activée":"désactivée")+".");
+}
+
+function creerReconnaissance(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR)return null;
+ const r=new SR();r.lang="fr-FR";r.interimResults=false;r.continuous=false;
+ return r;
+}
+function demarrerMicro(){
+ const r=creerReconnaissance();
+ if(!r){alerte("Reconnaissance vocale non prise en charge par ce navigateur.");return}
+ r.onresult=e=>{
+  const texte=e.results[0][0].transcript;
+  $("chat-input").value=texte;envoyer();
+ };
+ r.onerror=e=>alerte("Microphone : "+e.error);
+ try{r.start()}catch(e){alerte("Impossible de démarrer le microphone.")}
+}
+
+async function demarrerConversationVocale(){
+ reconnaissance=creerReconnaissance();
+ if(!reconnaissance){alerte("La reconnaissance vocale n'est pas disponible ici.");return}
+ if(vocalActif)return;
+ vocalActif=true;
+ $("voice-status").textContent="ÉCOUTE ACTIVE";
+ $("voice-caption").textContent="Je vous écoute, Monsieur.";
+ $("voice-orb").classList.add("listening");
+ ecouterProchainePhrase();
+}
+function ecouterProchainePhrase(){
+ if(!vocalActif||!reconnaissance)return;
+ reconnaissance.onresult=async e=>{
+  const texte=e.results[0][0].transcript;
+  $("voice-caption").textContent="Vous : "+texte;
+  $("voice-status").textContent="ANALYSE";
+  $("voice-orb").classList.remove("listening");
+  if(traiterCommandeMemoireVocale(texte)){
+   if(vocalActif&&$("voice-auto").checked)setTimeout(ecouterProchainePhrase,500);
+   return;
+  }
   try{
-    const souvenirs=await recupererSouvenirsPourIA();
-    const messagesIA=[construireSysteme(souvenirs),...messagesConversation.slice(-10),{role:"user",content:texte}];
-    const reponse=await appelerIA(messagesIA);
-    ajouterMessage(reponse,"jarvis");
-    messagesConversation.push({role:"user",content:texte},{role:"assistant",content:reponse});
-    messagesConversation=messagesConversation.slice(-12);
-    localStorage.setItem(CLE_CONVERSATION,JSON.stringify(messagesConversation));
-    if(voixActive)lireReponse(reponse);
-  }catch(e){ajouterMessage("Impossible de contacter le serveur : "+e.message,"system")}
-  finally{
-    envoiEnCours=false;
-    element("send").disabled=false;
-    element("systemState").textContent="SYSTÈME OPÉRATIONNEL";
+   const reponse=await appelerIA(texte,historique.slice(-10));
+   historique.push({role:"user",content:texte},{role:"assistant",content:reponse});
+   sauvegarderChat();
+   $("voice-caption").textContent=reponse;
+   $("voice-status").textContent="RÉPONSE";
+   if($("voice-tts").checked&&lectureActive){
+    parlerVocal(reponse);
+   }else if(vocalActif&&$("voice-auto").checked){
+    setTimeout(ecouterProchainePhrase,500);
+   }
+  }catch(err){
+   $("voice-caption").textContent="Erreur : "+err.message;
+   if(vocalActif&&$("voice-auto").checked)setTimeout(ecouterProchainePhrase,1000);
   }
-}
-
-function effacer(){
-  if(!confirm("Effacer la conversation affichée ?"))return;
-  element("messages").replaceChildren();
-  messagesConversation=[];
-  localStorage.removeItem(CLE_CONVERSATION);
-}
-
-/* SYNTHÈSE VOCALE CLASSIQUE */
-
-function choisirVoixFrancaise(){
-  if(!window.speechSynthesis)return;
-  const voix=window.speechSynthesis.getVoices();
-  voixFrancaise=
-    voix.find(v=>v.lang==="fr-FR"&&/Henri|Thomas|Paul|Claude/i.test(v.name))||
-    voix.find(v=>v.lang==="fr-FR")||
-    voix.find(v=>v.lang.startsWith("fr"))||null;
-}
-if(window.speechSynthesis){
-  choisirVoixFrancaise();
-  window.speechSynthesis.onvoiceschanged=choisirVoixFrancaise;
-}
-
-function basculerVoix(){
-  voixActive=!voixActive;
-  localStorage.setItem("jarvis_voice",String(voixActive));
-  element("voiceToggle").textContent="LECTURE VOCALE : "+(voixActive?"ON":"OFF");
-  if(!voixActive)arreterVoix();
-}
-
-function lireReponse(texte){
-  if(!voixActive||!window.speechSynthesis)return;
-  window.speechSynthesis.cancel();
-  const phrase=new SpeechSynthesisUtterance(texte);
-  phrase.lang="fr-FR";
-  if(voixFrancaise)phrase.voice=voixFrancaise;
-  phrase.rate=1;
-  window.speechSynthesis.speak(phrase);
-}
-
-function arreterVoix(){
-  if(window.speechSynthesis)window.speechSynthesis.cancel();
-}
-
-function parler(){
-  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition){ajouterMessage("Reconnaissance vocale indisponible.","system");return}
-  const rec=new Recognition();
-  rec.lang="fr-FR";
-  rec.interimResults=false;
-  rec.onresult=e=>{
-    element("question").value=e.results[0][0].transcript;
-    envoyer();
-  };
-  rec.onerror=e=>ajouterMessage("Erreur vocale : "+e.error,"system");
-  rec.start();
-}
-
-/* NOUVEAU MODE CONVERSATION VOCALE */
-
-let conversationVocaleActive=false;
-let microVocalActif=true;
-let traitementVocal=false;
-let paroleVocaleEnCours=false;
-let reconnaissanceVocale=null;
-let historiqueVocal=[];
-let ecouteVocaleEnCours=false;
-let identifiantSessionVocale=0;
-let temporisationEcoute=null;
-
-function changerEtatOrb(etat){
-  const orb=element("jarvis-orb");
-  orb.classList.remove("listening","speaking","muted");
-  if(etat==="speaking"){
-    orb.classList.add("speaking");
-    element("call-state").textContent="J.A.R.V.I.S RÉPOND";
-  }else if(etat==="muted"){
-    orb.classList.add("muted");
-    element("call-state").textContent="MICROPHONE DÉSACTIVÉ";
-  }else{
-    orb.classList.add("listening");
-    element("call-state").textContent="JE VOUS ÉCOUTE";
+ };
+ reconnaissance.onerror=()=>{
+  if(vocalActif){$("voice-status").textContent="MICRO INDISPONIBLE";arreterConversationVocale()}
+ };
+ reconnaissance.onend=()=>{
+  if(vocalActif&&$("voice-status").textContent==="ÉCOUTE ACTIVE"){
+   setTimeout(ecouterProchainePhrase,300);
   }
+ };
+ try{reconnaissance.start()}catch(e){
+  vocalActif=false;$("voice-status").textContent="ERREUR MICRO";
+ }
 }
-
-function afficherTexteVocal(texte){
-  element("call-transcript").textContent=texte;
-}
-
-function ouvrirModeVocal(){
-  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition){
-    alert("La reconnaissance vocale n'est pas prise en charge par ce navigateur. Essayez Safari ou Chrome à jour.");
-    return;
+function parlerVocal(texte){
+ if(!window.speechSynthesis){if(vocalActif&&$("voice-auto").checked)ecouterProchainePhrase();return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(texte);u.lang="fr-FR";
+ const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
+ if(fr)u.voice=fr;
+ u.onend=()=>{
+  if(vocalActif&&$("voice-auto").checked){
+   $("voice-status").textContent="ÉCOUTE ACTIVE";
+   $("voice-orb").classList.add("listening");
+   setTimeout(ecouterProchainePhrase,400);
   }
-  if(!window.speechSynthesis){
-    alert("La synthèse vocale n'est pas disponible sur cet appareil.");
-    return;
-  }
-
-  identifiantSessionVocale++;
-  conversationVocaleActive=true;
-  microVocalActif=true;
-  traitementVocal=false;
-  paroleVocaleEnCours=false;
-  historiqueVocal=[];
-  element("voice-call").classList.add("open");
-  element("voice-call").setAttribute("aria-hidden","false");
-  element("call-mic").textContent="🎙️";
-  element("call-mic").classList.remove("muted-button");
-  afficherTexteVocal("Connexion au canal vocal...");
-  window.speechSynthesis.cancel();
-  demarrerEcouteVocale();
+ };
+ u.onerror=()=>{if(vocalActif&&$("voice-auto").checked)ecouterProchainePhrase()};
+ speechSynthesis.speak(u);
 }
+function traiterCommandeMemoireVocale(texte){
+ const t=texte.trim(),b=t.toLowerCase();
+ for(const cmd of ["retiens que ","souviens-toi que ","mémorise que ","memorise que "]){
+  if(b.startsWith(cmd)){enregistrerSouvenir(t.slice(cmd.length));return true}
+ }
+ return false;
+}
+function arreterConversationVocale(){
+ vocalActif=false;
+ if(reconnaissance){try{reconnaissance.abort()}catch(e){}}
+ if(window.speechSynthesis)speechSynthesis.cancel();
+ $("voice-status").textContent="MODE VOCAL ARRÊTÉ";
+ $("voice-caption").textContent="Conversation terminée.";
+ $("voice-orb").classList.remove("listening");
+}
+function ouvrirModeVocal(){allerPage("vocal");demarrerConversationVocale()}
 
-function demarrerEcouteVocale(){
-  if(!conversationVocaleActive||!microVocalActif||traitementVocal||paroleVocaleEnCours||ecouteVocaleEnCours)return;
+/* =========================================================
+   AGENDA ET RAPPELS
+========================================================= */
 
-  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition)return;
+function sauvegarderRappels(){
+ localStorage.setItem(CLE_RAPPELS,JSON.stringify(rappels));
+}
+function ajouterRappel(){
+ const titre=$("reminder-title").value.trim();
+ const date=$("reminder-date").value;
+ if(!titre||!date){alerte("Indiquez un titre et une date.");return}
+ const timestamp=new Date(date).getTime();
+ if(!Number.isFinite(timestamp)||timestamp<=Date.now()){
+  alerte("Choisissez une date future.");return;
+ }
+ rappels.push({id:Date.now(),titre,date,fait:false});
+ sauvegarderRappels();afficherRappels();
+ $("reminder-title").value="";$("reminder-date").value="";
+}
+function afficherRappels(){
+ const zone=$("reminder-list");zone.innerHTML="";
+ if(!rappels.length){zone.textContent="Aucun rappel.";return}
+ rappels.sort((a,b)=>new Date(a.date)-new Date(b.date));
+ rappels.forEach(r=>{
+  const div=document.createElement("div");div.className="list-item";
+  const txt=document.createElement("div");
+  const strong=document.createElement("strong");strong.textContent=r.titre;
+  const date=document.createElement("div");date.className="small";
+  date.textContent=new Date(r.date).toLocaleString("fr-FR");
+  txt.append(strong,date);
+  const actions=document.createElement("div");
+  const done=document.createElement("button");done.textContent=r.fait?"À faire":"Terminé";
+  done.onclick=()=>{r.fait=!r.fait;sauvegarderRappels();afficherRappels()};
+  const del=document.createElement("button");del.className="danger";del.textContent="×";
+  del.onclick=()=>{const i=rappels.findIndex(x=>x.id===r.id);if(i>=0)rappels.splice(i,1);sauvegarderRappels();afficherRappels()};
+  actions.append(done,del);div.append(txt,actions);zone.append(div);
+ });
+}
+async function demanderNotifications(){
+ if(!("Notification" in window)){alerte("Notifications non prises en charge.");return}
+ const p=await Notification.requestPermission();
+ alerte("Autorisation des notifications : "+p);
+}
+function verifierRappels(){
+ const maintenant=Date.now();
+ rappels.forEach(r=>{
+  if(!r.fait&&!r.notifie&&new Date(r.date).getTime()<=maintenant){
+   r.notifie=true;r.fait=true;
+   if("Notification" in window&&Notification.permission==="granted"){
+    new Notification("J.A.R.V.I.S — Rappel",{body:r.titre});
+   }else{
+    alerte("Rappel : "+r.titre);
+   }
+   sauvegarderRappels();
+  }
+ });
+}
+minuterieRappels=setInterval(verifierRappels,15000);
+afficherRappels();
 
+/* =========================================================
+   MÉTÉO OPEN-METEO
+========================================================= */
+
+async function chargerMeteo(){
+ const zone=$("weather-result");
+ zone.textContent="Recherche de votre position...";
+ if(!navigator.geolocation){zone.textContent="Géolocalisation non disponible.";return}
+ navigator.geolocation.getCurrentPosition(async pos=>{
   try{
-    reconnaissanceVocale=new Recognition();
-    reconnaissanceVocale.lang="fr-FR";
-    reconnaissanceVocale.continuous=false;
-    reconnaissanceVocale.interimResults=true;
-    reconnaissanceVocale.maxAlternatives=1;
-
-    const session=identifiantSessionVocale;
-    ecouteVocaleEnCours=true;
-    changerEtatOrb("listening");
-
-    reconnaissanceVocale.onresult=e=>{
-      if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-
-      let phraseFinale="";
-      let phraseTemporaire="";
-
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        const phrase=e.results[i][0].transcript;
-        if(e.results[i].isFinal)phraseFinale+=phrase;
-        else phraseTemporaire+=phrase;
-      }
-
-      if(phraseTemporaire)afficherTexteVocal(phraseTemporaire);
-      if(phraseFinale.trim()){
-        traitementVocal=true;
-        afficherTexteVocal(phraseFinale.trim());
-        try{reconnaissanceVocale.stop()}catch(err){}
-        traiterMessageVocal(phraseFinale.trim(),session);
-      }
-    };
-
-    reconnaissanceVocale.onerror=e=>{
-      if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-      if(e.error==="not-allowed"||e.error==="service-not-allowed"){
-        microVocalActif=false;
-        element("call-mic").textContent="🔇";
-        element("call-mic").classList.add("muted-button");
-        changerEtatOrb("muted");
-        afficherTexteVocal("Autorisation du microphone refusée. Vérifiez les réglages du navigateur.");
-      }else if(e.error!=="no-speech"&&e.error!=="aborted"){
-        afficherTexteVocal("Problème de reconnaissance vocale : "+e.error);
-      }
-    };
-
-    reconnaissanceVocale.onend=()=>{
-      ecouteVocaleEnCours=false;
-      reconnaissanceVocale=null;
-
-      if(conversationVocaleActive&&microVocalActif&&!traitementVocal&&!paroleVocaleEnCours&&session===identifiantSessionVocale){
-        temporisationEcoute=setTimeout(demarrerEcouteVocale,450);
-      }
-    };
-
-    reconnaissanceVocale.start();
-  }catch(e){
-    ecouteVocaleEnCours=false;
-    reconnaissanceVocale=null;
-    afficherTexteVocal("Impossible de démarrer le microphone. Vérifiez son autorisation.");
-  }
+   const lat=pos.coords.latitude,lon=pos.coords.longitude;
+   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
+   const r=await fetch(url);
+   if(!r.ok)throw new Error("Service météo indisponible");
+   const d=await r.json(),c=d.current;
+   zone.innerHTML="";
+   const titre=document.createElement("h2");titre.textContent="CONDITIONS ACTUELLES";
+   const temp=document.createElement("div");temp.className="morse-output";temp.textContent=Math.round(c.temperature_2m)+" °C";
+   const details=document.createElement("p");
+   details.textContent="Ressenti : "+Math.round(c.apparent_temperature)+" °C · Humidité : "+c.relative_humidity_2m+" % · Vent : "+c.wind_speed_10m+" km/h";
+   zone.append(titre,temp,details);
+   d.daily.time.forEach((jour,i)=>{
+    const p=document.createElement("p");
+    p.textContent=new Date(jour+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+
+    " : "+Math.round(d.daily.temperature_2m_min[i])+" à "+Math.round(d.daily.temperature_2m_max[i])+" °C";
+    zone.append(p);
+   });
+  }catch(e){zone.textContent="Erreur météo : "+e.message}
+ },err=>{zone.textContent="Position non autorisée ou indisponible : "+err.message},
+ {enableHighAccuracy:false,timeout:10000});
 }
 
-async function traiterMessageVocal(texte,session){
-  if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-
-  if(traiterCommandeMemoireVocale(texte,session))return;
-
-  try{
-    afficherTexteVocal("Analyse de votre demande...");
-    const souvenirs=await recupererSouvenirsPourIA();
-    if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-
-    const messagesIA=[
-      construireSysteme(souvenirs),
-      ...historiqueVocal.slice(-10),
-      {role:"user",content:texte}
-    ];
-
-    const reponse=await appelerIA(messagesIA);
-    if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-
-    historiqueVocal.push(
-      {role:"user",content:texte},
-      {role:"assistant",content:reponse}
-    );
-    historiqueVocal=historiqueVocal.slice(-12);
-
-    parlerDansConversation(reponse,session);
-
-  }catch(e){
-    if(conversationVocaleActive&&session===identifiantSessionVocale){
-      parlerDansConversation("Je rencontre un problème de connexion au serveur, Monsieur.",session);
-      console.error(e);
-    }
-  }
+function rechercherInternet(){
+ const q=$("search-input").value.trim();
+ if(!q)return;
+ ouvrirLien("https://www.google.com/search?q="+encodeURIComponent(q));
 }
 
-function traiterCommandeMemoireVocale(texte,session){
-  const t=texte.trim();
-  const commandes=["retiens que ","souviens-toi que ","mémorise que ","memorise que "];
-
-  for(const cmd of commandes){
-    if(t.toLowerCase().startsWith(cmd)){
-      const souvenir=t.slice(cmd.length).trim();
-      if(!souvenir){
-        parlerDansConversation("Quel souvenir souhaitez-vous enregistrer, Monsieur ?",session);
-        return true;
-      }
-      if(/mot de passe|code bancaire|numéro de carte|adresse exacte|diagnostic médical/i.test(souvenir)){
-        parlerDansConversation("Je ne peux pas enregistrer ce type d'information sensible, Monsieur.",session);
-        return true;
-      }
-      enregistrerSouvenir(souvenir).then(()=>{
-        if(conversationVocaleActive&&session===identifiantSessionVocale){
-          parlerDansConversation("C'est enregistré dans ma mémoire, Monsieur.",session);
-        }
-      }).catch(()=>{
-        parlerDansConversation("Je n'ai pas réussi à enregistrer ce souvenir, Monsieur.",session);
-      });
-      return true;
-    }
-  }
-  return false;
-}
-
-function parlerDansConversation(texte,session){
-  if(!conversationVocaleActive||session!==identifiantSessionVocale)return;
-
-  if(temporisationEcoute){
-    clearTimeout(temporisationEcoute);
-    temporisationEcoute=null;
-  }
-
-  if(reconnaissanceVocale){
-    try{reconnaissanceVocale.stop()}catch(e){}
-  }
-
-  ecouteVocaleEnCours=false;
-  paroleVocaleEnCours=true;
-  traitementVocal=true;
-  changerEtatOrb("speaking");
-  afficherTexteVocal(texte);
-
-  window.speechSynthesis.cancel();
-
-  const phrase=new SpeechSynthesisUtterance(texte);
-  phrase.lang="fr-FR";
-  if(voixFrancaise)phrase.voice=voixFrancaise;
-  phrase.rate=1;
-  phrase.pitch=1;
-
-  phrase.onend=()=>{
-    if(session!==identifiantSessionVocale)return;
-    paroleVocaleEnCours=false;
-    traitementVocal=false;
-
-    if(conversationVocaleActive&&microVocalActif){
-      afficherTexteVocal("Je vous écoute, Monsieur.");
-      demarrerEcouteVocale();
-    }else if(conversationVocaleActive){
-      changerEtatOrb("muted");
-    }
-  };
-
-  phrase.onerror=()=>{
-    if(session!==identifiantSessionVocale)return;
-    paroleVocaleEnCours=false;
-    traitementVocal=false;
-    if(conversationVocaleActive&&microVocalActif)demarrerEcouteVocale();
-  };
-
-  window.speechSynthesis.speak(phrase);
-}
-
-function basculerMicroVocal(){
-  if(!conversationVocaleActive)return;
-
-  microVocalActif=!microVocalActif;
-
-  if(!microVocalActif){
-    if(temporisationEcoute)clearTimeout(temporisationEcoute);
-    temporisationEcoute=null;
-    if(reconnaissanceVocale){
-      try{reconnaissanceVocale.stop()}catch(e){}
-    }
-    ecouteVocaleEnCours=false;
-    element("call-mic").textContent="🔇";
-    element("call-mic").classList.add("muted-button");
-    if(!paroleVocaleEnCours)changerEtatOrb("muted");
-    afficherTexteVocal("Microphone désactivé.");
-  }else{
-    element("call-mic").textContent="🎙️";
-    element("call-mic").classList.remove("muted-button");
-    afficherTexteVocal("Microphone réactivé. Je vous écoute.");
-    demarrerEcouteVocale();
-  }
-}
-
-function jouerSonRaccrochage(){
-  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-  if(!AudioContextClass)return;
-
-  try{
-    const ctx=new AudioContextClass();
-    const maintenant=ctx.currentTime;
-
-    [520,350].forEach((frequence,i)=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      const debut=maintenant+i*.16;
-
-      osc.type="sine";
-      osc.frequency.value=frequence;
-      gain.gain.setValueAtTime(.0001,debut);
-      gain.gain.exponentialRampToValueAtTime(.15,debut+.02);
-      gain.gain.exponentialRampToValueAtTime(.0001,debut+.13);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(debut);
-      osc.stop(debut+.15);
-    });
-
-    setTimeout(()=>ctx.close().catch(()=>{}),600);
-  }catch(e){}
-}
-
-function quitterModeVocal(){
-  if(!conversationVocaleActive)return;
-
-  jouerSonRaccrochage();
-
-  conversationVocaleActive=false;
-  identifiantSessionVocale++;
-  microVocalActif=false;
-  traitementVocal=false;
-  paroleVocaleEnCours=false;
-  ecouteVocaleEnCours=false;
-
-  if(temporisationEcoute)clearTimeout(temporisationEcoute);
-  temporisationEcoute=null;
-
-  if(reconnaissanceVocale){
-    try{reconnaissanceVocale.stop()}catch(e){}
-    reconnaissanceVocale=null;
-  }
-
-  window.speechSynthesis.cancel();
-
-  element("voice-call").classList.remove("open");
-  element("voice-call").setAttribute("aria-hidden","true");
-
-  element("call-state").textContent="CONVERSATION TERMINÉE";
-  element("call-transcript").textContent="Canal vocal fermé.";
-
-  historiqueVocal=[];
-}
-
-/* CAMÉRA */
+/* =========================================================
+   CAMÉRA
+========================================================= */
 
 async function demarrerCamera(){
-  if(!navigator.mediaDevices?.getUserMedia){
-    element("cameraStatus").textContent="Caméra non prise en charge.";
-    return;
-  }
-  try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
-    element("cameraPreview").srcObject=cameraStream;
-    element("cameraStatus").textContent="Caméra active.";
-  }catch(e){element("cameraStatus").textContent="Accès refusé ou indisponible : "+e.message}
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error("Caméra non prise en charge.");
+  fluxCamera=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
+  $("camera-preview").srcObject=fluxCamera;
+ }catch(e){alerte("Impossible d'activer la caméra : "+e.message)}
 }
-
 function arreterCamera(){
-  if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());
-  cameraStream=null;
-  element("cameraPreview").srcObject=null;
-  element("cameraStatus").textContent="Caméra inactive.";
+ if(fluxCamera){fluxCamera.getTracks().forEach(t=>t.stop());fluxCamera=null}
+ $("camera-preview").srcObject=null;
+}
+function prendrePhoto(){
+ const video=$("camera-preview");
+ if(!video.videoWidth){alerte("Activez d'abord la caméra.");return}
+ const canvas=$("camera-canvas");
+ canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+ canvas.getContext("2d").drawImage(video,0,0);
+ const url=canvas.toDataURL("image/png");
+ $("photo-result").src=url;$("photo-result").style.display="block";
+ $("photo-download").href=url;$("photo-download").download="jarvis-capture.png";
+ $("photo-download").style.display="inline-block";
 }
 
-function analyserCamera(){
-  element("visionResult").textContent=cameraStream
-    ?"Caméra active. L'analyse par IA nécessite un service de vision connecté."
-    :"Activez d'abord la caméra.";
+/* =========================================================
+   LECTURE DE DOCUMENTS
+========================================================= */
+
+$("document-file").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const zone=$("document-result");
+ contexteDocument="";
+ $("send-document").style.display="none";
+ if(file.type.startsWith("image/")){
+  const url=URL.createObjectURL(file);
+  $("file-preview").src=url;$("file-preview").style.display="block";
+  zone.textContent="Image chargée : "+file.name+". Aperçu disponible, analyse visuelle non activée dans cette version.";
+  return;
+ }
+ $("file-preview").style.display="none";
+ if(file.size>1024*1024){zone.textContent="Fichier trop volumineux (limite : 1 Mo).";return}
+ try{
+  contexteDocument=await file.text();
+  zone.textContent="Fichier chargé : "+file.name+" ("+contexteDocument.length+" caractères).";
+  $("send-document").style.display="inline-block";
+ }catch(err){zone.textContent="Impossible de lire ce fichier."}
+});
+function envoyerDocumentIA(){
+ if(!contexteDocument)return;
+ allerPage("assistant");
+ $("chat-input").value="Analyse et résume ce document, puis explique les éléments importants :\n\n"+contexteDocument.slice(0,12000);
+ envoyer();
 }
 
-/* PERFORMANCES */
+/* =========================================================
+   TRADUCTEUR MORSE ET ÉMISSION SONORE
+========================================================= */
 
-async function actualiserPerformances(){
-  element("networkState").textContent=navigator.onLine?"EN LIGNE":"HORS LIGNE";
-  element("screenSize").textContent=screen.width+" × "+screen.height;
-  element("browserName").textContent=navigator.userAgent.includes("Firefox")?"Firefox":
-    navigator.userAgent.includes("Edg")?"Edge":
-    navigator.userAgent.includes("Chrome")?"Chrome":"Navigateur";
-
-  element("browserMemory").textContent=performance.memory
-    ?Math.round(performance.memory.usedJSHeapSize/1048576)+" Mo":"Non disponible";
-
-  if(navigator.storage?.estimate){
-    try{
-      const s=await navigator.storage.estimate();
-      element("siteStorage").textContent=s.usage!=null?(s.usage/1048576).toFixed(1)+" Mo":"Indisponible";
-    }catch(e){element("siteStorage").textContent="Indisponible"}
-  }else element("siteStorage").textContent="Non disponible";
-
-  if(navigator.getBattery){
-    try{
-      const b=await navigator.getBattery();
-      element("batteryState").textContent=Math.round(b.level*100)+" %";
-    }catch(e){element("batteryState").textContent="Indisponible"}
-  }else element("batteryState").textContent="Non disponible";
-}
-
-/* MORSE */
-
-const alphabetMorse={
+const MORSE={
  A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",
  H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",
  O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",
  V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
- 0:"-----",1:".----",2:"..---",3:"...--",4:"....-",
- 5:".....",6:"-....",7:"--...",8:"---..",9:"----.",
+ "0":"-----","1":".----","2":"..---","3":"...--","4":"....-",
+ "5":".....","6":"-....","7":"--...","8":"---..","9":"----.",
  ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--",
- "/":"-..-.","=":"-...-"
+ "'":".----.","(":"-.--.",")":"-.--.-","&":".-...",
+ ":":"---...",";":"-.-.-.","=":"-...-","+":".-.-.",
+ "-":"-....-","_":"..--.-",'"':".-..-.","/":"-..-."
 };
-const inverseMorse=Object.fromEntries(Object.entries(alphabetMorse).map(([a,b])=>[b,a]));
-
-function convertirMorse(){
-  const texte=element("morseInput").value.trim();
-  if(!texte)return;
-  const ressemble=/^[.\-/\s]+$/.test(texte);
-  let resultat;
-  if(ressemble){
-    resultat=texte.split(" / ").map(m=>m.trim().split(/\s+/).map(c=>inverseMorse[c]||"�").join("")).join(" ");
-  }else{
-    resultat=texte.toUpperCase().split("").map(c=>c===" " ? "/" : alphabetMorse[c]||"").join(" ");
-  }
-  element("morseOutput").value=resultat;
-  element("morseStatus").textContent=ressemble?"Morse vers texte":"Texte vers Morse";
+const inverseMorse=Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
+function estMorse(t){return /^[.\-/\s]+$/.test(t)&&/[.-]/.test(t)}
+function traduireMorse(){
+ const t=$("morse-input").value.trim().toUpperCase();
+ if(!t)return;
+ let resultat;
+ if(estMorse(t)){
+  resultat=t.split(" / ").map(mot=>mot.trim().split(/\s+/).map(code=>inverseMorse[code]||"�").join("")).join(" ");
+ }else{
+  resultat=t.split("").map(c=>c===" " ? "/" : MORSE[c]||"").filter(Boolean).join(" ");
+ }
+ $("morse-output").textContent=resultat||"Caractères non reconnus";
 }
-
-function obtenirSequenceMorse(){
-  const texte=element("morseInput").value.trim();
-  if(!texte)return "";
-  if(/^[.\-/\s]+$/.test(texte))return texte;
-  return texte.toUpperCase().split("").map(c=>c===" "?"/":alphabetMorse[c]||"").join(" ");
+function emettreMorse(){
+ arreterMorse();
+ const t=$("morse-output").textContent;
+ if(!t||t==="---"){alerte("Traduisez un message avant l'émission.");return}
+ const ctx=new (window.AudioContext||window.webkitAudioContext)();
+ audioMorse=ctx;
+ let temps=ctx.currentTime+.1;
+ const unit=.12;
+ for(const c of t){
+  if(c==="."){
+   sonMorse(ctx,temps,unit);temps+=unit*2;
+  }else if(c==="-"){
+   sonMorse(ctx,temps,unit*3);temps+=unit*4;
+  }else if(c===" "){temps+=unit*2}
+  else if(c==="/"){temps+=unit*5}
+ }
 }
-
-async function emettreMorse(){
-  const sequence=obtenirSequenceMorse();
-  if(!sequence){element("morseStatus").textContent="Aucun texte à émettre.";return}
-  const AC=window.AudioContext||window.webkitAudioContext;
-  if(!AC){element("morseStatus").textContent="Audio non pris en charge.";return}
-  arreterMorse();
-  generationMorse++;
-  const generation=generationMorse;
-  try{
-    contexteMorse=new AC();
-    await contexteMorse.resume();
-    let temps=contexteMorse.currentTime+.08;
-    const unite=.12;
-    for(const c of sequence){
-      if(generation!==generationMorse)return;
-      if(c===".")temps=jouerTonalite(contexteMorse,temps,unite);
-      else if(c==="-")temps=jouerTonalite(contexteMorse,temps,unite*3);
-      else if(c==="/")temps+=unite*4;
-      else if(c===" ")temps+=unite*2;
-    }
-    element("morseStatus").textContent="Émission sonore en cours.";
-  }catch(e){element("morseStatus").textContent="Erreur audio : "+e.message}
+function sonMorse(ctx,debut,duree){
+ const osc=ctx.createOscillator(),gain=ctx.createGain();
+ osc.frequency.value=650;gain.gain.setValueAtTime(.0001,debut);
+ gain.gain.exponentialRampToValueAtTime(.18,debut+.01);
+ gain.gain.setValueAtTime(.18,debut+duree-.01);
+ gain.gain.exponentialRampToValueAtTime(.0001,debut+duree);
+ osc.connect(gain);gain.connect(ctx.destination);
+ osc.start(debut);osc.stop(debut+duree);
 }
-
-function jouerTonalite(ctx,debut,duree){
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
-  osc.type="sine";
-  osc.frequency.value=650;
-  gain.gain.setValueAtTime(.0001,debut);
-  gain.gain.setValueAtTime(.18,debut+.01);
-  gain.gain.setValueAtTime(.0001,debut+duree);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(debut);
-  osc.stop(debut+duree+.02);
-  return debut+duree+.12;
-}
-
 function arreterMorse(){
-  generationMorse++;
-  if(contexteMorse){contexteMorse.close().catch(()=>{});contexteMorse=null}
+ if(audioMorse){audioMorse.close().catch(()=>{});audioMorse=null}
 }
 
-function effacerMorse(){
-  element("morseInput").value="";
-  element("morseOutput").value="";
-  element("morseStatus").textContent="Prêt.";
-  arreterMorse();
-}
-
-/* RECHERCHE */
-
-function rechercheGoogle(terme){
-  const q=terme||element("searchInput").value.trim();
-  if(!q)return;
-  const liens={youtube:"https://www.youtube.com",google:"https://www.google.com",discord:"https://discord.com"};
-  const destination=liens[q.toLowerCase()]||"https://www.google.com/search?q="+encodeURIComponent(q);
-  window.open(destination,"_blank","noopener");
-}
-
-/* DIAGNOSTIC */
+/* =========================================================
+   DIAGNOSTIC ET PERFORMANCES
+========================================================= */
 
 async function lancerDiagnostic(){
-  const resultats=[];
-  const test=(nom,ok,detail="")=>resultats.push((ok?"[OK] ":"[INFO] ")+nom+(detail?" : "+detail:""));
-  test("Connexion internet",navigator.onLine);
-  test("HTTPS",location.protocol==="https:");
-  test("Stockage local",!!window.localStorage);
-  test("Microphone",!!navigator.mediaDevices?.getUserMedia);
-  test("Synthèse vocale",!!window.speechSynthesis);
-  test("Reconnaissance vocale",!!(window.SpeechRecognition||window.webkitSpeechRecognition));
-  test("Notifications","Notification" in window);
-  test("Service Worker","serviceWorker" in navigator);
-  test("Audio",!!(window.AudioContext||window.webkitAudioContext));
-  test("Supabase",!!client);
-  test("Session cloud",!!utilisateur);
-  if(navigator.storage?.estimate){
-    try{
-      const s=await navigator.storage.estimate();
-      test("Stockage du site",true,Math.round((s.usage||0)/1048576)+" Mo utilisés");
-    }catch(e){test("Stockage du site",false)}
-  }
-  element("diagnosticResults").textContent=resultats.join("\n")+
-    "\n\nCe diagnostic ne détecte pas les virus et n'analyse pas les fichiers de l'appareil.";
+ const zone=$("diagnostic-results");zone.innerHTML="";
+ const tests=[
+  ["Connexion Internet",()=>navigator.onLine],
+  ["Stockage local",()=>{localStorage.setItem("__test","ok");localStorage.removeItem("__test");return true}],
+  ["Synthèse vocale",()=>!!window.speechSynthesis],
+  ["Reconnaissance vocale",()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition)],
+  ["Caméra disponible",()=>!!navigator.mediaDevices?.getUserMedia],
+  ["Géolocalisation",()=>!!navigator.geolocation],
+  ["Notifications",()=>("Notification" in window)],
+  ["API mémoire locale",()=>Array.isArray(memoireLocale)]
+ ];
+ let ok=0;
+ for(const [nom,test] of tests){
+  let valide=false;
+  try{valide=!!test()}catch(e){}
+  if(valide)ok++;
+  const div=document.createElement("div");div.className="list-item";
+  const a=document.createElement("span");a.textContent=nom;
+  const b=document.createElement("span");b.className=valide?"good":"warn";
+  b.textContent=valide?"DISPONIBLE":"INDISPONIBLE";
+  div.append(a,b);zone.append(div);
+ }
+ const total=document.createElement("p");
+ total.textContent=ok+" / "+tests.length+" contrôles disponibles.";
+ zone.prepend(total);
+ $("performance-tips").textContent=
+ "Fermez les onglets inutilisés, gardez votre navigateur à jour, vérifiez les autorisations de caméra et de microphone et évitez de laisser plusieurs conversations vocales ouvertes. Ce contrôle ne recherche pas les virus.";
 }
 
-/* RAPPELS */
+/* =========================================================
+   PARAMÈTRES
+========================================================= */
 
-function lireAutomatisations(){
-  try{
-    const a=JSON.parse(localStorage.getItem("jarvis_automations")||"[]");
-    return Array.isArray(a)?a:[];
-  }catch(e){return []}
+function sauverParametres(){
+ const nom=$("assistant-name").value.trim()||"J.A.R.V.I.S";
+ localStorage.setItem(CLE_NOM,nom);
+ alerte("Paramètres enregistrés.");
+}
+function alerte(message){
+ if(window.alert)window.alert(message);
 }
 
-function enregistrerAutomatisations(a){
-  localStorage.setItem("jarvis_automations",JSON.stringify(a));
-}
+/* =========================================================
+   FERMETURE PROPRE
+========================================================= */
 
-function ajouterAutomatisation(){
-  const nom=element("automationName").value.trim();
-  const date=element("automationDate").value;
-  if(!nom||!date){alert("Remplissez le nom et la date.");return}
-  const timestamp=new Date(date).getTime();
-  if(!Number.isFinite(timestamp)||timestamp<=Date.now()){alert("Choisissez une date future.");return}
-  const liste=lireAutomatisations();
-  liste.push({id:Date.now(),nom,date:timestamp,fait:false});
-  enregistrerAutomatisations(liste);
-  element("automationName").value="";
-  element("automationDate").value="";
-  afficherAutomatisations();
-}
-
-function afficherAutomatisations(){
-  const zone=element("automationList");
-  zone.replaceChildren();
-  const liste=lireAutomatisations();
-  if(!liste.length){zone.textContent="Aucun rappel enregistré.";return}
-  liste.sort((a,b)=>a.date-b.date).forEach(r=>{
-    const carte=document.createElement("div");
-    carte.className="card-memory";
-    const texte=document.createElement("p");
-    texte.textContent=r.nom+" — "+new Date(r.date).toLocaleString("fr-FR")+(r.fait?" — TERMINÉ":"");
-    const bouton=document.createElement("button");
-    bouton.textContent="SUPPRIMER";
-    bouton.className="danger";
-    bouton.onclick=()=>{
-      enregistrerAutomatisations(lireAutomatisations().filter(x=>x.id!==r.id));
-      afficherAutomatisations();
-    };
-    carte.append(texte,bouton);
-    zone.appendChild(carte);
-  });
-}
-
-function verifierAutomatisations(){
-  const liste=lireAutomatisations();
-  let change=false;
-  liste.forEach(r=>{
-    if(!r.fait&&r.date<=Date.now()){
-      r.fait=true;
-      change=true;
-      ajouterMessage("Rappel : "+r.nom,"jarvis");
-      if(voixActive)lireReponse("Monsieur, voici votre rappel : "+r.nom);
-      if("Notification" in window&&Notification.permission==="granted"){
-        try{new Notification("J.A.R.V.I.S",{body:r.nom})}catch(e){}
-      }
-    }
-  });
-  if(change){enregistrerAutomatisations(liste);afficherAutomatisations()}
-}
-setInterval(verifierAutomatisations,5000);
-
-/* TÉLÉPHONE ET NOTIFICATIONS */
-
-function actualiserTelephone(){
-  const ua=navigator.userAgent;
-  element("phonePlatform").textContent=/iPhone|iPad|iPod/i.test(ua)?"Apple iOS":/Android/i.test(ua)?"Android":"Ordinateur / autre";
-  element("phoneMic").textContent=navigator.mediaDevices?.getUserMedia?"Disponible":"Non disponible";
-}
-
-async function demanderNotifications(){
-  if(!("Notification" in window)){element("notificationStatus").textContent="Non pris en charge.";return}
-  const permission=await Notification.requestPermission();
-  element("notificationStatus").textContent="Autorisation : "+permission;
-}
-
-function testerNotification(){
-  if(!("Notification" in window)||Notification.permission!=="granted"){
-    element("notificationStatus").textContent="Autorisez d'abord les notifications.";
-    return;
-  }
-  try{
-    new Notification("J.A.R.V.I.S",{body:"Test de notification, Monsieur."});
-    element("notificationStatus").textContent="Notification de test envoyée.";
-  }catch(e){element("notificationStatus").textContent="Impossible d'afficher la notification."}
-}
-
-/* PERSONNALISATION */
-
-function sauverPersonnalisation(){
-  const nom=element("assistantName").value.trim()||"J.A.R.V.I.S";
-  localStorage.setItem(CLE_NOM,nom);
-  ajouterMessage("Personnalisation enregistrée, Monsieur.","jarvis");
-}
-
-/* INITIALISATION */
-
-function actualiserEtatConnexion(){
-  element("networkState").textContent=navigator.onLine?"EN LIGNE":"HORS LIGNE";
-  element("status").textContent=navigator.onLine?"● SYSTÈME OPÉRATIONNEL":"● MODE HORS LIGNE";
-}
-window.addEventListener("online",actualiserEtatConnexion);
-window.addEventListener("offline",actualiserEtatConnexion);
-
-window.addEventListener("beforeunload",()=>{
-  arreterCamera();
-  arreterVoix();
-  if(reconnaissance)reconnaissance.stop();
-  quitterModeVocal();
-  arreterMorse();
+window.addEventListener("pagehide",()=>{
+ arreterCamera();
+ arreterConversationVocale();
+ arreterMorse();
+});
+window.addEventListener("online",()=>{
+ $("ia-state").textContent="PRÊTE À TESTER";
+});
+window.addEventListener("offline",()=>{
+ $("ia-state").textContent="HORS LIGNE";
 });
 
-element("voiceToggle").textContent="LECTURE VOCALE : "+(voixActive?"ON":"OFF");
-actualiserEtatConnexion();
-actualiserTelephone();
-actualiserPerformances();
-afficherAutomatisations();
-initialiserSupabase();
+/* RESTAURATION DU NOM */
+$("assistant-name").value=localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S";
+actualiserCompteurMemoire();
 
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("/service-worker.js").catch(e=>console.warn("Service Worker :",e));
-  });
+/* RESTAURATION DE LA CONVERSATION */
+if(historique.length){
+ $("messages").innerHTML="";
+ historique.slice(-20).forEach(m=>{
+  if(m.role==="user")ajouterMessage(m.content,"user");
+  if(m.role==="assistant")ajouterMessage(m.content,"jarvis");
+ });
 }
 </script>
 </body>
