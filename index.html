@@ -486,14 +486,27 @@ footer{
 </head>
 
 <body>
-<div id="lock-screen" aria-modal="true" role="dialog" aria-label="Verrouillage JARVIS">
+
+<div id="lock-screen" class="visible" aria-modal="true" role="dialog" aria-label="Protection JARVIS">
  <div class="lock-card">
-  <div class="small">STARK INDUSTRIES // ACCÈS PRIVÉ</div>
-  <h2>J.A.R.V.I.S VERROUILLÉ</h2>
-  <p class="muted">Saisissez votre code PIN pour ouvrir la console.</p>
-  <input id="unlock-pin" type="password" inputmode="numeric" maxlength="12" placeholder="Code PIN" autocomplete="current-password">
-  <button class="primary" style="width:100%" onclick="deverrouillerApplication()">DÉVERROUILLER</button>
-  <div id="lock-error" class="bad small" style="margin-top:10px"></div>
+  <div class="small">STARK INDUSTRIES // SÉCURITÉ</div>
+  <h2>J.A.R.V.I.S PROTÉGÉ</h2>
+
+  <div id="pin-setup-zone" style="display:none">
+   <p>Première configuration. Créez votre code personnel à 6 chiffres.</p>
+   <input id="setup-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Nouveau code à 6 chiffres">
+   <input id="setup-pin-confirm" type="password" inputmode="numeric" maxlength="6" placeholder="Confirmer le code">
+   <button class="primary" style="width:100%" onclick="creerPINInitial()">CRÉER MON CODE</button>
+  </div>
+
+  <div id="pin-unlock-zone" style="display:none">
+   <p>Authentification obligatoire pour accéder au système.</p>
+   <input id="unlock-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Votre code à 6 chiffres">
+   <button class="primary" style="width:100%" onclick="deverrouillerApplication()">DÉVERROUILLER</button>
+  </div>
+
+  <div id="lock-error" class="bad small" style="margin-top:12px"></div>
+  <div class="small" style="margin-top:18px">STARK INDUSTRIES // ACCÈS RESTREINT</div>
  </div>
 </div>
 <header>
@@ -835,17 +848,41 @@ footer{
  </div>
 
  <div class="panel">
-  <h2>SÉCURITÉ — CODE PIN</h2>
-  <p class="small">Verrouillage local de l'interface. Ce code protège l'accès visuel sur cet appareil, mais ne remplace pas la sécurité du compte ni le chiffrement des données.</p>
-  <input id="pin-new" type="password" inputmode="numeric" maxlength="12" placeholder="Nouveau code PIN (4 à 12 chiffres)">
-  <input id="pin-confirm" type="password" inputmode="numeric" maxlength="12" placeholder="Confirmer le code PIN" style="margin-top:8px">
-  <div class="actions" style="margin-top:9px">
-   <button onclick="configurerPIN()">ACTIVER / MODIFIER</button>
-   <button class="danger" onclick="retirerPIN()">RETIRER LE CODE</button>
-   <button class="secondary" onclick="verrouillerApplication()">VERROUILLER</button>
-  </div>
-  <div id="pin-status" class="small" style="margin-top:9px">Aucun code PIN configuré.</div>
+ <h2>SÉCURITÉ — MOT DE PASSE</h2>
+
+ <p class="small">
+  Votre code personnel comporte exactement 6 chiffres.
+  Il est obligatoire pour accéder à J.A.R.V.I.S.
+ </p>
+
+ <input id="pin-current" type="password"
+  inputmode="numeric" maxlength="6"
+  placeholder="Code actuel">
+
+ <input id="pin-new" type="password"
+  inputmode="numeric" maxlength="6"
+  placeholder="Nouveau code à 6 chiffres"
+  style="margin-top:8px">
+
+ <input id="pin-confirm" type="password"
+  inputmode="numeric" maxlength="6"
+  placeholder="Confirmer le nouveau code"
+  style="margin-top:8px">
+
+ <button class="primary" style="width:100%;margin-top:10px"
+  onclick="configurerPIN()">
+  MODIFIER MON MOT DE PASSE
+ </button>
+
+ <button class="secondary" style="width:100%;margin-top:9px"
+  onclick="verrouillerApplication()">
+  VERROUILLER J.A.R.V.I.S
+ </button>
+
+ <div id="pin-status" class="small" style="margin-top:10px">
+  Vérification de la sécurité...
  </div>
+</div>
 
   <div class="panel">
   <div class="section-title"><h2>JOURNAL DES ACTIONS</h2><button class="danger" onclick="effacerJournal()">EFFACER</button></div>
@@ -1716,9 +1753,11 @@ function desactiverMotCle(){
 
 /* VERROUILLAGE LOCAL PAR CODE PIN */
 
+/* PROTECTION OBLIGATOIRE J.A.R.V.I.S */
+
 async function hacherPIN(pin){
  if(!window.crypto?.subtle){
-  throw new Error("Le verrouillage nécessite une connexion sécurisée HTTPS.");
+  throw new Error("Une connexion HTTPS est nécessaire.");
  }
 
  const hash=await crypto.subtle.digest(
@@ -1731,97 +1770,160 @@ async function hacherPIN(pin){
   .join("");
 }
 
-async function configurerPIN(){
- const pin=$("pin-new").value;
- const confirmation=$("pin-confirm").value;
+/* PREMIÈRE CONFIGURATION */
 
- if(!/^\d{4,12}$/.test(pin)){
-  alerte("Le code doit contenir entre 4 et 12 chiffres.");
+async function creerPINInitial(){
+ const pin=$("setup-pin").value;
+ const confirmation=$("setup-pin-confirm").value;
+
+ if(!/^\d{6}$/.test(pin)){
+  $("lock-error").textContent="Le code doit contenir exactement 6 chiffres.";
   return;
  }
 
  if(pin!==confirmation){
-  alerte("Les deux codes ne correspondent pas.");
+  $("lock-error").textContent="Les deux codes ne correspondent pas.";
   return;
  }
 
  try{
-  localStorage.setItem(CLE_PIN,await hacherPIN(pin));
+  const hash=await hacherPIN(pin);
 
-  $("pin-new").value="";
-  $("pin-confirm").value="";
-  $("pin-status").textContent="Code PIN activé sur cet appareil.";
+  localStorage.setItem(CLE_PIN,hash);
 
-  journaliserAction("Code PIN configuré");
+  $("setup-pin").value="";
+  $("setup-pin-confirm").value="";
+  $("lock-error").textContent="";
+
+  $("pin-setup-zone").style.display="none";
+  $("pin-unlock-zone").style.display="block";
+
+  $("unlock-pin").focus();
+
+  journaliserAction("Mot de passe initial créé");
+
  }catch(e){
-  alerte(e.message);
+  $("lock-error").textContent=e.message;
  }
 }
 
+/* DÉVERROUILLAGE */
+
 async function deverrouillerApplication(){
  const pin=$("unlock-pin").value;
+
+ if(!/^\d{6}$/.test(pin)){
+  $("lock-error").textContent="Entrez les 6 chiffres de votre code.";
+  return;
+ }
 
  try{
   const attendu=localStorage.getItem(CLE_PIN);
   const fourni=await hacherPIN(pin);
 
   if(attendu&&fourni===attendu){
-   sessionStorage.setItem("jarvis_session_unlocked","1");
+
    $("lock-screen").classList.remove("visible");
+
    $("unlock-pin").value="";
    $("lock-error").textContent="";
-   journaliserAction("Interface déverrouillée");
+
+   journaliserAction("Authentification réussie");
+
   }else{
-   $("lock-error").textContent="Code incorrect.";
+   $("lock-error").textContent="Code incorrect. Accès refusé.";
    $("unlock-pin").value="";
+   $("unlock-pin").focus();
   }
+
  }catch(e){
   $("lock-error").textContent=e.message;
  }
 }
 
-async function retirerPIN(){
- const actuel=prompt("Saisissez le code PIN actuel pour le retirer :");
- if(actuel===null)return;
+/* MODIFICATION DU MOT DE PASSE */
+
+async function configurerPIN(){
+ const actuel=$("pin-current").value;
+ const nouveau=$("pin-new").value;
+ const confirmation=$("pin-confirm").value;
+
+ if(!/^\d{6}$/.test(actuel)){
+  alerte("Entrez votre code actuel à 6 chiffres.");
+  return;
+ }
+
+ if(!/^\d{6}$/.test(nouveau)){
+  alerte("Le nouveau code doit contenir exactement 6 chiffres.");
+  return;
+ }
+
+ if(nouveau!==confirmation){
+  alerte("Les deux nouveaux codes ne correspondent pas.");
+  return;
+ }
 
  try{
-  if(await hacherPIN(actuel)!==localStorage.getItem(CLE_PIN)){
-   alerte("Code PIN incorrect.");
+  const ancienHash=await hacherPIN(actuel);
+  const hashEnregistre=localStorage.getItem(CLE_PIN);
+
+  if(ancienHash!==hashEnregistre){
+   alerte("Votre code actuel est incorrect.");
    return;
   }
 
-  localStorage.removeItem(CLE_PIN);
-  sessionStorage.removeItem("jarvis_session_unlocked");
+  const nouveauHash=await hacherPIN(nouveau);
 
-  $("pin-status").textContent="Code PIN retiré.";
-  journaliserAction("Code PIN retiré");
+  localStorage.setItem(CLE_PIN,nouveauHash);
+
+  $("pin-current").value="";
+  $("pin-new").value="";
+  $("pin-confirm").value="";
+
+  $("pin-status").textContent="Mot de passe modifié avec succès.";
+
+  journaliserAction("Mot de passe modifié");
+
+  alerte("Votre nouveau code est enregistré.");
+
  }catch(e){
   alerte(e.message);
  }
 }
 
+/* VERROUILLAGE MANUEL */
+
 function verrouillerApplication(){
  if(!localStorage.getItem(CLE_PIN)){
-  alerte("Configurez d'abord un code PIN.");
+  alerte("Aucun mot de passe n'est configuré.");
   return;
  }
 
- sessionStorage.removeItem("jarvis_session_unlocked");
  $("lock-screen").classList.add("visible");
- $("unlock-pin").focus();
+ $("pin-setup-zone").style.display="none";
+ $("pin-unlock-zone").style.display="block";
+ $("lock-error").textContent="";
+ $("unlock-pin").value="";
 
  journaliserAction("Interface verrouillée");
+ $("unlock-pin").focus();
 }
+
+/* INITIALISATION OBLIGATOIRE */
 
 function verifierVerrouillage(){
  const configure=!!localStorage.getItem(CLE_PIN);
 
- $("pin-status").textContent=configure?
-  "Code PIN configuré.":
-  "Aucun code PIN configuré.";
+ $("lock-screen").classList.add("visible");
 
- if(configure&&sessionStorage.getItem("jarvis_session_unlocked")!=="1"){
-  $("lock-screen").classList.add("visible");
+ if(configure){
+  $("pin-setup-zone").style.display="none";
+  $("pin-unlock-zone").style.display="block";
+  $("pin-status").textContent="Protection active : mot de passe obligatoire.";
+ }else{
+  $("pin-setup-zone").style.display="block";
+  $("pin-unlock-zone").style.display="none";
+  $("pin-status").textContent="Création obligatoire de votre premier mot de passe.";
  }
 }
 
