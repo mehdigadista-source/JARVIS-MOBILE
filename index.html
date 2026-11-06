@@ -380,26 +380,75 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
 </section>
 
 <!-- MODE VOCAL -->
+<!-- MODE VOCAL STARK -->
 <section class="page" id="page-vocal">
  <div class="panel" style="text-align:center">
-  <div class="small">STARK VOICE INTERFACE</div>
-  <h1>CONVERSATION VOCALE</h1>
-  <div id="voice-orb">◉</div>
-  <h2 id="voice-status">MODE VOCAL EN ATTENTE</h2>
-  <p id="voice-caption">Activez le microphone pour commencer une conversation.</p>
+
+  <div class="small">STARK INDUSTRIES // VOICE SYSTEM</div>
+  <h1>J.A.R.V.I.S</h1>
+  <h2>INTERFACE VOCALE MK-3000</h2>
+
+  <div id="voice-orb">
+   <div class="orb-ring one"></div>
+   <div class="orb-ring two"></div>
+   <div class="orb-ring three"></div>
+
+   <div class="orb-core">
+    <span>J</span>
+    <div class="orb-center-light"></div>
+   </div>
+  </div>
+
+  <div class="voice-indicator">
+   <span></span>
+   <span></span>
+   <span></span>
+   <span></span>
+   <span></span>
+  </div>
+
+  <h2 id="voice-status">SYSTÈME EN ATTENTE</h2>
+
+  <p id="voice-caption">
+   Bonjour, Monsieur. Activez le microphone pour commencer.
+  </p>
+
   <div class="actions">
-   <button class="primary" id="voice-start" onclick="demarrerConversationVocale()">ACTIVER MICRO</button>
-   <button class="danger" onclick="arreterConversationVocale()">TERMINER</button>
+   <button class="primary" id="voice-start"
+    onclick="demarrerConversationVocale()">
+    ACTIVER LE MICRO
+   </button>
+
+   <button class="danger"
+    onclick="arreterConversationVocale()">
+    ARRÊTER
+   </button>
   </div>
-  <div style="margin-top:15px">
-   <label class="small"><input type="checkbox" id="voice-auto" checked style="width:auto"> Reprendre l'écoute après chaque réponse</label>
+
+  <div style="margin-top:20px;text-align:left">
+   <label class="small">
+    <input type="checkbox" id="voice-auto" checked style="width:auto">
+    Reprendre automatiquement l'écoute
+   </label>
+
+   <br><br>
+
+   <label class="small">
+    <input type="checkbox" id="voice-tts" checked style="width:auto">
+    Lire les réponses à voix haute
+   </label>
   </div>
-  <div style="margin-top:12px">
-   <label class="small"><input type="checkbox" id="voice-tts" checked style="width:auto"> Lire les réponses à voix haute</label>
+
+  <div class="stat" style="margin-top:20px">
+   <span>ÉTAT DU RÉACTEUR VOCAL</span>
+   <strong style="font-size:13px" id="voice-reactor-state">
+    INITIALISÉ
+   </strong>
   </div>
+
  </div>
 </section>
-
+ 
 <!-- AGENDA -->
 <section class="page" id="page-agenda">
  <div class="panel">
@@ -887,86 +936,201 @@ function demarrerMicro(){
  try{r.start()}catch(e){alerte("Impossible de démarrer le microphone.")}
 }
 
+
+function definirEtatVocal(etat, message){
+ const orb=$("voice-orb");
+ const status=$("voice-status");
+ const reactor=$("voice-reactor-state");
+
+ if(orb){
+  orb.classList.remove("listening","thinking","speaking");
+  if(etat)orb.classList.add(etat);
+ }
+
+ if(status&&message)status.textContent=message;
+
+ if(reactor){
+  const etats={
+   listening:"ÉCOUTE ACTIVE",
+   thinking:"ANALYSE EN COURS",
+   speaking:"RÉPONSE VOCALE",
+   idle:"EN ATTENTE"
+  };
+  reactor.textContent=etats[etat]||"INITIALISÉ";
+ }
+}
+
 async function demarrerConversationVocale(){
- reconnaissance=creerReconnaissance();
- if(!reconnaissance){alerte("La reconnaissance vocale n'est pas disponible ici.");return}
  if(vocalActif)return;
+
+ reconnaissance=creerReconnaissance();
+
+ if(!reconnaissance){
+  alerte("La reconnaissance vocale n'est pas disponible ici.");
+  return;
+ }
+
  vocalActif=true;
- $("voice-status").textContent="ÉCOUTE ACTIVE";
+
  $("voice-caption").textContent="Je vous écoute, Monsieur.";
- $("voice-orb").classList.add("listening");
+ definirEtatVocal("listening","ÉCOUTE ACTIVE");
+
  ecouterProchainePhrase();
 }
+
 function ecouterProchainePhrase(){
  if(!vocalActif||!reconnaissance)return;
+
  reconnaissance.onresult=async e=>{
-  const texte=e.results[0][0].transcript;
+  const texte=e.results[0][0].transcript.trim();
+
   $("voice-caption").textContent="Vous : "+texte;
-  $("voice-status").textContent="ANALYSE";
-  $("voice-orb").classList.remove("listening");
+  definirEtatVocal("thinking","ANALYSE EN COURS");
+
   if(traiterCommandeMemoireVocale(texte)){
-   if(vocalActif&&$("voice-auto").checked)setTimeout(ecouterProchainePhrase,500);
-   return;
-  }
-  try{
-   const reponse=await appelerIA(texte,historique.slice(-10));
-   historique.push({role:"user",content:texte},{role:"assistant",content:reponse});
-   sauvegarderChat();
-   $("voice-caption").textContent=reponse;
-   $("voice-status").textContent="RÉPONSE";
-   if($("voice-tts").checked&&lectureActive){
-    parlerVocal(reponse);
-   }else if(vocalActif&&$("voice-auto").checked){
+   if(vocalActif&&$("voice-auto").checked){
     setTimeout(ecouterProchainePhrase,500);
    }
+   return;
+  }
+
+  try{
+   const reponse=await appelerIA(texte,historique.slice(-10));
+
+   historique.push(
+    {role:"user",content:texte},
+    {role:"assistant",content:reponse}
+   );
+
+   sauvegarderChat();
+
+   $("voice-caption").textContent=reponse;
+
+   if($("voice-tts").checked&&lectureActive){
+    parlerVocal(reponse);
+   }else{
+    definirEtatVocal("idle","RÉPONSE TERMINÉE");
+
+    if(vocalActif&&$("voice-auto").checked){
+     setTimeout(ecouterProchainePhrase,500);
+    }
+   }
+
   }catch(err){
    $("voice-caption").textContent="Erreur : "+err.message;
-   if(vocalActif&&$("voice-auto").checked)setTimeout(ecouterProchainePhrase,1000);
+   definirEtatVocal("idle","ERREUR DE CONNEXION");
+
+   if(vocalActif&&$("voice-auto").checked){
+    setTimeout(ecouterProchainePhrase,1000);
+   }
   }
  };
+
  reconnaissance.onerror=()=>{
-  if(vocalActif){$("voice-status").textContent="MICRO INDISPONIBLE";arreterConversationVocale()}
+  if(vocalActif){
+   definirEtatVocal("idle","MICRO INDISPONIBLE");
+   arreterConversationVocale();
+  }
  };
+
  reconnaissance.onend=()=>{
   if(vocalActif&&$("voice-status").textContent==="ÉCOUTE ACTIVE"){
    setTimeout(ecouterProchainePhrase,300);
   }
  };
- try{reconnaissance.start()}catch(e){
-  vocalActif=false;$("voice-status").textContent="ERREUR MICRO";
+
+ try{
+  reconnaissance.start();
+ }catch(e){
+  vocalActif=false;
+  definirEtatVocal("idle","ERREUR MICRO");
  }
 }
+
 function parlerVocal(texte){
- if(!window.speechSynthesis){if(vocalActif&&$("voice-auto").checked)ecouterProchainePhrase();return}
+ if(!window.speechSynthesis){
+  definirEtatVocal("idle","SYNTHÈSE VOCALE INDISPONIBLE");
+
+  if(vocalActif&&$("voice-auto").checked){
+   ecouterProchainePhrase();
+  }
+  return;
+ }
+
  speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(texte);u.lang="fr-FR";
+
+ definirEtatVocal("speaking","J.A.R.V.I.S RÉPOND");
+
+ const u=new SpeechSynthesisUtterance(texte);
+ u.lang="fr-FR";
+ u.rate=1;
+ u.pitch=1;
+
  const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
  if(fr)u.voice=fr;
+
  u.onend=()=>{
   if(vocalActif&&$("voice-auto").checked){
-   $("voice-status").textContent="ÉCOUTE ACTIVE";
-   $("voice-orb").classList.add("listening");
+   definirEtatVocal("listening","ÉCOUTE ACTIVE");
    setTimeout(ecouterProchainePhrase,400);
+  }else{
+   definirEtatVocal("idle","RÉPONSE TERMINÉE");
   }
  };
- u.onerror=()=>{if(vocalActif&&$("voice-auto").checked)ecouterProchainePhrase()};
+
+ u.onerror=()=>{
+  definirEtatVocal("idle","ERREUR VOCALE");
+
+  if(vocalActif&&$("voice-auto").checked){
+   setTimeout(ecouterProchainePhrase,500);
+  }
+ };
+
  speechSynthesis.speak(u);
 }
+
 function traiterCommandeMemoireVocale(texte){
- const t=texte.trim(),b=t.toLowerCase();
- for(const cmd of ["retiens que ","souviens-toi que ","mémorise que ","memorise que "]){
-  if(b.startsWith(cmd)){enregistrerSouvenir(t.slice(cmd.length));return true}
+ const t=texte.trim();
+ const b=t.toLowerCase();
+
+ for(const cmd of [
+  "retiens que ",
+  "souviens-toi que ",
+  "mémorise que ",
+  "memorise que "
+ ]){
+  if(b.startsWith(cmd)){
+   enregistrerSouvenir(t.slice(cmd.length).trim());
+   return true;
+  }
  }
+
  return false;
 }
+
 function arreterConversationVocale(){
  vocalActif=false;
- if(reconnaissance){try{reconnaissance.abort()}catch(e){}}
- if(window.speechSynthesis)speechSynthesis.cancel();
- $("voice-status").textContent="MODE VOCAL ARRÊTÉ";
+
+ if(reconnaissance){
+  try{
+   reconnaissance.abort();
+  }catch(e){}
+ }
+
+ if(window.speechSynthesis){
+  speechSynthesis.cancel();
+ }
+
+ definirEtatVocal("idle","MODE VOCAL ARRÊTÉ");
+
  $("voice-caption").textContent="Conversation terminée.";
- $("voice-orb").classList.remove("listening");
 }
+
+function ouvrirModeVocal(){
+ allerPage("vocal");
+ demarrerConversationVocale();
+}
+ 
 function ouvrirModeVocal(){allerPage("vocal");demarrerConversationVocale()}
 
 /* =========================================================
