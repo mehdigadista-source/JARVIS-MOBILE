@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>J.A.R.V.I.S — STARK INDUSTRIES</title>
+<title>J.A.R.V.I.S — STARK INDUSTRIES V8</title>
 
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -16,35 +15,78 @@
 
 <style>
 :root{
- --bg:#060b14;--panel:#0b1525;--panel2:#101e31;
- --blue:#00bfff;--cyan:#49eaff;--text:#e8f7ff;
- --muted:#8299ad;--line:#17344c;--green:#35e6a0;
- --red:#ff5470;--orange:#ffb454;
+ --bg:#060b14;
+ --panel:#0b1525;
+ --panel2:#101e31;
+ --blue:#00bfff;
+ --cyan:#49eaff;
+ --text:#e8f7ff;
+ --muted:#8299ad;
+ --line:#17344c;
+ --green:#35e6a0;
+ --red:#ff5470;
+ --orange:#ffb454;
 }
 *{box-sizing:border-box}
 body{
- margin:0;background:radial-gradient(circle at 50% -20%,#123456 0,#060b14 48%);
- color:var(--text);font-family:Arial,Helvetica,sans-serif;
- min-height:100vh;padding-bottom:90px;
+ margin:0;
+ min-height:100vh;
+ padding-bottom:90px;
+ background:radial-gradient(circle at 50% -20%,#123456 0,#060b14 48%);
+ color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;
 }
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 header{
- position:sticky;top:0;z-index:20;padding:14px 16px;
- background:rgba(5,12,23,.94);backdrop-filter:blur(15px);
+ position:sticky;
+ top:0;
+ z-index:20;
+ padding:14px 16px;
+ background:rgba(5,12,23,.95);
+ backdrop-filter:blur(15px);
  border-bottom:1px solid var(--line);
 }
-.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.brand{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--cyan)}
-.version{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}
-.status{font-size:10px;color:var(--green);letter-spacing:1px}
-main{max-width:900px;margin:auto;padding:16px}
+.topline{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+}
+.brand{
+ font-size:21px;
+ font-weight:900;
+ letter-spacing:3px;
+ color:var(--cyan);
+}
+.version{
+ font-size:10px;
+ color:var(--muted);
+ letter-spacing:2px;
+ margin-top:4px;
+}
+.status{
+ font-size:10px;
+ color:var(--green);
+ letter-spacing:1px;
+}
+main{
+ max-width:1000px;
+ margin:auto;
+ padding:16px;
+}
 .page{display:none;animation:appear .25s ease}
 .page.active{display:block}
-@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes appear{
+ from{opacity:0;transform:translateY(7px)}
+ to{opacity:1;transform:translateY(0)}
+}
 .panel{
  background:linear-gradient(145deg,rgba(16,30,49,.96),rgba(7,16,29,.96));
- border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px;
+ border:1px solid var(--line);
+ border-radius:17px;
+ padding:16px;
+ margin-bottom:14px;
  box-shadow:0 8px 30px #0003;
 }
 h1,h2,h3{margin:0 0 12px}
@@ -52,88 +94,218 @@ h1{font-size:21px;letter-spacing:2px}
 h2{font-size:15px;letter-spacing:1.5px;color:var(--cyan)}
 h3{font-size:13px;color:var(--cyan)}
 p{line-height:1.5;color:#c5d8e8}
-.muted{color:var(--muted);font-size:12px}
 .small{font-size:11px;color:var(--muted)}
+.muted{color:var(--muted);font-size:12px}
 button,.btn{
- border:1px solid #17618a;background:#0b2942;color:var(--cyan);
- padding:11px 13px;border-radius:10px;font-weight:700;
+ border:1px solid #17618a;
+ background:#0b2942;
+ color:var(--cyan);
+ padding:11px 13px;
+ border-radius:10px;
+ font-weight:700;
 }
 button:active{transform:scale(.98)}
-button.primary{background:linear-gradient(135deg,#0876a8,#06466e);color:white}
-button.danger{border-color:#803246;background:#351421;color:#ff8da1}
-button.secondary{background:#101d2d;border-color:var(--line);color:#c7d8e8}
+button.primary{
+ background:linear-gradient(135deg,#0876a8,#06466e);
+ color:white;
+}
+button.danger{
+ border-color:#803246;
+ background:#351421;
+ color:#ff8da1;
+}
+button.secondary{
+ background:#101d2d;
+ border-color:var(--line);
+ color:#c7d8e8;
+}
 button:disabled{opacity:.45;cursor:not-allowed}
 input,textarea,select{
- width:100%;background:#071321;color:var(--text);
- border:1px solid var(--line);border-radius:10px;padding:12px;outline:none;
+ width:100%;
+ background:#071321;
+ color:var(--text);
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:12px;
+ outline:none;
 }
 input:focus,textarea:focus,select:focus{border-color:var(--blue)}
 textarea{resize:vertical;min-height:85px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.stat{
- padding:13px;background:#071321;border:1px solid var(--line);
- border-radius:12px;min-width:0;
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px;
 }
-.stat strong{display:block;font-size:18px;color:var(--cyan);margin-top:7px}
-.stat span{font-size:10px;color:var(--muted);letter-spacing:1px}
-.actions{display:flex;flex-wrap:wrap;gap:8px}
+.stat{
+ padding:13px;
+ background:#071321;
+ border:1px solid var(--line);
+ border-radius:12px;
+ min-width:0;
+}
+.stat strong{
+ display:block;
+ font-size:18px;
+ color:var(--cyan);
+ margin-top:7px;
+ overflow-wrap:anywhere;
+}
+.stat span{
+ font-size:10px;
+ color:var(--muted);
+ letter-spacing:1px;
+}
+.actions{
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+}
 .actions button{flex:1;min-width:110px}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-#reactor-wrap{display:flex;justify-content:center;padding:20px 0}
+.section-title{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:8px;
+ margin-bottom:12px;
+}
+.tag{
+ font-size:10px;
+ padding:5px 8px;
+ border-radius:20px;
+ background:#123149;
+ color:var(--cyan);
+}
+.good{color:var(--green)}
+.warn{color:var(--orange)}
+.bad{color:var(--red)}
+.list-item{
+ padding:12px 0;
+ border-bottom:1px solid var(--line);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+}
+.list-item:last-child{border-bottom:0}
+.list-item button{padding:7px 10px;font-size:11px}
+.bottom-nav{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ z-index:30;
+ display:flex;
+ justify-content:space-around;
+ gap:2px;
+ padding:9px 3px calc(9px + env(safe-area-inset-bottom));
+ background:rgba(4,11,20,.97);
+ border-top:1px solid var(--line);
+ backdrop-filter:blur(15px);
+}
+.nav-btn{
+ border:0;
+ background:transparent;
+ color:#7f9aae;
+ padding:8px 5px;
+ font-size:10px;
+ min-width:0;
+ flex:1;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:5px;
+}
+.nav-btn b{font-size:17px}
+.nav-btn.active{
+ color:var(--cyan);
+ background:#0b2942;
+ border-radius:10px;
+}
+#reactor-wrap{
+ display:flex;
+ justify-content:center;
+ padding:20px 0;
+}
 #reactor{
- width:180px;height:180px;border-radius:50%;position:relative;
- display:grid;place-items:center;
+ width:180px;
+ height:180px;
+ border-radius:50%;
+ position:relative;
+ display:grid;
+ place-items:center;
  border:2px solid #147ca8;
  background:radial-gradient(circle,#163b54 0,#071321 55%,#02060c 72%);
  box-shadow:0 0 20px #00bfff55,inset 0 0 30px #00bfff33;
  animation:reactorPulse 3s infinite ease-in-out;
 }
 #reactor:before,#reactor:after{
- content:"";position:absolute;border-radius:50%;inset:10px;
- border:2px dashed #36dfff88;animation:spin 18s linear infinite;
+ content:"";
+ position:absolute;
+ border-radius:50%;
+ inset:10px;
+ border:2px dashed #36dfff88;
+ animation:spin 18s linear infinite;
 }
-#reactor:after{inset:23px;border:2px solid #00bfff55;animation:spin 12s linear infinite reverse}
+#reactor:after{
+ inset:23px;
+ border:2px solid #00bfff55;
+ animation:spin 12s linear infinite reverse;
+}
 #reactor-core{
- width:70px;height:70px;border-radius:50%;z-index:1;
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ z-index:1;
  background:radial-gradient(circle,#fff 0,#62eaff 18%,#087cb9 55%,#061b31 75%);
  box-shadow:0 0 30px #00cfff;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes reactorPulse{50%{box-shadow:0 0 38px #00bfff99,inset 0 0 35px #00bfff66}}
-#messages{
- height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
- padding:5px;margin-bottom:12px;
+@keyframes reactorPulse{
+ 50%{box-shadow:0 0 38px #00bfff99,inset 0 0 35px #00bfff66}
 }
-.message{padding:11px 13px;border-radius:12px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;font-size:14px}
-.message.user{align-self:flex-end;background:#0b4262;border:1px solid #1677a4}
-.message.jarvis{align-self:flex-start;background:#101e30;border:1px solid #1a3c55}
-.message.system{align-self:center;background:#171e29;color:var(--muted);font-size:11px}
-.chat-input{display:flex;gap:8px;align-items:flex-end}
+#messages{
+ height:340px;
+ overflow-y:auto;
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+ padding:5px;
+ margin-bottom:12px;
+}
+.message{
+ padding:11px 13px;
+ border-radius:12px;
+ max-width:92%;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ line-height:1.45;
+ font-size:14px;
+}
+.message.user{
+ align-self:flex-end;
+ background:#0b4262;
+ border:1px solid #1677a4;
+}
+.message.jarvis{
+ align-self:flex-start;
+ background:#101e30;
+ border:1px solid #1a3c55;
+}
+.message.system{
+ align-self:center;
+ background:#171e29;
+ color:var(--muted);
+ font-size:11px;
+}
+.chat-input{
+ display:flex;
+ gap:8px;
+ align-items:flex-end;
+}
 .chat-input input{flex:1;min-width:0}
 .chat-input button{flex-shrink:0}
-.bottom-nav{
- position:fixed;bottom:0;left:0;right:0;z-index:30;
- display:flex;justify-content:space-around;gap:2px;
- padding:9px 3px calc(9px + env(safe-area-inset-bottom));
- background:rgba(4,11,20,.97);border-top:1px solid var(--line);
- backdrop-filter:blur(15px);
-}
-.nav-btn{
- border:0;background:transparent;color:#7f9aae;padding:8px 5px;
- font-size:10px;min-width:0;flex:1;display:flex;flex-direction:column;
- align-items:center;gap:5px;
-}
-.nav-btn b{font-size:17px}
-.nav-btn.active{color:var(--cyan);background:#0b2942;border-radius:10px}
-.list-item{
- padding:12px 0;border-bottom:1px solid var(--line);
- display:flex;justify-content:space-between;align-items:center;gap:10px;
-}
-.list-item:last-child{border-bottom:0}
-.list-item button{padding:7px 10px;font-size:11px}
-.tag{font-size:10px;padding:5px 8px;border-radius:20px;background:#123149;color:var(--cyan)}
-.good{color:var(--green)}.warn{color:var(--orange)}.bad{color:var(--red)}
-/* REACTEUR ARC - INTERFACE VOCALE */
+
+/* RÉACTEUR VOCAL */
 
 #voice-orb{
  width:230px;
@@ -150,19 +322,16 @@ textarea{resize:vertical;min-height:85px}
  box-shadow:0 0 25px #00bfff66,inset 0 0 35px #00bfff44;
  transition:box-shadow .4s,transform .4s;
 }
-
 .orb-ring{
  position:absolute;
  border-radius:50%;
  pointer-events:none;
 }
-
 .orb-ring.one{
  inset:7px;
  border:3px dashed #42dfff;
  animation:orbSpin 12s linear infinite;
 }
-
 .orb-ring.two{
  inset:23px;
  border:2px solid #078ac4;
@@ -170,13 +339,11 @@ textarea{resize:vertical;min-height:85px}
  border-right-color:#55eaff;
  animation:orbSpin 5s linear infinite reverse;
 }
-
 .orb-ring.three{
  inset:40px;
  border:2px dotted #54dfff99;
  animation:orbSpin 18s linear infinite;
 }
-
 .orb-core{
  width:100px;
  height:100px;
@@ -185,17 +352,15 @@ textarea{resize:vertical;min-height:85px}
  place-items:center;
  position:relative;
  z-index:2;
- background:radial-gradient(circle,#ffffff 0%,#8cf4ff 12%,#12a9dc 38%,#07517e 67%,#03182c 100%);
+ background:radial-gradient(circle,#fff 0%,#8cf4ff 12%,#12a9dc 38%,#07517e 67%,#03182c 100%);
  box-shadow:0 0 20px #00cfff,0 0 55px #00aaff88,inset 0 0 20px white;
 }
-
 .orb-core span{
  color:white;
  font-size:38px;
  font-weight:900;
  text-shadow:0 0 15px #fff;
 }
-
 .orb-center-light{
  position:absolute;
  width:12px;
@@ -204,49 +369,33 @@ textarea{resize:vertical;min-height:85px}
  background:white;
  box-shadow:0 0 20px white,0 0 40px #00d9ff;
 }
-
 #voice-orb.listening{
  box-shadow:0 0 35px #00cfff,0 0 85px #008cff88,inset 0 0 40px #00cfff66;
  animation:orbListen 1.5s ease-in-out infinite;
 }
-
 #voice-orb.thinking{
  box-shadow:0 0 35px #ffb45488,inset 0 0 35px #ffb45444;
 }
-
-#voice-orb.thinking .orb-ring{
- border-color:#ffb454;
-}
-
+#voice-orb.thinking .orb-ring{border-color:#ffb454}
 #voice-orb.speaking{
  box-shadow:0 0 45px #35e6a0aa,0 0 90px #00bfff88;
  animation:orbSpeak .55s ease-in-out infinite alternate;
 }
-
 #voice-orb.speaking .orb-core{
  box-shadow:0 0 35px #35e6a0,0 0 70px #00cfff;
 }
-
-@keyframes orbSpin{
- to{transform:rotate(360deg)}
-}
-
-@keyframes orbListen{
- 50%{transform:scale(1.045)}
-}
-
+@keyframes orbSpin{to{transform:rotate(360deg)}}
+@keyframes orbListen{50%{transform:scale(1.045)}}
 @keyframes orbSpeak{
  from{transform:scale(1)}
  to{transform:scale(1.07)}
 }
-
 .voice-indicator{
  display:flex;
  justify-content:center;
  gap:6px;
  margin:14px auto;
 }
-
 .voice-indicator span{
  width:5px;
  height:15px;
@@ -254,45 +403,85 @@ textarea{resize:vertical;min-height:85px}
  background:var(--cyan);
  opacity:.45;
 }
-
 #voice-orb.speaking~.voice-indicator span{
  animation:voiceBars .5s ease-in-out infinite alternate;
  opacity:1;
 }
-
 .voice-indicator span:nth-child(2){animation-delay:.1s}
 .voice-indicator span:nth-child(3){animation-delay:.2s}
 .voice-indicator span:nth-child(4){animation-delay:.3s}
 .voice-indicator span:nth-child(5){animation-delay:.4s}
-
-@keyframes voiceBars{
- to{height:30px}
-}
-
+@keyframes voiceBars{to{height:30px}}
 #voice-caption{
  min-height:45px;
  max-width:600px;
  margin:12px auto;
  overflow-wrap:anywhere;
 }
-#camera-preview{width:100%;max-height:300px;background:#02060c;border-radius:12px;object-fit:cover}
-#file-preview{max-width:100%;max-height:220px;border-radius:10px;display:none}
-.morse-output{font-size:19px;letter-spacing:2px;overflow-wrap:anywhere;color:var(--cyan)}
-footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
+#camera-preview{
+ width:100%;
+ max-height:300px;
+ background:#02060c;
+ border-radius:12px;
+ object-fit:cover;
+}
+#file-preview{
+ max-width:100%;
+ max-height:220px;
+ border-radius:10px;
+ display:none;
+}
+.morse-output{
+ font-size:19px;
+ letter-spacing:2px;
+ overflow-wrap:anywhere;
+ color:var(--cyan);
+}
+.memory-entry{
+ padding:10px;
+ background:#071321;
+ border:1px solid var(--line);
+ border-radius:10px;
+ margin:7px 0;
+ overflow-wrap:anywhere;
+}
+footer{
+ text-align:center;
+ color:#536b80;
+ font-size:10px;
+ padding:20px;
+}
+.theme-green{
+ --blue:#35e6a0;
+ --cyan:#65ffc0;
+ --line:#174b3b;
+}
+.theme-purple{
+ --blue:#a78bfa;
+ --cyan:#c4b5fd;
+ --line:#392d62;
+}
 @media(min-width:700px){
  main{padding:24px}
  #messages{height:420px}
  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+@media(max-width:380px){
+ .brand{font-size:18px}
+ .version{font-size:8px}
+ .nav-btn{font-size:9px}
+ .nav-btn b{font-size:15px}
+}
 </style>
 </head>
 
 <body>
+
 <header>
  <div class="topline">
   <div>
    <div class="brand">J.A.R.V.I.S</div>
-   <div class="version">STARK INDUSTRIES // MK-3000 // VERSION 7.0</div>
+   <div class="version">STARK INDUSTRIES // MK-3000 // VERSION 8.0</div>
   </div>
   <div style="text-align:right">
    <div class="status" id="global-status">● SYSTEM ONLINE</div>
@@ -304,15 +493,18 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
 <main>
 
 <!-- ACCUEIL -->
+
 <section class="page active" id="page-home">
  <div class="panel" style="text-align:center">
   <div class="small">STARK INDUSTRIES PERSONAL AI SYSTEM</div>
-  <div id="reactor-wrap"><div id="reactor"><div id="reactor-core"></div></div></div>
+  <div id="reactor-wrap">
+   <div id="reactor"><div id="reactor-core"></div></div>
+  </div>
   <h1>BIENVENUE, MONSIEUR</h1>
   <p id="home-greeting">Système Stark opérationnel. En attente de vos instructions.</p>
   <div class="actions">
    <button class="primary" onclick="allerPage('assistant')">OUVRIR J.A.R.V.I.S</button>
-   <button onclick="ouvrirModeVocal()">MODE CONVERSATION VOCALE</button>
+   <button onclick="ouvrirModeVocal()">CONVERSATION VOCALE</button>
   </div>
  </div>
 
@@ -323,23 +515,26 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
   <div class="stat"><span>CONNEXION</span><strong id="connection">--</strong></div>
  </div>
 
-<div class="panel">
+ <div class="panel">
   <div class="section-title">
-    <h2>ACCÈS RAPIDES</h2>
-    <span class="tag">MK-3000</span>
+   <h2>CENTRE DE COMMANDES</h2>
+   <span class="tag">MK-3000</span>
   </div>
-
   <div class="grid">
-    <button onclick="ouvrirLien('https://www.google.com')">GOOGLE</button>
-    <button onclick="ouvrirLien('https://www.youtube.com')">YOUTUBE</button>
-    <button onclick="ouvrirLien('https://www.wikipedia.org')">WIKIPÉDIA</button>
-    <button onclick="allerPage('agenda')">AGENDA</button>
-    <button onclick="allerPage('meteo')">MÉTÉO</button>
-    <button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
-    <button onclick="allerPage('morse')">〰 MORSE</button>
-    <button onclick="allerPage('camera')">📷 CAMÉRA</button>
+   <button onclick="commandeRapide('Quelle heure est-il ?')">HEURE</button>
+   <button onclick="commandeRapide('Quelle est la date aujourd’hui ?')">DATE</button>
+   <button onclick="allerPage('agenda')">AGENDA</button>
+   <button onclick="allerPage('meteo')">MÉTÉO</button>
+   <button onclick="allerPage('camera')">CAMÉRA</button>
+   <button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
+   <button onclick="allerPage('morse')">TRADUCTEUR MORSE</button>
+   <button onclick="allerPage('settings')">PARAMÈTRES</button>
+   <button onclick="ouvrirLien('https://www.google.com')">GOOGLE</button>
+   <button onclick="ouvrirLien('https://www.youtube.com')">YOUTUBE</button>
+   <button onclick="ouvrirLien('https://news.google.com')">ACTUALITÉS</button>
+   <button onclick="allerPage('assistant')">ASSISTANT IA</button>
   </div>
-</div>
+ </div>
 
  <div class="panel">
   <h2>ÉTAT DU SYSTÈME</h2>
@@ -347,13 +542,18 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
   <div class="list-item"><span>Mémoire locale</span><span class="tag good">Disponible</span></div>
   <div class="list-item"><span>Supabase</span><span id="supabase-state" class="tag">Vérification</span></div>
   <div class="list-item"><span>Reconnaissance vocale</span><span id="speech-state" class="tag">Vérification</span></div>
+  <div class="list-item"><span>Stockage navigateur</span><span id="storage-state" class="tag">Vérification</span></div>
  </div>
 </section>
 
 <!-- ASSISTANT -->
+
 <section class="page" id="page-assistant">
  <div class="panel">
-  <div class="section-title"><h2>CONSOLE J.A.R.V.I.S</h2><span class="tag">IA</span></div>
+  <div class="section-title">
+   <h2>CONSOLE J.A.R.V.I.S</h2>
+   <span class="tag">IA ACTIVE</span>
+  </div>
   <div id="messages">
    <div class="message jarvis">Bonjour, Monsieur. Système Stark opérationnel. Comment puis-je vous assister ?</div>
   </div>
@@ -366,24 +566,26 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
    <button class="secondary" onclick="lireDerniereReponse()">🔊 RELIRE</button>
    <button class="secondary" onclick="effacerChat()">EFFACER</button>
   </div>
-  <div class="small" style="margin-top:10px">Les conversations sont conservées localement sur cet appareil.</div>
+  <div class="small" style="margin-top:10px">Historique conservé localement sur cet appareil.</div>
  </div>
+
  <div class="panel">
   <h2>COMMANDES RAPIDES</h2>
-  <div class="actions">
+  <div class="grid">
    <button onclick="commandeRapide('Quelle heure est-il ?')">HEURE</button>
    <button onclick="commandeRapide('Donne-moi la date du jour.')">DATE</button>
    <button onclick="commandeRapide('Résume les tâches de mon agenda.')">MES TÂCHES</button>
-   <button onclick="commandeRapide('Comment économiser la batterie de mon iPhone ?')">BATTERIE</button>
+   <button onclick="commandeRapide('Comment économiser la batterie de mon téléphone ?')">BATTERIE</button>
+   <button onclick="commandeRapide('Que sais-tu de moi ?')">MA MÉMOIRE</button>
+   <button onclick="commandeRapide('Présente-moi tes fonctions.')">TES FONCTIONS</button>
   </div>
  </div>
 </section>
 
 <!-- MODE VOCAL -->
-<!-- MODE VOCAL STARK -->
+
 <section class="page" id="page-vocal">
  <div class="panel" style="text-align:center">
-
   <div class="small">STARK INDUSTRIES // VOICE SYSTEM</div>
   <h1>J.A.R.V.I.S</h1>
   <h2>INTERFACE VOCALE MK-3000</h2>
@@ -392,7 +594,6 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
    <div class="orb-ring one"></div>
    <div class="orb-ring two"></div>
    <div class="orb-ring three"></div>
-
    <div class="orb-core">
     <span>J</span>
     <div class="orb-center-light"></div>
@@ -400,29 +601,15 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
   </div>
 
   <div class="voice-indicator">
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
+   <span></span><span></span><span></span><span></span><span></span>
   </div>
 
   <h2 id="voice-status">SYSTÈME EN ATTENTE</h2>
-
-  <p id="voice-caption">
-   Bonjour, Monsieur. Activez le microphone pour commencer.
-  </p>
+  <p id="voice-caption">Bonjour, Monsieur. Activez le microphone pour commencer.</p>
 
   <div class="actions">
-   <button class="primary" id="voice-start"
-    onclick="demarrerConversationVocale()">
-    ACTIVER LE MICRO
-   </button>
-
-   <button class="danger"
-    onclick="arreterConversationVocale()">
-    ARRÊTER
-   </button>
+   <button class="primary" id="voice-start" onclick="demarrerConversationVocale()">ACTIVER LE MICRO</button>
+   <button class="danger" onclick="arreterConversationVocale()">ARRÊTER</button>
   </div>
 
   <div style="margin-top:20px;text-align:left">
@@ -430,9 +617,7 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
     <input type="checkbox" id="voice-auto" checked style="width:auto">
     Reprendre automatiquement l'écoute
    </label>
-
    <br><br>
-
    <label class="small">
     <input type="checkbox" id="voice-tts" checked style="width:auto">
     Lire les réponses à voix haute
@@ -441,30 +626,46 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
 
   <div class="stat" style="margin-top:20px">
    <span>ÉTAT DU RÉACTEUR VOCAL</span>
-   <strong style="font-size:13px" id="voice-reactor-state">
-    INITIALISÉ
-   </strong>
+   <strong style="font-size:13px" id="voice-reactor-state">INITIALISÉ</strong>
   </div>
-
  </div>
 </section>
- 
+
 <!-- AGENDA -->
+
 <section class="page" id="page-agenda">
  <div class="panel">
   <h1>AGENDA INTELLIGENT</h1>
-  <p class="muted">Les rappels sont enregistrés sur cet appareil. Les notifications nécessitent votre autorisation.</p>
+  <p class="muted">Rappels enregistrés sur cet appareil. Les notifications nécessitent votre autorisation et l'application doit pouvoir fonctionner.</p>
   <input id="reminder-title" placeholder="Nom du rappel">
   <input id="reminder-date" type="datetime-local" style="margin-top:9px">
   <button class="primary" style="width:100%;margin-top:9px" onclick="ajouterRappel()">AJOUTER UN RAPPEL</button>
  </div>
  <div class="panel">
-  <div class="section-title"><h2>MES RAPPELS</h2><button class="secondary" onclick="demanderNotifications()">AUTORISER NOTIFICATIONS</button></div>
+  <div class="section-title">
+   <h2>MES RAPPELS</h2>
+   <button class="secondary" onclick="demanderNotifications()">AUTORISER NOTIFICATIONS</button>
+  </div>
   <div id="reminder-list"></div>
  </div>
 </section>
 
-<!-- METEO ET RECHERCHE -->
+<!-- OUTILS -->
+
+<section class="page" id="page-outils">
+ <div class="panel">
+  <h1>OUTILS STARK</h1>
+  <div class="grid">
+   <button onclick="allerPage('meteo')">MÉTÉO</button>
+   <button onclick="allerPage('camera')">CAMÉRA</button>
+   <button onclick="allerPage('morse')">MORSE</button>
+   <button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
+  </div>
+ </div>
+</section>
+
+<!-- MÉTÉO -->
+
 <section class="page" id="page-meteo">
  <div class="panel">
   <h1>MÉTÉO</h1>
@@ -476,16 +677,15 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
   <h2>RECHERCHE INTERNET</h2>
   <input id="search-input" placeholder="Que souhaitez-vous rechercher ?">
   <button class="primary" style="width:100%;margin-top:9px" onclick="rechercherInternet()">LANCER LA RECHERCHE</button>
-  <div class="small" style="margin-top:8px">La recherche s'ouvre dans votre navigateur.</div>
  </div>
  <div class="panel">
   <h2>ACTUALITÉS</h2>
-  <p>Consultez les dernières actualités dans votre navigateur.</p>
   <button onclick="ouvrirLien('https://news.google.com/home?hl=fr&gl=FR&ceid=FR:fr')">OUVRIR LES ACTUALITÉS</button>
  </div>
 </section>
 
-<!-- CAMÉRA ET DOCUMENTS -->
+<!-- CAMÉRA -->
+
 <section class="page" id="page-camera">
  <div class="panel">
   <h1>MODULE CAMÉRA</h1>
@@ -497,20 +697,22 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
    <button onclick="prendrePhoto()">CAPTURER</button>
   </div>
   <canvas id="camera-canvas" style="display:none"></canvas>
-  <img id="photo-result" style="display:none;width:100%;margin-top:12px;border-radius:12px">
+  <img id="photo-result" alt="Capture caméra" style="display:none;width:100%;margin-top:12px;border-radius:12px">
   <a id="photo-download" style="display:none;color:var(--cyan);margin-top:10px">Enregistrer la capture</a>
  </div>
+
  <div class="panel">
   <h2>LECTEUR DE DOCUMENTS</h2>
   <input type="file" id="document-file" accept=".txt,.csv,.json,.md,.html,.log,image/*">
   <div id="document-result" class="small" style="margin-top:12px">Sélectionnez un fichier texte ou une image.</div>
   <img id="file-preview" alt="Aperçu du fichier">
   <button id="send-document" style="display:none;margin-top:10px" onclick="envoyerDocumentIA()">ENVOYER LE TEXTE À JARVIS</button>
-  <p class="small">Les fichiers texte peuvent être lus et résumés par l'IA. Les images sont affichées en aperçu, mais leur analyse nécessite un modèle et un service compatibles avec les images.</p>
+  <p class="small">Les fichiers texte peuvent être résumés par l'IA. Les images sont affichées en aperçu ; leur analyse intelligente nécessite une API compatible avec les images.</p>
  </div>
 </section>
 
 <!-- MORSE -->
+
 <section class="page" id="page-morse">
  <div class="panel">
   <h1>TRADUCTEUR MORSE</h1>
@@ -528,6 +730,7 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
 </section>
 
 <!-- DIAGNOSTIC -->
+
 <section class="page" id="page-diagnostic">
  <div class="panel">
   <h1>DIAGNOSTIC SYSTÈME</h1>
@@ -542,16 +745,47 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
 </section>
 
 <!-- PARAMÈTRES -->
+
 <section class="page" id="page-settings">
  <div class="panel">
-  <h1>PARAMÈTRES</h1>
+  <h1>PERSONNALISATION STARK</h1>
+
   <label class="small">Nom de l'assistant</label>
   <input id="assistant-name" value="J.A.R.V.I.S" style="margin:7px 0">
-  <button onclick="sauverParametres()">ENREGISTRER</button>
-  <div class="list-item"><span>Lecture vocale</span><button class="secondary" onclick="basculerLecture()">ACTIVER / DÉSACTIVER</button></div>
-  <div class="list-item"><span>Mode sombre</span><span class="tag good">ACTIF</span></div>
-  <div class="list-item"><span>Connexion Supabase</span><span id="settings-supabase" class="tag">Vérification</span></div>
+  <button onclick="sauverParametres()">ENREGISTRER LE NOM</button>
+
+  <div style="margin-top:16px">
+   <label class="small">Couleur du système</label>
+   <select id="theme-select" onchange="changerTheme(this.value)">
+    <option value="blue">BLEU STARK</option>
+    <option value="green">VERT ÉNERGIE</option>
+    <option value="purple">VIOLET FUTURISTE</option>
+   </select>
+  </div>
+
+  <div style="margin-top:16px">
+   <label class="small">Vitesse de la voix</label>
+   <select id="voice-rate">
+    <option value="0.85">LENTE</option>
+    <option value="1" selected>NORMALE</option>
+    <option value="1.15">RAPIDE</option>
+   </select>
+  </div>
+
+  <div class="list-item">
+   <span>Lecture vocale</span>
+   <button class="secondary" onclick="basculerLecture()">ACTIVER / DÉSACTIVER</button>
+  </div>
+  <div class="list-item">
+   <span>Mode sombre</span>
+   <span class="tag good">ACTIF</span>
+  </div>
+  <div class="list-item">
+   <span>Connexion Supabase</span>
+   <span id="settings-supabase" class="tag">Vérification</span>
+  </div>
  </div>
+
  <div class="panel">
   <h2>COMPTE SUPABASE</h2>
   <p class="small">Connexion facultative pour synchroniser la mémoire entre vos appareils.</p>
@@ -562,17 +796,20 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
   </div>
   <div id="account-status" class="small" style="margin-top:9px">Compte non vérifié.</div>
  </div>
+
  <div class="panel">
-  <h2>MÉMOIRE</h2>
+  <h2>MÉMOIRE INTELLIGENTE</h2>
   <div id="memory-count" class="muted">0 souvenir local</div>
-  <button class="secondary" onclick="afficherSouvenirs()">AFFICHER LES SOUVENIRS</button>
-  <button class="danger" onclick="effacerSouvenirs()" style="margin-top:8px">EFFACER LA MÉMOIRE LOCALE</button>
+  <input id="memory-search" placeholder="Rechercher dans les souvenirs..." oninput="afficherSouvenirs()">
+  <button class="secondary" onclick="afficherSouvenirs()" style="margin-top:8px">ACTUALISER LA MÉMOIRE</button>
   <div id="memory-list" style="margin-top:10px"></div>
+  <button class="danger" onclick="effacerSouvenirs()" style="margin-top:10px">EFFACER LA MÉMOIRE LOCALE</button>
  </div>
+
  <div class="panel">
   <h2>À PROPOS</h2>
-  <p>J.A.R.V.I.S — STARK INDUSTRIES<br>Version 7.0 — MK-3000<br>Interface personnelle expérimentale.</p>
-  <p class="small">Les données locales restent dans le stockage du navigateur. Les échanges avec l'IA nécessitent une connexion Internet.</p>
+  <p>J.A.R.V.I.S — STARK INDUSTRIES<br>Version 8.0 — MK-3000<br>Interface personnelle expérimentale.</p>
+  <p class="small">Les données locales restent dans le stockage du navigateur. Les échanges avec l'IA nécessitent Internet. Certaines fonctions dépendent des autorisations du navigateur.</p>
  </div>
 </section>
 
@@ -586,20 +823,19 @@ footer{text-align:center;color:#536b80;font-size:10px;padding:20px}
  <button class="nav-btn" data-page="settings" onclick="allerPage('settings')"><b>⚙</b>OPTIONS</button>
 </nav>
 
-<footer>STARK INDUSTRIES // J.A.R.V.I.S MK-3000 // VERSION 7.0</footer>
+<footer>STARK INDUSTRIES // J.A.R.V.I.S MK-3000 // VERSION 8.0</footer>
 
 <script>
 "use strict";
 
-/* =========================================================
-   CONFIGURATION ET STOCKAGE
-========================================================= */
+/* CONFIGURATION */
 
 const CLE_MEMOIRE="jarvis_memoire";
-const CLE_CHAT="jarvis_chat_v7";
+const CLE_CHAT="jarvis_chat_v8";
 const CLE_RAPPELS="jarvis_automations";
 const CLE_NOM="jarvis_assistant_name";
-const CLE_TTS="jarvis_tts_v7";
+const CLE_TTS="jarvis_tts_v8";
+const CLE_THEME="jarvis_theme_v8";
 
 let clientSupabase=null;
 let utilisateur=null;
@@ -614,39 +850,47 @@ let contexteDocument="";
 let minuterieRappels=null;
 
 const $=id=>document.getElementById(id);
-const lireJSON=(cle,defaut)=>{
+
+function lireJSON(cle,defaut){
  try{return JSON.parse(localStorage.getItem(cle))??defaut}
  catch{return defaut}
-};
+}
+
 const memoireLocale=lireJSON(CLE_MEMOIRE,[]);
 const rappels=lireJSON(CLE_RAPPELS,[]);
 historique=lireJSON(CLE_CHAT,[]);
 
+function alerte(message){window.alert(message)}
+
 function sauvegarderChat(){
  localStorage.setItem(CLE_CHAT,JSON.stringify(historique.slice(-40)));
 }
+
 function sauvegarderMemoire(){
  localStorage.setItem(CLE_MEMOIRE,JSON.stringify(memoireLocale));
  actualiserCompteurMemoire();
 }
+
 function actualiserCompteurMemoire(){
  $("memory-count").textContent=memoireLocale.length+" souvenir(s) local(aux)";
 }
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
+/* NAVIGATION */
 
 function allerPage(nom){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+
  const page=$("page-"+nom);
  if(page)page.classList.add("active");
+
  const bouton=document.querySelector('[data-page="'+nom+'"]');
  if(bouton)bouton.classList.add("active");
+
  if(nom==="agenda")afficherRappels();
  if(nom==="settings")actualiserCompteurMemoire();
  if(nom==="assistant")setTimeout(()=>$("chat-input").focus(),100);
+
  window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -654,80 +898,123 @@ function ouvrirLien(url){
  window.open(url,"_blank","noopener,noreferrer");
 }
 
-/* =========================================================
-   TABLEAU DE BORD
-========================================================= */
+/* TABLEAU DE BORD */
 
 function actualiserHorloge(){
  const d=new Date();
  $("clock").textContent=d.toLocaleTimeString("fr-FR");
  $("date").textContent=d.toLocaleDateString("fr-FR");
 }
+
 setInterval(actualiserHorloge,1000);
 actualiserHorloge();
 
 if(navigator.getBattery){
  navigator.getBattery().then(b=>{
-  const maj=()=>{$("battery").textContent=Math.round(b.level*100)+" %"};
-  maj();b.addEventListener("levelchange",maj);
+  const maj=()=>{
+   $("battery").textContent=Math.round(b.level*100)+" %";
+  };
+  maj();
+  b.addEventListener("levelchange",maj);
  }).catch(()=>$("battery").textContent="Indisponible");
-}else $("battery").textContent="Indisponible";
+}else{
+ $("battery").textContent="Indisponible";
+}
 
 function actualiserConnexion(){
  const enLigne=navigator.onLine;
  $("connection").textContent=enLigne?"EN LIGNE":"HORS LIGNE";
  $("network-status").textContent=enLigne?"Internet disponible":"Connexion absente";
  $("network-status").style.color=enLigne?"var(--green)":"var(--red)";
+ $("global-status").textContent=enLigne?"● SYSTEM ONLINE":"● OFFLINE";
 }
+
 window.addEventListener("online",actualiserConnexion);
 window.addEventListener("offline",actualiserConnexion);
 actualiserConnexion();
 
-/* =========================================================
-   CONNEXION API ET SUPABASE
-========================================================= */
+function verifierStockage(){
+ try{
+  localStorage.setItem("__jarvis_test","1");
+  localStorage.removeItem("__jarvis_test");
+  $("storage-state").textContent="DISPONIBLE";
+  $("storage-state").className="tag good";
+ }catch(e){
+  $("storage-state").textContent="INDISPONIBLE";
+  $("storage-state").className="tag warn";
+ }
+}
+verifierStockage();
+
+$("speech-state").textContent=
+ (window.SpeechRecognition||window.webkitSpeechRecognition)?"DISPONIBLE":"NON DISPONIBLE";
+
+/* SERVICES GROQ ET SUPABASE */
 
 async function initialiserServices(){
  try{
   const r=await fetch("/api/config",{cache:"no-store"});
   if(!r.ok)throw new Error("Configuration serveur indisponible");
+
   const config=await r.json();
+
   if(config.url&&config.key&&window.supabase){
    clientSupabase=window.supabase.createClient(config.url,config.key);
+
    $("supabase-state").textContent="CONFIGURÉ";
    $("supabase-state").className="tag good";
    $("settings-supabase").textContent="CONFIGURÉ";
+
    const {data}=await clientSupabase.auth.getSession();
    utilisateur=data.session?.user||null;
    actualiserCompte();
+
    if(utilisateur)await chargerSouvenirsDistants();
-  }else throw new Error("Configuration Supabase incomplète");
+  }else{
+   throw new Error("Configuration Supabase incomplète");
+  }
  }catch(e){
   $("supabase-state").textContent="NON CONNECTÉ";
   $("supabase-state").className="tag warn";
   $("settings-supabase").textContent="NON CONNECTÉ";
  }
+
  $("ia-state").textContent=navigator.onLine?"PRÊTE À TESTER":"HORS LIGNE";
  $("ia-state").className="tag";
 }
+
 initialiserServices();
 
 async function connexionSupabase(){
- if(!clientSupabase){alerte("Supabase n'est pas configuré.");return}
+ if(!clientSupabase){
+  alerte("Supabase n'est pas configuré.");
+  return;
+ }
+
  const email=$("account-email").value.trim();
- if(!email||!email.includes("@")){alerte("Entrez une adresse e-mail valide.");return}
+
+ if(!email||!email.includes("@")){
+  alerte("Entrez une adresse e-mail valide.");
+  return;
+ }
+
  try{
   const {error}=await clientSupabase.auth.signInWithOtp({
    email,
    options:{emailRedirectTo:location.origin}
   });
+
   if(error)throw error;
+
   $("account-status").textContent="Lien de connexion envoyé. Consultez votre boîte e-mail.";
- }catch(e){$("account-status").textContent="Erreur : "+e.message}
+ }catch(e){
+  $("account-status").textContent="Erreur : "+e.message;
+ }
 }
 
 async function deconnexionSupabase(){
  if(!clientSupabase)return;
+
  await clientSupabase.auth.signOut();
  utilisateur=null;
  $("account-status").textContent="Déconnecté.";
@@ -735,92 +1022,159 @@ async function deconnexionSupabase(){
 
 function actualiserCompte(){
  $("account-status").textContent=utilisateur?
- "Connecté : "+utilisateur.email:"Compte non connecté.";
+ "Connecté : "+utilisateur.email:
+ "Compte non connecté.";
 }
 
 async function chargerSouvenirsDistants(){
  if(!clientSupabase||!utilisateur)return;
+
  try{
-  const {data,error}=await clientSupabase.from("jarvis_memory")
+  const {data,error}=await clientSupabase
+   .from("jarvis_memory")
    .select("id,memory,category,created_at")
    .eq("owner_id",utilisateur.id)
-   .order("created_at",{ascending:false}).limit(50);
+   .order("created_at",{ascending:false})
+   .limit(50);
+
   if(error)throw error;
+
   data.forEach(item=>{
    if(!memoireLocale.some(m=>m.texte===item.memory)){
-    memoireLocale.push({texte:item.memory,source:"supabase",date:item.created_at});
+    memoireLocale.push({
+     texte:item.memory,
+     source:"supabase",
+     date:item.created_at
+    });
    }
   });
+
   sauvegarderMemoire();
- }catch(e){console.warn("Mémoire distante :",e.message)}
+ }catch(e){
+  console.warn("Mémoire distante :",e.message);
+ }
 }
+
+/* MÉMOIRE INTELLIGENTE */
 
 async function enregistrerSouvenir(texte){
  const propre=texte.trim();
  if(!propre)return;
+
  if(memoireLocale.some(m=>m.texte.toLowerCase()===propre.toLowerCase())){
-  ajouterMessage("Cette information est déjà dans ma mémoire.","jarvis");return;
+  ajouterMessage("Cette information est déjà dans ma mémoire.","jarvis");
+  return;
  }
- memoireLocale.unshift({texte:propre,date:new Date().toISOString()});
+
+ memoireLocale.unshift({
+  texte:propre,
+  date:new Date().toISOString()
+ });
+
  sauvegarderMemoire();
+
  if(clientSupabase&&utilisateur){
   try{
    const {error}=await clientSupabase.from("jarvis_memory").insert({
-    memory:propre,category:"personnel",owner_id:utilisateur.id
+    memory:propre,
+    category:"personnel",
+    owner_id:utilisateur.id
    });
+
    if(error)console.warn("Synchronisation mémoire :",error.message);
-  }catch(e){console.warn(e)}
+  }catch(e){
+   console.warn(e);
+  }
  }
+
  ajouterMessage("Information enregistrée dans ma mémoire, Monsieur.","jarvis");
 }
 
 function chercherSouvenir(question){
- const mots=question.toLowerCase().split(/\W+/).filter(m=>m.length>3);
+ const mots=question.toLowerCase().split(/\W+/).filter(m=>m.length>2);
+
  return memoireLocale.filter(s=>
   mots.some(m=>s.texte.toLowerCase().includes(m))
- ).slice(0,5);
+ ).slice(0,8);
 }
 
 function afficherSouvenirs(){
  const zone=$("memory-list");
+ const recherche=$("memory-search").value.trim().toLowerCase();
+
  zone.innerHTML="";
- if(!memoireLocale.length){zone.textContent="Aucun souvenir enregistré.";return}
- memoireLocale.forEach((m,i)=>{
-  const div=document.createElement("div");div.className="list-item";
-  const span=document.createElement("span");span.textContent=m.texte;
-  const btn=document.createElement("button");btn.className="danger";btn.textContent="×";
-  btn.onclick=()=>{memoireLocale.splice(i,1);sauvegarderMemoire();afficherSouvenirs()};
-  div.append(span,btn);zone.appendChild(div);
+
+ const liste=memoireLocale
+  .map((m,i)=>({...m,index:i}))
+  .filter(m=>!recherche||m.texte.toLowerCase().includes(recherche));
+
+ if(!liste.length){
+  zone.textContent="Aucun souvenir correspondant.";
+  return;
+ }
+
+ liste.forEach(m=>{
+  const div=document.createElement("div");
+  div.className="memory-entry";
+
+  const texte=document.createElement("div");
+  texte.textContent=m.texte;
+
+  const btn=document.createElement("button");
+  btn.className="danger";
+  btn.textContent="SUPPRIMER";
+  btn.style.marginTop="8px";
+
+  btn.onclick=()=>{
+   memoireLocale.splice(m.index,1);
+   sauvegarderMemoire();
+   afficherSouvenirs();
+  };
+
+  div.append(texte,btn);
+  zone.appendChild(div);
  });
 }
+
 async function effacerSouvenirs(){
  if(!confirm("Effacer les souvenirs enregistrés localement ?"))return;
+
  memoireLocale.splice(0,memoireLocale.length);
- sauvegarderMemoire();afficherSouvenirs();
+ sauvegarderMemoire();
+ afficherSouvenirs();
 }
 
-/* =========================================================
-   CHAT ET INTELLIGENCE ARTIFICIELLE
-========================================================= */
+/* CHAT ET INTELLIGENCE ARTIFICIELLE */
 
 function ajouterMessage(texte,type="jarvis"){
  const zone=$("messages");
  const div=document.createElement("div");
+
  div.className="message "+type;
  div.textContent=texte;
+
  zone.appendChild(div);
  zone.scrollTop=zone.scrollHeight;
+
  if(type==="jarvis")dernierTexte=texte;
 }
 
 function systemePrompt(){
- const souvenirs=memoireLocale.slice(0,30).map(m=>"- "+m.texte).join("\n");
+ const souvenirs=memoireLocale
+  .slice(0,40)
+  .map(m=>"- "+m.texte)
+  .join("\n");
+
  const nom=localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S";
- return `Tu es ${nom}, un assistant personnel inspiré d'une interface futuriste Stark Industries.
-Tu réponds toujours en français, avec politesse et précision. Tu appelles l'utilisateur "Monsieur".
-Tu comprends les fautes de frappe. Tu ne prétends jamais avoir effectué une action que tu ne peux pas faire.
+
+ return `Tu es ${nom}, un assistant personnel inspiré de Stark Industries.
+Tu réponds toujours en français, avec politesse et précision.
+Tu appelles l'utilisateur "Monsieur".
+Tu comprends les fautes de frappe.
+Tu ne prétends jamais avoir effectué une action que tu ne peux pas faire.
 Tu expliques clairement les limites d'une application web sur iPhone.
 Tu ne prétends pas lire les SMS, contrôler les autres applications ou effectuer un scan antivirus.
+Tu ne prétends pas analyser les images si elles ne t'ont pas été transmises par un service compatible.
 Si l'utilisateur dit "Jarvis ?", réponds exactement : "Système Stark opérationnel. Code JARVIS-3000 accepté."
 Souvenirs disponibles :
 ${souvenirs||"Aucun souvenir enregistré."}`;
@@ -828,116 +1182,203 @@ ${souvenirs||"Aucun souvenir enregistré."}`;
 
 function traiterCommandeMemoire(texte){
  const t=texte.trim();
- const commandes=["retiens que ","souviens-toi que ","mémorise que ","memorise que "];
  const bas=t.toLowerCase();
+
+ const commandes=[
+  "retiens que ",
+  "souviens-toi que ",
+  "mémorise que ",
+  "memorise que "
+ ];
+
  for(const cmd of commandes){
   if(bas.startsWith(cmd)){
-   enregistrerSouvenir(t.slice(cmd.length));return true;
+   enregistrerSouvenir(t.slice(cmd.length));
+   return true;
   }
  }
- if(bas==="que sais-tu de moi ?"||bas==="qu'est-ce que tu sais de moi ?"){
-  const liste=memoireLocale.slice(0,20).map(m=>"• "+m.texte).join("\n");
-  ajouterMessage(liste||"Je n'ai pas encore de souvenirs enregistrés.", "jarvis");
+
+ if(
+  bas==="que sais-tu de moi ?"||
+  bas==="qu'est-ce que tu sais de moi ?"
+ ){
+  const liste=memoireLocale
+   .slice(0,20)
+   .map(m=>"• "+m.texte)
+   .join("\n");
+
+  ajouterMessage(
+   liste||"Je n'ai pas encore de souvenirs enregistrés.",
+   "jarvis"
+  );
   return true;
  }
+
  return false;
 }
 
 async function appelerIA(texte,contexte=[]){
- if(!navigator.onLine)throw new Error("Connexion Internet nécessaire.");
+ if(!navigator.onLine){
+  throw new Error("Connexion Internet nécessaire.");
+ }
+
  const messagesIA=[
   {role:"system",content:systemePrompt()},
   ...contexte.slice(-12),
   {role:"user",content:texte}
  ];
+
  const reponse=await fetch("/api/chat",{
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({messages:messagesIA})
  });
+
  const donnees=await reponse.json();
- if(!reponse.ok)throw new Error(donnees.details||donnees.error||"Erreur serveur");
- if(!donnees.reply)throw new Error("Aucune réponse reçue.");
+
+ if(!reponse.ok){
+  throw new Error(donnees.details||donnees.error||"Erreur serveur");
+ }
+
+ if(!donnees.reply){
+  throw new Error("Aucune réponse reçue.");
+ }
+
  return donnees.reply;
 }
 
 async function envoyer(){
  const champ=$("chat-input");
  const texte=champ.value.trim();
+
  if(!texte)return;
+
  champ.value="";
  ajouterMessage(texte,"user");
+
  if(traiterCommandeMemoire(texte))return;
+
  const contexte=historique.slice(-12);
  ajouterMessage("Analyse en cours...","system");
+
  try{
   const reponse=await appelerIA(texte,contexte);
+
   const dernier=$("messages").lastElementChild;
   if(dernier?.classList.contains("system"))dernier.remove();
+
   ajouterMessage(reponse,"jarvis");
-  historique.push({role:"user",content:texte},{role:"assistant",content:reponse});
+
+  historique.push(
+   {role:"user",content:texte},
+   {role:"assistant",content:reponse}
+  );
+
   sauvegarderChat();
+
   if(lectureActive)parler(reponse);
+
  }catch(e){
   const dernier=$("messages").lastElementChild;
   if(dernier?.classList.contains("system"))dernier.remove();
+
   ajouterMessage("Erreur : "+e.message,"jarvis");
  }
 }
+
 $("chat-input").addEventListener("keydown",e=>{
  if(e.key==="Enter")envoyer();
 });
-function commandeRapide(t){$("chat-input").value=t;envoyer()}
+
+function commandeRapide(texte){
+ allerPage("assistant");
+ $("chat-input").value=texte;
+ envoyer();
+}
+
 function effacerChat(){
  if(!confirm("Effacer l'historique de cette conversation ?"))return;
- historique=[];sauvegarderChat();
+
+ historique=[];
+ sauvegarderChat();
  $("messages").innerHTML="";
+
  ajouterMessage("Historique effacé. Je suis prêt, Monsieur.","jarvis");
 }
 
-/* =========================================================
-   SYNTHÈSE VOCALE ET RECONNAISSANCE
-========================================================= */
+/* SYNTHÈSE VOCALE */
 
 function parler(texte){
  if(!lectureActive||!window.speechSynthesis)return;
+
  speechSynthesis.cancel();
+
  const u=new SpeechSynthesisUtterance(texte);
- u.lang="fr-FR";u.rate=1;u.pitch=1;
- const voix=speechSynthesis.getVoices();
- const fr=voix.find(v=>v.lang==="fr-FR");
+ u.lang="fr-FR";
+ u.rate=Number($("voice-rate")?.value||1);
+ u.pitch=1;
+
+ const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
  if(fr)u.voice=fr;
+
  speechSynthesis.speak(u);
 }
+
 function lireDerniereReponse(){
  if(dernierTexte)parler(dernierTexte);
 }
+
 function basculerLecture(){
  lectureActive=!lectureActive;
  localStorage.setItem(CLE_TTS,String(lectureActive));
- if(!lectureActive&&speechSynthesis)speechSynthesis.cancel();
+
+ if(!lectureActive&&window.speechSynthesis){
+  speechSynthesis.cancel();
+ }
+
  alerte("Lecture vocale "+(lectureActive?"activée":"désactivée")+".");
 }
+
+/* RECONNAISSANCE VOCALE */
 
 function creerReconnaissance(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR)return null;
- const r=new SR();r.lang="fr-FR";r.interimResults=false;r.continuous=false;
+
+ const r=new SR();
+ r.lang="fr-FR";
+ r.interimResults=false;
+ r.continuous=false;
+
  return r;
 }
+
 function demarrerMicro(){
  const r=creerReconnaissance();
- if(!r){alerte("Reconnaissance vocale non prise en charge par ce navigateur.");return}
+
+ if(!r){
+  alerte("Reconnaissance vocale non prise en charge par ce navigateur.");
+  return;
+ }
+
  r.onresult=e=>{
   const texte=e.results[0][0].transcript;
-  $("chat-input").value=texte;envoyer();
+  $("chat-input").value=texte;
+  envoyer();
  };
+
  r.onerror=e=>alerte("Microphone : "+e.error);
- try{r.start()}catch(e){alerte("Impossible de démarrer le microphone.")}
+
+ try{
+  r.start();
+ }catch(e){
+  alerte("Impossible de démarrer le microphone.");
+ }
 }
 
+/* RÉACTEUR VOCAL */
 
-function definirEtatVocal(etat, message){
+function definirEtatVocal(etat,message){
  const orb=$("voice-orb");
  const status=$("voice-status");
  const reactor=$("voice-reactor-state");
@@ -956,6 +1397,7 @@ function definirEtatVocal(etat, message){
    speaking:"RÉPONSE VOCALE",
    idle:"EN ATTENTE"
   };
+
   reactor.textContent=etats[etat]||"INITIALISÉ";
  }
 }
@@ -1063,7 +1505,7 @@ function parlerVocal(texte){
 
  const u=new SpeechSynthesisUtterance(texte);
  u.lang="fr-FR";
- u.rate=1;
+ u.rate=Number($("voice-rate")?.value||1);
  u.pitch=1;
 
  const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
@@ -1112,9 +1554,7 @@ function arreterConversationVocale(){
  vocalActif=false;
 
  if(reconnaissance){
-  try{
-   reconnaissance.abort();
-  }catch(e){}
+  try{reconnaissance.abort()}catch(e){}
  }
 
  if(window.speechSynthesis){
@@ -1122,7 +1562,6 @@ function arreterConversationVocale(){
  }
 
  definirEtatVocal("idle","MODE VOCAL ARRÊTÉ");
-
  $("voice-caption").textContent="Conversation terminée.";
 }
 
@@ -1130,167 +1569,312 @@ function ouvrirModeVocal(){
  allerPage("vocal");
  demarrerConversationVocale();
 }
- 
-function ouvrirModeVocal(){allerPage("vocal");demarrerConversationVocale()}
 
-/* =========================================================
-   AGENDA ET RAPPELS
-========================================================= */
+/* AGENDA */
 
 function sauvegarderRappels(){
  localStorage.setItem(CLE_RAPPELS,JSON.stringify(rappels));
 }
+
 function ajouterRappel(){
  const titre=$("reminder-title").value.trim();
  const date=$("reminder-date").value;
- if(!titre||!date){alerte("Indiquez un titre et une date.");return}
- const timestamp=new Date(date).getTime();
- if(!Number.isFinite(timestamp)||timestamp<=Date.now()){
-  alerte("Choisissez une date future.");return;
+
+ if(!titre||!date){
+  alerte("Indiquez un titre et une date.");
+  return;
  }
- rappels.push({id:Date.now(),titre,date,fait:false});
- sauvegarderRappels();afficherRappels();
- $("reminder-title").value="";$("reminder-date").value="";
+
+ const timestamp=new Date(date).getTime();
+
+ if(!Number.isFinite(timestamp)||timestamp<=Date.now()){
+  alerte("Choisissez une date future.");
+  return;
+ }
+
+ rappels.push({
+  id:Date.now(),
+  titre,
+  date,
+  fait:false,
+  notifie:false
+ });
+
+ sauvegarderRappels();
+ afficherRappels();
+
+ $("reminder-title").value="";
+ $("reminder-date").value="";
 }
+
 function afficherRappels(){
- const zone=$("reminder-list");zone.innerHTML="";
- if(!rappels.length){zone.textContent="Aucun rappel.";return}
+ const zone=$("reminder-list");
+ zone.innerHTML="";
+
+ if(!rappels.length){
+  zone.textContent="Aucun rappel.";
+  return;
+ }
+
  rappels.sort((a,b)=>new Date(a.date)-new Date(b.date));
+
  rappels.forEach(r=>{
-  const div=document.createElement("div");div.className="list-item";
+  const div=document.createElement("div");
+  div.className="list-item";
+
   const txt=document.createElement("div");
-  const strong=document.createElement("strong");strong.textContent=r.titre;
-  const date=document.createElement("div");date.className="small";
+
+  const strong=document.createElement("strong");
+  strong.textContent=r.titre;
+
+  const date=document.createElement("div");
+  date.className="small";
   date.textContent=new Date(r.date).toLocaleString("fr-FR");
+
   txt.append(strong,date);
+
   const actions=document.createElement("div");
-  const done=document.createElement("button");done.textContent=r.fait?"À faire":"Terminé";
-  done.onclick=()=>{r.fait=!r.fait;sauvegarderRappels();afficherRappels()};
-  const del=document.createElement("button");del.className="danger";del.textContent="×";
-  del.onclick=()=>{const i=rappels.findIndex(x=>x.id===r.id);if(i>=0)rappels.splice(i,1);sauvegarderRappels();afficherRappels()};
-  actions.append(done,del);div.append(txt,actions);zone.append(div);
+
+  const done=document.createElement("button");
+  done.textContent=r.fait?"À faire":"Terminé";
+
+  done.onclick=()=>{
+   r.fait=!r.fait;
+   sauvegarderRappels();
+   afficherRappels();
+  };
+
+  const del=document.createElement("button");
+  del.className="danger";
+  del.textContent="×";
+
+  del.onclick=()=>{
+   const i=rappels.findIndex(x=>x.id===r.id);
+   if(i>=0)rappels.splice(i,1);
+   sauvegarderRappels();
+   afficherRappels();
+  };
+
+  actions.append(done,del);
+  div.append(txt,actions);
+  zone.append(div);
  });
 }
+
 async function demanderNotifications(){
- if(!("Notification" in window)){alerte("Notifications non prises en charge.");return}
+ if(!("Notification" in window)){
+  alerte("Notifications non prises en charge.");
+  return;
+ }
+
  const p=await Notification.requestPermission();
  alerte("Autorisation des notifications : "+p);
 }
+
 function verifierRappels(){
  const maintenant=Date.now();
+
  rappels.forEach(r=>{
   if(!r.fait&&!r.notifie&&new Date(r.date).getTime()<=maintenant){
-   r.notifie=true;r.fait=true;
+   r.notifie=true;
+   r.fait=true;
+
    if("Notification" in window&&Notification.permission==="granted"){
     new Notification("J.A.R.V.I.S — Rappel",{body:r.titre});
    }else{
     alerte("Rappel : "+r.titre);
    }
+
    sauvegarderRappels();
   }
  });
 }
+
 minuterieRappels=setInterval(verifierRappels,15000);
 afficherRappels();
 
-/* =========================================================
-   MÉTÉO OPEN-METEO
-========================================================= */
+/* MÉTÉO */
 
 async function chargerMeteo(){
  const zone=$("weather-result");
  zone.textContent="Recherche de votre position...";
- if(!navigator.geolocation){zone.textContent="Géolocalisation non disponible.";return}
+
+ if(!navigator.geolocation){
+  zone.textContent="Géolocalisation non disponible.";
+  return;
+ }
+
  navigator.geolocation.getCurrentPosition(async pos=>{
   try{
-   const lat=pos.coords.latitude,lon=pos.coords.longitude;
-   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
+   const lat=pos.coords.latitude;
+   const lon=pos.coords.longitude;
+
+   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
+
    const r=await fetch(url);
    if(!r.ok)throw new Error("Service météo indisponible");
-   const d=await r.json(),c=d.current;
+
+   const d=await r.json();
+   const c=d.current;
+
    zone.innerHTML="";
-   const titre=document.createElement("h2");titre.textContent="CONDITIONS ACTUELLES";
-   const temp=document.createElement("div");temp.className="morse-output";temp.textContent=Math.round(c.temperature_2m)+" °C";
+
+   const titre=document.createElement("h2");
+   titre.textContent="CONDITIONS ACTUELLES";
+
+   const temp=document.createElement("div");
+   temp.className="morse-output";
+   temp.textContent=Math.round(c.temperature_2m)+" °C";
+
    const details=document.createElement("p");
-   details.textContent="Ressenti : "+Math.round(c.apparent_temperature)+" °C · Humidité : "+c.relative_humidity_2m+" % · Vent : "+c.wind_speed_10m+" km/h";
+   details.textContent=
+    "Ressenti : "+Math.round(c.apparent_temperature)+
+    " °C · Humidité : "+c.relative_humidity_2m+
+    " % · Vent : "+c.wind_speed_10m+" km/h";
+
    zone.append(titre,temp,details);
+
    d.daily.time.forEach((jour,i)=>{
     const p=document.createElement("p");
-    p.textContent=new Date(jour+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+
-    " : "+Math.round(d.daily.temperature_2m_min[i])+" à "+Math.round(d.daily.temperature_2m_max[i])+" °C";
+
+    p.textContent=
+     new Date(jour+"T12:00:00").toLocaleDateString("fr-FR",{
+      weekday:"long",day:"numeric",month:"long"
+     })+
+     " : "+
+     Math.round(d.daily.temperature_2m_min[i])+
+     " à "+
+     Math.round(d.daily.temperature_2m_max[i])+
+     " °C";
+
     zone.append(p);
    });
-  }catch(e){zone.textContent="Erreur météo : "+e.message}
- },err=>{zone.textContent="Position non autorisée ou indisponible : "+err.message},
- {enableHighAccuracy:false,timeout:10000});
+
+  }catch(e){
+   zone.textContent="Erreur météo : "+e.message;
+  }
+
+ },err=>{
+  zone.textContent="Position non autorisée ou indisponible : "+err.message;
+ },{enableHighAccuracy:false,timeout:10000});
 }
 
 function rechercherInternet(){
  const q=$("search-input").value.trim();
  if(!q)return;
+
  ouvrirLien("https://www.google.com/search?q="+encodeURIComponent(q));
 }
 
-/* =========================================================
-   CAMÉRA
-========================================================= */
+/* CAMÉRA */
 
 async function demarrerCamera(){
  try{
-  if(!navigator.mediaDevices?.getUserMedia)throw new Error("Caméra non prise en charge.");
-  fluxCamera=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw new Error("Caméra non prise en charge.");
+  }
+
+  fluxCamera=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:"environment"},
+   audio:false
+  });
+
   $("camera-preview").srcObject=fluxCamera;
- }catch(e){alerte("Impossible d'activer la caméra : "+e.message)}
+
+ }catch(e){
+  alerte("Impossible d'activer la caméra : "+e.message);
+ }
 }
+
 function arreterCamera(){
- if(fluxCamera){fluxCamera.getTracks().forEach(t=>t.stop());fluxCamera=null}
+ if(fluxCamera){
+  fluxCamera.getTracks().forEach(t=>t.stop());
+  fluxCamera=null;
+ }
+
  $("camera-preview").srcObject=null;
 }
+
 function prendrePhoto(){
  const video=$("camera-preview");
- if(!video.videoWidth){alerte("Activez d'abord la caméra.");return}
+
+ if(!video.videoWidth){
+  alerte("Activez d'abord la caméra.");
+  return;
+ }
+
  const canvas=$("camera-canvas");
- canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+ canvas.width=video.videoWidth;
+ canvas.height=video.videoHeight;
+
  canvas.getContext("2d").drawImage(video,0,0);
+
  const url=canvas.toDataURL("image/png");
- $("photo-result").src=url;$("photo-result").style.display="block";
- $("photo-download").href=url;$("photo-download").download="jarvis-capture.png";
+
+ $("photo-result").src=url;
+ $("photo-result").style.display="block";
+
+ $("photo-download").href=url;
+ $("photo-download").download="jarvis-capture.png";
  $("photo-download").style.display="inline-block";
 }
 
-/* =========================================================
-   LECTURE DE DOCUMENTS
-========================================================= */
+/* LECTEUR DE DOCUMENTS */
 
 $("document-file").addEventListener("change",async e=>{
- const file=e.target.files[0];if(!file)return;
+ const file=e.target.files[0];
+ if(!file)return;
+
  const zone=$("document-result");
  contexteDocument="";
  $("send-document").style.display="none";
+
  if(file.type.startsWith("image/")){
   const url=URL.createObjectURL(file);
-  $("file-preview").src=url;$("file-preview").style.display="block";
-  zone.textContent="Image chargée : "+file.name+". Aperçu disponible, analyse visuelle non activée dans cette version.";
+  $("file-preview").src=url;
+  $("file-preview").style.display="block";
+
+  zone.textContent=
+   "Image chargée : "+file.name+
+   ". Aperçu disponible ; analyse visuelle non activée.";
+
   return;
  }
+
  $("file-preview").style.display="none";
- if(file.size>1024*1024){zone.textContent="Fichier trop volumineux (limite : 1 Mo).";return}
+
+ if(file.size>1024*1024){
+  zone.textContent="Fichier trop volumineux (limite : 1 Mo).";
+  return;
+ }
+
  try{
   contexteDocument=await file.text();
-  zone.textContent="Fichier chargé : "+file.name+" ("+contexteDocument.length+" caractères).";
+
+  zone.textContent=
+   "Fichier chargé : "+file.name+
+   " ("+contexteDocument.length+" caractères).";
+
   $("send-document").style.display="inline-block";
- }catch(err){zone.textContent="Impossible de lire ce fichier."}
+
+ }catch(err){
+  zone.textContent="Impossible de lire ce fichier.";
+ }
 });
+
 function envoyerDocumentIA(){
  if(!contexteDocument)return;
+
  allerPage("assistant");
- $("chat-input").value="Analyse et résume ce document, puis explique les éléments importants :\n\n"+contexteDocument.slice(0,12000);
+
+ $("chat-input").value=
+  "Analyse et résume ce document, puis explique les éléments importants :\n\n"+
+  contexteDocument.slice(0,12000);
+
  envoyer();
 }
 
-/* =========================================================
-   TRADUCTEUR MORSE ET ÉMISSION SONORE
-========================================================= */
+/* TRADUCTEUR MORSE */
 
 const MORSE={
  A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",
@@ -1302,126 +1886,203 @@ const MORSE={
  ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--",
  "'":".----.","(":"-.--.",")":"-.--.-","&":".-...",
  ":":"---...",";":"-.-.-.","=":"-...-","+":".-.-.",
- "-":"-....-","_":"..--.-",'"':".-..-.","/":"-..-."
+ "-":"-....-","_":"..--.-",'"':".-..-.", "/":"-..-."
 };
-const inverseMorse=Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
-function estMorse(t){return /^[.\-/\s]+$/.test(t)&&/[.-]/.test(t)}
+
+const inverseMorse=Object.fromEntries(
+ Object.entries(MORSE).map(([k,v])=>[v,k])
+);
+
+function estMorse(t){
+ return /^[.\-/\s]+$/.test(t)&&/[.-]/.test(t);
+}
+
 function traduireMorse(){
  const t=$("morse-input").value.trim().toUpperCase();
  if(!t)return;
+
  let resultat;
+
  if(estMorse(t)){
-  resultat=t.split(" / ").map(mot=>mot.trim().split(/\s+/).map(code=>inverseMorse[code]||"�").join("")).join(" ");
+  resultat=t.split(" / ").map(mot=>
+   mot.trim().split(/\s+/).map(code=>inverseMorse[code]||"�").join("")
+  ).join(" ");
  }else{
-  resultat=t.split("").map(c=>c===" " ? "/" : MORSE[c]||"").filter(Boolean).join(" ");
+  resultat=t.split("").map(c=>
+   c===" " ? "/" : MORSE[c]||""
+  ).filter(Boolean).join(" ");
  }
+
  $("morse-output").textContent=resultat||"Caractères non reconnus";
 }
+
 function emettreMorse(){
  arreterMorse();
+
  const t=$("morse-output").textContent;
- if(!t||t==="---"){alerte("Traduisez un message avant l'émission.");return}
+
+ if(!t||t==="---"){
+  alerte("Traduisez un message avant l'émission.");
+  return;
+ }
+
  const ctx=new (window.AudioContext||window.webkitAudioContext)();
  audioMorse=ctx;
+
  let temps=ctx.currentTime+.1;
  const unit=.12;
+
  for(const c of t){
   if(c==="."){
-   sonMorse(ctx,temps,unit);temps+=unit*2;
+   sonMorse(ctx,temps,unit);
+   temps+=unit*2;
   }else if(c==="-"){
-   sonMorse(ctx,temps,unit*3);temps+=unit*4;
-  }else if(c===" "){temps+=unit*2}
-  else if(c==="/"){temps+=unit*5}
+   sonMorse(ctx,temps,unit*3);
+   temps+=unit*4;
+  }else if(c===" "){
+   temps+=unit*2;
+  }else if(c==="/"){
+   temps+=unit*5;
+  }
  }
 }
+
 function sonMorse(ctx,debut,duree){
- const osc=ctx.createOscillator(),gain=ctx.createGain();
- osc.frequency.value=650;gain.gain.setValueAtTime(.0001,debut);
+ const osc=ctx.createOscillator();
+ const gain=ctx.createGain();
+
+ osc.frequency.value=650;
+
+ gain.gain.setValueAtTime(.0001,debut);
  gain.gain.exponentialRampToValueAtTime(.18,debut+.01);
  gain.gain.setValueAtTime(.18,debut+duree-.01);
  gain.gain.exponentialRampToValueAtTime(.0001,debut+duree);
- osc.connect(gain);gain.connect(ctx.destination);
- osc.start(debut);osc.stop(debut+duree);
-}
-function arreterMorse(){
- if(audioMorse){audioMorse.close().catch(()=>{});audioMorse=null}
+
+ osc.connect(gain);
+ gain.connect(ctx.destination);
+
+ osc.start(debut);
+ osc.stop(debut+duree);
 }
 
-/* =========================================================
-   DIAGNOSTIC ET PERFORMANCES
-========================================================= */
+function arreterMorse(){
+ if(audioMorse){
+  audioMorse.close().catch(()=>{});
+  audioMorse=null;
+ }
+}
+
+/* DIAGNOSTIC ET SÉCURITÉ */
 
 async function lancerDiagnostic(){
- const zone=$("diagnostic-results");zone.innerHTML="";
+ const zone=$("diagnostic-results");
+ zone.innerHTML="";
+
  const tests=[
   ["Connexion Internet",()=>navigator.onLine],
-  ["Stockage local",()=>{localStorage.setItem("__test","ok");localStorage.removeItem("__test");return true}],
+  ["Stockage local",()=>{
+   localStorage.setItem("__test","ok");
+   localStorage.removeItem("__test");
+   return true;
+  }],
   ["Synthèse vocale",()=>!!window.speechSynthesis],
   ["Reconnaissance vocale",()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition)],
   ["Caméra disponible",()=>!!navigator.mediaDevices?.getUserMedia],
   ["Géolocalisation",()=>!!navigator.geolocation],
   ["Notifications",()=>("Notification" in window)],
-  ["API mémoire locale",()=>Array.isArray(memoireLocale)]
+  ["Mémoire locale",()=>Array.isArray(memoireLocale)],
+  ["Connexion sécurisée",()=>window.isSecureContext]
  ];
+
  let ok=0;
+
  for(const [nom,test] of tests){
   let valide=false;
-  try{valide=!!test()}catch(e){}
+
+  try{
+   valide=!!test();
+  }catch(e){}
+
   if(valide)ok++;
-  const div=document.createElement("div");div.className="list-item";
-  const a=document.createElement("span");a.textContent=nom;
-  const b=document.createElement("span");b.className=valide?"good":"warn";
+
+  const div=document.createElement("div");
+  div.className="list-item";
+
+  const a=document.createElement("span");
+  a.textContent=nom;
+
+  const b=document.createElement("span");
+  b.className=valide?"good":"warn";
   b.textContent=valide?"DISPONIBLE":"INDISPONIBLE";
-  div.append(a,b);zone.append(div);
+
+  div.append(a,b);
+  zone.append(div);
  }
+
  const total=document.createElement("p");
  total.textContent=ok+" / "+tests.length+" contrôles disponibles.";
  zone.prepend(total);
+
  $("performance-tips").textContent=
- "Fermez les onglets inutilisés, gardez votre navigateur à jour, vérifiez les autorisations de caméra et de microphone et évitez de laisser plusieurs conversations vocales ouvertes. Ce contrôle ne recherche pas les virus.";
+  "Fermez les onglets inutilisés, gardez votre navigateur à jour, vérifiez les autorisations de caméra et de microphone et évitez de laisser plusieurs conversations vocales ouvertes. Ce diagnostic ne recherche pas les virus.";
 }
 
-/* =========================================================
-   PARAMÈTRES
-========================================================= */
+/* PERSONNALISATION */
 
 function sauverParametres(){
  const nom=$("assistant-name").value.trim()||"J.A.R.V.I.S";
+
  localStorage.setItem(CLE_NOM,nom);
  alerte("Paramètres enregistrés.");
 }
-function alerte(message){
- if(window.alert)window.alert(message);
+
+function changerTheme(theme){
+ document.body.classList.remove("theme-green","theme-purple");
+
+ if(theme==="green")document.body.classList.add("theme-green");
+ if(theme==="purple")document.body.classList.add("theme-purple");
+
+ localStorage.setItem(CLE_THEME,theme);
 }
 
-/* =========================================================
-   FERMETURE PROPRE
-========================================================= */
+/* FERMETURE PROPRE */
 
 window.addEventListener("pagehide",()=>{
  arreterCamera();
  arreterConversationVocale();
  arreterMorse();
 });
+
 window.addEventListener("online",()=>{
  $("ia-state").textContent="PRÊTE À TESTER";
 });
+
 window.addEventListener("offline",()=>{
  $("ia-state").textContent="HORS LIGNE";
 });
 
-/* RESTAURATION DU NOM */
-$("assistant-name").value=localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S";
+/* RESTAURATION DES PARAMÈTRES */
+
+$("assistant-name").value=
+ localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S";
+
+const themeSauve=localStorage.getItem(CLE_THEME)||"blue";
+$("theme-select").value=themeSauve;
+changerTheme(themeSauve);
+
 actualiserCompteurMemoire();
 
 /* RESTAURATION DE LA CONVERSATION */
+
 if(historique.length){
  $("messages").innerHTML="";
+
  historique.slice(-20).forEach(m=>{
   if(m.role==="user")ajouterMessage(m.content,"user");
   if(m.role==="assistant")ajouterMessage(m.content,"jarvis");
  });
 }
+
 </script>
 </body>
 </html>
