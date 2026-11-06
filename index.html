@@ -461,6 +461,16 @@ footer{
  --cyan:#c4b5fd;
  --line:#392d62;
 }
+
+/* EXTENSIONS VERSION 8.0 */
+#lock-screen{position:fixed;inset:0;z-index:9999;display:none;place-items:center;padding:20px;background:rgba(2,7,14,.97);backdrop-filter:blur(18px)}
+#lock-screen.visible{display:grid}
+.lock-card{width:min(420px,100%);padding:24px;border:1px solid #17618a;border-radius:18px;background:linear-gradient(145deg,#101e31,#050b14);box-shadow:0 0 40px #00bfff33;text-align:center}
+.lock-card h2{margin:0 0 10px;color:var(--cyan)}
+.lock-card input{margin:12px 0}
+.log-entry{padding:9px 10px;border-bottom:1px solid var(--line);font-size:12px}
+.log-entry time{display:block;color:var(--muted);font-size:10px;margin-bottom:3px}
+
 @media(min-width:700px){
  main{padding:24px}
  #messages{height:420px}
@@ -476,12 +486,21 @@ footer{
 </head>
 
 <body>
-
+<div id="lock-screen" aria-modal="true" role="dialog" aria-label="Verrouillage JARVIS">
+ <div class="lock-card">
+  <div class="small">STARK INDUSTRIES // ACCÈS PRIVÉ</div>
+  <h2>J.A.R.V.I.S VERROUILLÉ</h2>
+  <p class="muted">Saisissez votre code PIN pour ouvrir la console.</p>
+  <input id="unlock-pin" type="password" inputmode="numeric" maxlength="12" placeholder="Code PIN" autocomplete="current-password">
+  <button class="primary" style="width:100%" onclick="deverrouillerApplication()">DÉVERROUILLER</button>
+  <div id="lock-error" class="bad small" style="margin-top:10px"></div>
+ </div>
+</div>
 <header>
  <div class="topline">
   <div>
    <div class="brand">J.A.R.V.I.S</div>
-   <div class="version">STARK INDUSTRIES // MK-3000 // VERSION 8.0</div>
+   <div class="version">STARK INDUSTRIES // MK-3000 // VERSION 8.0 EXTENDED</div>
   </div>
   <div style="text-align:right">
    <div class="status" id="global-status">● SYSTEM ONLINE</div>
@@ -513,6 +532,7 @@ footer{
   <div class="stat"><span>DATE</span><strong id="date">--/--/----</strong></div>
   <div class="stat"><span>BATTERIE</span><strong id="battery">--</strong></div>
   <div class="stat"><span>CONNEXION</span><strong id="connection">--</strong></div>
+   <div class="stat"><span>MÉMOIRE WEB</span><strong id="web-memory">--</strong></div>
  </div>
 
  <div class="panel">
@@ -546,9 +566,7 @@ footer{
  </div>
 </section>
 
-<!-- ASSISTANT -->
-
-<section class="page" id="page-assistant">
+ <section class="page" id="page-assistant">
  <div class="panel">
   <div class="section-title">
    <h2>CONSOLE J.A.R.V.I.S</h2>
@@ -612,6 +630,15 @@ footer{
    <button class="danger" onclick="arreterConversationVocale()">ARRÊTER</button>
   </div>
 
+  <div class="panel" style="margin-top:16px;text-align:left">
+   <h2>RÉVEIL VOCAL</h2>
+   <p class="small">Le navigateur écoute le mot « Jarvis » tant que cette page reste ouverte et que le microphone est autorisé. Le mode peut s'interrompre si le navigateur passe en arrière-plan.</p>
+   <div class="actions">
+    <button class="secondary" onclick="activerMotCle()">ACTIVER « JARVIS »</button>
+    <button class="danger" onclick="desactiverMotCle()">DÉSACTIVER</button>
+   </div>
+   <div id="wake-status" class="small" style="margin-top:9px">Mot-clé désactivé.</div>
+  </div>
   <div style="margin-top:20px;text-align:left">
    <label class="small">
     <input type="checkbox" id="voice-auto" checked style="width:auto">
@@ -640,6 +667,7 @@ footer{
   <input id="reminder-title" placeholder="Nom du rappel">
   <input id="reminder-date" type="datetime-local" style="margin-top:9px">
   <button class="primary" style="width:100%;margin-top:9px" onclick="ajouterRappel()">AJOUTER UN RAPPEL</button>
+   <button class="secondary" style="width:100%;margin-top:9px" onclick="exporterAgendaICS()">EXPORTER MES RAPPELS (.ICS)</button>
  </div>
  <div class="panel">
   <div class="section-title">
@@ -807,6 +835,24 @@ footer{
  </div>
 
  <div class="panel">
+  <h2>SÉCURITÉ — CODE PIN</h2>
+  <p class="small">Verrouillage local de l'interface. Ce code protège l'accès visuel sur cet appareil, mais ne remplace pas la sécurité du compte ni le chiffrement des données.</p>
+  <input id="pin-new" type="password" inputmode="numeric" maxlength="12" placeholder="Nouveau code PIN (4 à 12 chiffres)">
+  <input id="pin-confirm" type="password" inputmode="numeric" maxlength="12" placeholder="Confirmer le code PIN" style="margin-top:8px">
+  <div class="actions" style="margin-top:9px">
+   <button onclick="configurerPIN()">ACTIVER / MODIFIER</button>
+   <button class="danger" onclick="retirerPIN()">RETIRER LE CODE</button>
+   <button class="secondary" onclick="verrouillerApplication()">VERROUILLER</button>
+  </div>
+  <div id="pin-status" class="small" style="margin-top:9px">Aucun code PIN configuré.</div>
+ </div>
+
+  <div class="panel">
+  <div class="section-title"><h2>JOURNAL DES ACTIONS</h2><button class="danger" onclick="effacerJournal()">EFFACER</button></div>
+  <p class="small">Le journal conserve les événements de l'application sur cet appareil, sans enregistrer le contenu de vos messages.</p>
+  <div id="action-log"></div>
+ </div>
+ <div class="panel">
   <h2>À PROPOS</h2>
   <p>J.A.R.V.I.S — STARK INDUSTRIES<br>Version 8.0 — MK-3000<br>Interface personnelle expérimentale.</p>
   <p class="small">Les données locales restent dans le stockage du navigateur. Les échanges avec l'IA nécessitent Internet. Certaines fonctions dépendent des autorisations du navigateur.</p>
@@ -836,6 +882,8 @@ const CLE_RAPPELS="jarvis_automations";
 const CLE_NOM="jarvis_assistant_name";
 const CLE_TTS="jarvis_tts_v8";
 const CLE_THEME="jarvis_theme_v8";
+const CLE_JOURNAL="jarvis_action_log_v1";
+const CLE_PIN="jarvis_pin_hash_v1";
 
 let clientSupabase=null;
 let utilisateur=null;
@@ -848,6 +896,9 @@ let vocalActif=false;
 let audioMorse=null;
 let contexteDocument="";
 let minuterieRappels=null;
+let reconnaissanceMotCle=null;
+let motCleActif=false;
+let journalActions=lireJSON(CLE_JOURNAL,[]);
 
 const $=id=>document.getElementById(id);
 
@@ -908,6 +959,12 @@ function actualiserHorloge(){
 
 setInterval(actualiserHorloge,1000);
 actualiserHorloge();
+function actualiserMemoireWeb(){
+ const cible=$("web-memory");if(!cible)return;
+ const mem=performance.memory;
+ cible.textContent=mem?Math.round(mem.usedJSHeapSize/1048576)+" Mo (web)":"Non exposée";
+}
+setInterval(actualiserMemoireWeb,5000);actualiserMemoireWeb();
 
 if(navigator.getBattery){
  navigator.getBattery().then(b=>{
@@ -1072,6 +1129,7 @@ async function enregistrerSouvenir(texte){
  });
 
  sauvegarderMemoire();
+ journaliserAction("Souvenir ajouté à la mémoire");
 
  if(clientSupabase&&utilisateur){
   try{
@@ -1145,6 +1203,30 @@ async function effacerSouvenirs(){
 }
 
 /* CHAT ET INTELLIGENCE ARTIFICIELLE */
+
+function journaliserAction(action){
+ const entree={action, date:new Date().toISOString()};
+ journalActions.unshift(entree);
+ journalActions=journalActions.slice(0,100);
+ try{localStorage.setItem(CLE_JOURNAL,JSON.stringify(journalActions));}catch(e){}
+ if($("action-log"))afficherJournal();
+}
+function afficherJournal(){
+ const zone=$("action-log");
+ if(!zone)return;
+ zone.innerHTML="";
+ if(!journalActions.length){zone.textContent="Aucune action enregistrée.";return;}
+ journalActions.slice(0,30).forEach(item=>{
+  const div=document.createElement("div");div.className="log-entry";
+  const time=document.createElement("time");time.textContent=new Date(item.date).toLocaleString("fr-FR");
+  const label=document.createElement("span");label.textContent=item.action;
+  div.append(time,label);zone.append(div);
+ });
+}
+function effacerJournal(){
+ if(!confirm("Effacer le journal des actions ?"))return;
+ journalActions=[];localStorage.removeItem(CLE_JOURNAL);afficherJournal();
+}
 
 function ajouterMessage(texte,type="jarvis"){
  const zone=$("messages");
@@ -1570,6 +1652,224 @@ function ouvrirModeVocal(){
  demarrerConversationVocale();
 }
 
+/* RÉVEIL PAR MOT-CLÉ — PAGE ACTIVE UNIQUEMENT */
+
+function activerMotCle(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alerte("Le réveil vocal n'est pas pris en charge par ce navigateur.");return;}
+ if(motCleActif)return;
+
+ reconnaissanceMotCle=new SR();
+ reconnaissanceMotCle.lang="fr-FR";
+ reconnaissanceMotCle.continuous=true;
+ reconnaissanceMotCle.interimResults=false;
+
+ reconnaissanceMotCle.onresult=e=>{
+  for(let i=e.resultIndex;i<e.results.length;i++){
+   const phrase=e.results[i][0].transcript.toLowerCase();
+
+   if(/\bjarvis\b/.test(phrase)){
+    desactiverMotCle();
+    journaliserAction("Mot-clé vocal détecté");
+    ouvrirModeVocal();
+    break;
+   }
+  }
+ };
+
+ reconnaissanceMotCle.onerror=()=>{
+  $("wake-status").textContent="Écoute interrompue par le navigateur. Réactivez le mot-clé si nécessaire.";
+  motCleActif=false;
+ };
+
+ reconnaissanceMotCle.onend=()=>{
+  if(motCleActif){
+   try{reconnaissanceMotCle.start()}catch(e){}
+  }
+ };
+
+ try{
+  reconnaissanceMotCle.start();
+  motCleActif=true;
+  $("wake-status").textContent="Mot-clé actif. Dites « Jarvis ». Gardez cette page ouverte.";
+  journaliserAction("Réveil vocal activé");
+ }catch(e){
+  motCleActif=false;
+  $("wake-status").textContent="Impossible d'activer le microphone.";
+ }
+}
+
+function desactiverMotCle(){
+ motCleActif=false;
+
+ if(reconnaissanceMotCle){
+  try{
+   reconnaissanceMotCle.onend=null;
+   reconnaissanceMotCle.abort();
+  }catch(e){}
+  reconnaissanceMotCle=null;
+ }
+
+ const zone=$("wake-status");
+ if(zone)zone.textContent="Mot-clé désactivé.";
+}
+
+/* VERROUILLAGE LOCAL PAR CODE PIN */
+
+async function hacherPIN(pin){
+ if(!window.crypto?.subtle){
+  throw new Error("Le verrouillage nécessite une connexion sécurisée HTTPS.");
+ }
+
+ const hash=await crypto.subtle.digest(
+  "SHA-256",
+  new TextEncoder().encode(pin)
+ );
+
+ return Array.from(new Uint8Array(hash))
+  .map(b=>b.toString(16).padStart(2,"0"))
+  .join("");
+}
+
+async function configurerPIN(){
+ const pin=$("pin-new").value;
+ const confirmation=$("pin-confirm").value;
+
+ if(!/^\d{4,12}$/.test(pin)){
+  alerte("Le code doit contenir entre 4 et 12 chiffres.");
+  return;
+ }
+
+ if(pin!==confirmation){
+  alerte("Les deux codes ne correspondent pas.");
+  return;
+ }
+
+ try{
+  localStorage.setItem(CLE_PIN,await hacherPIN(pin));
+
+  $("pin-new").value="";
+  $("pin-confirm").value="";
+  $("pin-status").textContent="Code PIN activé sur cet appareil.";
+
+  journaliserAction("Code PIN configuré");
+ }catch(e){
+  alerte(e.message);
+ }
+}
+
+async function deverrouillerApplication(){
+ const pin=$("unlock-pin").value;
+
+ try{
+  const attendu=localStorage.getItem(CLE_PIN);
+  const fourni=await hacherPIN(pin);
+
+  if(attendu&&fourni===attendu){
+   sessionStorage.setItem("jarvis_session_unlocked","1");
+   $("lock-screen").classList.remove("visible");
+   $("unlock-pin").value="";
+   $("lock-error").textContent="";
+   journaliserAction("Interface déverrouillée");
+  }else{
+   $("lock-error").textContent="Code incorrect.";
+   $("unlock-pin").value="";
+  }
+ }catch(e){
+  $("lock-error").textContent=e.message;
+ }
+}
+
+async function retirerPIN(){
+ const actuel=prompt("Saisissez le code PIN actuel pour le retirer :");
+ if(actuel===null)return;
+
+ try{
+  if(await hacherPIN(actuel)!==localStorage.getItem(CLE_PIN)){
+   alerte("Code PIN incorrect.");
+   return;
+  }
+
+  localStorage.removeItem(CLE_PIN);
+  sessionStorage.removeItem("jarvis_session_unlocked");
+
+  $("pin-status").textContent="Code PIN retiré.";
+  journaliserAction("Code PIN retiré");
+ }catch(e){
+  alerte(e.message);
+ }
+}
+
+function verrouillerApplication(){
+ if(!localStorage.getItem(CLE_PIN)){
+  alerte("Configurez d'abord un code PIN.");
+  return;
+ }
+
+ sessionStorage.removeItem("jarvis_session_unlocked");
+ $("lock-screen").classList.add("visible");
+ $("unlock-pin").focus();
+
+ journaliserAction("Interface verrouillée");
+}
+
+function verifierVerrouillage(){
+ const configure=!!localStorage.getItem(CLE_PIN);
+
+ $("pin-status").textContent=configure?
+  "Code PIN configuré.":
+  "Aucun code PIN configuré.";
+
+ if(configure&&sessionStorage.getItem("jarvis_session_unlocked")!=="1"){
+  $("lock-screen").classList.add("visible");
+ }
+}
+
+/* EXPORT AGENDA AU FORMAT CALENDAR */
+
+function exporterAgendaICS(){
+ if(!rappels.length){
+  alerte("Aucun rappel à exporter.");
+  return;
+ }
+
+ const formatDate=value=>
+  new Date(value).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")+"Z";
+
+ const echapper=value=>
+  String(value)
+   .replace(/\\/g,"\\\\")
+   .replace(/;/g,"\\;")
+   .replace(/,/g,"\\,")
+   .replace(/\n/g,"\\n");
+
+ const evenements=rappels.filter(r=>!r.fait).map(r=>
+  "BEGIN:VEVENT\r\nUID:"+r.id+"@jarvis.local\r\nDTSTAMP:"+formatDate(new Date())+
+  "\r\nDTSTART:"+formatDate(r.date)+"\r\nSUMMARY:"+echapper(r.titre)+"\r\nEND:VEVENT"
+ );
+
+ if(!evenements.length){
+  alerte("Tous les rappels sont terminés.");
+  return;
+ }
+
+ const contenu=
+  "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//JARVIS//AGENDA//FR\r\n"+
+  evenements.join("\r\n")+
+  "\r\nEND:VCALENDAR";
+
+ const blob=new Blob([contenu],{type:"text/calendar;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="agenda-jarvis.ics";
+ a.click();
+
+ URL.revokeObjectURL(url);
+ journaliserAction("Agenda exporté au format ICS");
+}
+
 /* AGENDA */
 
 function sauvegarderRappels(){
@@ -1602,6 +1902,7 @@ function ajouterRappel(){
 
  sauvegarderRappels();
  afficherRappels();
+ journaliserAction("Rappel ajouté");
 
  $("reminder-title").value="";
  $("reminder-date").value="";
@@ -1709,7 +2010,8 @@ async function chargerMeteo(){
    const lat=pos.coords.latitude;
    const lon=pos.coords.longitude;
 
-   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
+   const url=
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
 
    const r=await fetch(url);
    if(!r.ok)throw new Error("Service météo indisponible");
@@ -1780,6 +2082,7 @@ async function demarrerCamera(){
   });
 
   $("camera-preview").srcObject=fluxCamera;
+  journaliserAction("Caméra activée");
 
  }catch(e){
   alerte("Impossible d'activer la caméra : "+e.message);
@@ -1789,6 +2092,7 @@ async function demarrerCamera(){
 function arreterCamera(){
  if(fluxCamera){
   fluxCamera.getTracks().forEach(t=>t.stop());
+  journaliserAction("Caméra désactivée");
   fluxCamera=null;
  }
 
@@ -2051,6 +2355,7 @@ window.addEventListener("pagehide",()=>{
  arreterCamera();
  arreterConversationVocale();
  arreterMorse();
+ desactiverMotCle();
 });
 
 window.addEventListener("online",()=>{
@@ -2071,6 +2376,8 @@ $("theme-select").value=themeSauve;
 changerTheme(themeSauve);
 
 actualiserCompteurMemoire();
+afficherJournal();
+verifierVerrouillage();
 
 /* RESTAURATION DE LA CONVERSATION */
 
@@ -2086,3 +2393,5 @@ if(historique.length){
 </script>
 </body>
 </html>
+
+<!-- ASSISTANT -->
