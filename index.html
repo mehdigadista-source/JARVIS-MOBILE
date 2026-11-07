@@ -1428,6 +1428,16 @@ function effacerChat(){
 /* SYNTHÈSE VOCALE */
 
 
+function choisirVoixFrancaise(){
+ const voix = speechSynthesis.getVoices();
+
+ return (
+  voix.find(v => v.lang === "fr-FR" && /Google français|Google French/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR")
+ );
+}
+
 function parler(texte){
  if(!lectureActive || !window.speechSynthesis)return;
 
@@ -1438,16 +1448,8 @@ function parler(texte){
  u.rate = Number($("voice-rate")?.value || 1);
  u.pitch = 1;
 
- const voix = speechSynthesis.getVoices();
-
- const voixGoogle =
-   voix.find(v => v.lang === "fr-FR" && /Google français|Google French/i.test(v.name)) ||
-   voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) ||
-   voix.find(v => v.lang === "fr-FR");
-
- if(voixGoogle){
-   u.voice = voixGoogle;
- }
+ const voix = choisirVoixFrancaise();
+ if(voix)u.voice = voix;
 
  speechSynthesis.speak(u);
 }
@@ -1636,9 +1638,9 @@ function parlerVocal(texte){
  u.rate=Number($("voice-rate")?.value||1);
  u.pitch=1;
 
- const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
- if(fr)u.voice=fr;
-
+const voix = choisirVoixFrancaise();
+if(voix)u.voice = voix;
+ 
  u.onend=()=>{
   if(vocalActif&&$("voice-auto").checked){
    definirEtatVocal("listening","ÉCOUTE ACTIVE");
