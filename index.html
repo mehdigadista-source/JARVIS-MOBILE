@@ -1368,6 +1368,7 @@ async function appelerIA(texte,contexte=[]){
 
 
 
+
 function executerCommandeLocale(texte){
  const t=String(texte)
   .toLowerCase()
@@ -1379,7 +1380,6 @@ function executerCommandeLocale(texte){
   .trim();
 
  const sites=[
-  // GOOGLE
   [["google"],"https://www.google.com/","Google"],
   [["youtube","you tube"],"https://www.youtube.com/","YouTube"],
   [["gmail","google mail"],"https://mail.google.com/","Gmail"],
@@ -1399,11 +1399,10 @@ function executerCommandeLocale(texte){
   [["google keep","keep"],"https://keep.google.com/","Google Keep"],
   [["google forms","forms"],"https://forms.google.com/","Google Forms"],
 
-  // RESEAUX SOCIAUX
   [["instagram","insta"],"https://www.instagram.com/","Instagram"],
   [["tiktok","tik tok"],"https://www.tiktok.com/","TikTok"],
   [["snapchat","snap"],"https://www.snapchat.com/","Snapchat"],
-  [["facebook","facebook"],"https://www.facebook.com/","Facebook"],
+  [["facebook"],"https://www.facebook.com/","Facebook"],
   [["messenger"],"https://www.messenger.com/","Messenger"],
   [["whatsapp","whats app"],"https://web.whatsapp.com/","WhatsApp"],
   [["discord"],"https://discord.com/app","Discord"],
@@ -1416,7 +1415,6 @@ function executerCommandeLocale(texte){
   [["twitch"],"https://www.twitch.tv/","Twitch"],
   [["tumblr"],"https://www.tumblr.com/","Tumblr"],
 
-  // STREAMING ET MUSIQUE
   [["netflix"],"https://www.netflix.com/","Netflix"],
   [["prime video","amazon prime"],"https://www.primevideo.com/","Prime Video"],
   [["disney plus","disney"],"https://www.disneyplus.com/","Disney+"],
@@ -1427,7 +1425,6 @@ function executerCommandeLocale(texte){
   [["soundcloud"],"https://soundcloud.com/","SoundCloud"],
   [["apple music"],"https://music.apple.com/","Apple Music"],
 
-  // JEUX VIDEO
   [["steam"],"https://store.steampowered.com/","Steam"],
   [["epic games","epic"],"https://store.epicgames.com/","Epic Games"],
   [["roblox"],"https://www.roblox.com/","Roblox"],
@@ -1437,7 +1434,6 @@ function executerCommandeLocale(texte){
   [["riot games","riot"],"https://www.riotgames.com/","Riot Games"],
   [["fortnite"],"https://www.fortnite.com/","Fortnite"],
 
-  // INTELLIGENCE ARTIFICIELLE
   [["chatgpt","chat gpt"],"https://chatgpt.com/","ChatGPT"],
   [["openai"],"https://openai.com/","OpenAI"],
   [["claude"],"https://claude.ai/","Claude"],
@@ -1446,7 +1442,6 @@ function executerCommandeLocale(texte){
   [["copilot"],"https://copilot.microsoft.com/","Copilot"],
   [["deepseek"],"https://chat.deepseek.com/","DeepSeek"],
 
-  // ACHATS
   [["amazon"],"https://www.amazon.fr/","Amazon"],
   [["ebay"],"https://www.ebay.fr/","eBay"],
   [["aliexpress"],"https://www.aliexpress.com/","AliExpress"],
@@ -1457,7 +1452,6 @@ function executerCommandeLocale(texte){
   [["cdiscount"],"https://www.cdiscount.com/","Cdiscount"],
   [["fnac"],"https://www.fnac.com/","Fnac"],
 
-  // AUTRES SERVICES
   [["wikipedia","wikipédia"],"https://fr.wikipedia.org/","Wikipédia"],
   [["microsoft"],"https://www.microsoft.com/","Microsoft"],
   [["outlook"],"https://outlook.live.com/","Outlook"],
@@ -1500,7 +1494,6 @@ function executerCommandeLocale(texte){
   }
  }
 
- // SITE NON RECONNU : recherche automatique
  const correspondance=t.match(
   /\b(?:ouvre|ouvrir|ouvres|lance|lancer|va sur|aller sur|accede a|affiche|montre)\s+(?:le site|le site web|le navigateur)?\s*(.+)$/
  );
@@ -1521,31 +1514,6 @@ function executerCommandeLocale(texte){
 
    return "Je recherche le site demandé, Monsieur.";
   }
- }
-
- return null;
-}
-
-
- const parleYoutube=/\b(youtube|you tube)\b/.test(t);
-
- const demandeOuverture=
-  /\b(ouvre|ouvrir|ouvres|lance|lancer|lances|va sur|aller sur|accede|acceder|affiche|ouvrir moi|montre|rends toi sur)\b/.test(t);
-
- if(parleYoutube && demandeOuverture){
-
-  journaliserAction("Commande : ouverture de YouTube");
-
-  const fenetre=window.open(
-   "https://www.youtube.com/",
-   "_blank"
-  );
-
-  if(!fenetre){
-   window.location.href="https://www.youtube.com/";
-  }
-
-  return "Bien sûr, Monsieur. J'ouvre YouTube.";
  }
 
  return null;
