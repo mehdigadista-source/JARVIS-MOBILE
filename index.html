@@ -1367,6 +1367,7 @@ async function appelerIA(texte,contexte=[]){
 }
 
 
+
 function executerCommandeLocale(texte){
  const t=String(texte)
   .toLowerCase()
@@ -1376,6 +1377,155 @@ function executerCommandeLocale(texte){
   .replace(/[?!.,]/g," ")
   .replace(/\s+/g," ")
   .trim();
+
+ const sites=[
+  // GOOGLE
+  [["google"],"https://www.google.com/","Google"],
+  [["youtube","you tube"],"https://www.youtube.com/","YouTube"],
+  [["gmail","google mail"],"https://mail.google.com/","Gmail"],
+  [["google maps","maps"],"https://maps.google.com/","Google Maps"],
+  [["google drive","drive"],"https://drive.google.com/","Google Drive"],
+  [["google docs","docs"],"https://docs.google.com/","Google Docs"],
+  [["google sheets","sheets"],"https://sheets.google.com/","Google Sheets"],
+  [["google slides","slides"],"https://slides.google.com/","Google Slides"],
+  [["google agenda","google calendar","calendar"],"https://calendar.google.com/","Google Agenda"],
+  [["google traduction","google translate","translate"],"https://translate.google.com/","Google Traduction"],
+  [["google photos","photos"],"https://photos.google.com/","Google Photos"],
+  [["google meet","meet"],"https://meet.google.com/","Google Meet"],
+  [["google classroom","classroom"],"https://classroom.google.com/","Google Classroom"],
+  [["google earth","earth"],"https://earth.google.com/","Google Earth"],
+  [["google actualites","google news"],"https://news.google.com/","Google Actualités"],
+  [["google play","play store"],"https://play.google.com/","Google Play"],
+  [["google keep","keep"],"https://keep.google.com/","Google Keep"],
+  [["google forms","forms"],"https://forms.google.com/","Google Forms"],
+
+  // RESEAUX SOCIAUX
+  [["instagram","insta"],"https://www.instagram.com/","Instagram"],
+  [["tiktok","tik tok"],"https://www.tiktok.com/","TikTok"],
+  [["snapchat","snap"],"https://www.snapchat.com/","Snapchat"],
+  [["facebook","facebook"],"https://www.facebook.com/","Facebook"],
+  [["messenger"],"https://www.messenger.com/","Messenger"],
+  [["whatsapp","whats app"],"https://web.whatsapp.com/","WhatsApp"],
+  [["discord"],"https://discord.com/app","Discord"],
+  [["twitter","x"],"https://x.com/","X"],
+  [["threads"],"https://www.threads.com/","Threads"],
+  [["reddit"],"https://www.reddit.com/","Reddit"],
+  [["pinterest"],"https://www.pinterest.com/","Pinterest"],
+  [["linkedin"],"https://www.linkedin.com/","LinkedIn"],
+  [["telegram"],"https://web.telegram.org/","Telegram"],
+  [["twitch"],"https://www.twitch.tv/","Twitch"],
+  [["tumblr"],"https://www.tumblr.com/","Tumblr"],
+
+  // STREAMING ET MUSIQUE
+  [["netflix"],"https://www.netflix.com/","Netflix"],
+  [["prime video","amazon prime"],"https://www.primevideo.com/","Prime Video"],
+  [["disney plus","disney"],"https://www.disneyplus.com/","Disney+"],
+  [["max","hbo"],"https://www.max.com/","Max"],
+  [["crunchyroll"],"https://www.crunchyroll.com/","Crunchyroll"],
+  [["spotify"],"https://open.spotify.com/","Spotify"],
+  [["deezer"],"https://www.deezer.com/","Deezer"],
+  [["soundcloud"],"https://soundcloud.com/","SoundCloud"],
+  [["apple music"],"https://music.apple.com/","Apple Music"],
+
+  // JEUX VIDEO
+  [["steam"],"https://store.steampowered.com/","Steam"],
+  [["epic games","epic"],"https://store.epicgames.com/","Epic Games"],
+  [["roblox"],"https://www.roblox.com/","Roblox"],
+  [["minecraft"],"https://www.minecraft.net/","Minecraft"],
+  [["playstation","psn"],"https://www.playstation.com/","PlayStation"],
+  [["xbox"],"https://www.xbox.com/","Xbox"],
+  [["riot games","riot"],"https://www.riotgames.com/","Riot Games"],
+  [["fortnite"],"https://www.fortnite.com/","Fortnite"],
+
+  // INTELLIGENCE ARTIFICIELLE
+  [["chatgpt","chat gpt"],"https://chatgpt.com/","ChatGPT"],
+  [["openai"],"https://openai.com/","OpenAI"],
+  [["claude"],"https://claude.ai/","Claude"],
+  [["gemini"],"https://gemini.google.com/","Gemini"],
+  [["perplexity"],"https://www.perplexity.ai/","Perplexity"],
+  [["copilot"],"https://copilot.microsoft.com/","Copilot"],
+  [["deepseek"],"https://chat.deepseek.com/","DeepSeek"],
+
+  // ACHATS
+  [["amazon"],"https://www.amazon.fr/","Amazon"],
+  [["ebay"],"https://www.ebay.fr/","eBay"],
+  [["aliexpress"],"https://www.aliexpress.com/","AliExpress"],
+  [["shein"],"https://fr.shein.com/","Shein"],
+  [["temu"],"https://www.temu.com/","Temu"],
+  [["leboncoin","boncoin"],"https://www.leboncoin.fr/","Leboncoin"],
+  [["vinted"],"https://www.vinted.fr/","Vinted"],
+  [["cdiscount"],"https://www.cdiscount.com/","Cdiscount"],
+  [["fnac"],"https://www.fnac.com/","Fnac"],
+
+  // AUTRES SERVICES
+  [["wikipedia","wikipédia"],"https://fr.wikipedia.org/","Wikipédia"],
+  [["microsoft"],"https://www.microsoft.com/","Microsoft"],
+  [["outlook"],"https://outlook.live.com/","Outlook"],
+  [["icloud"],"https://www.icloud.com/","iCloud"],
+  [["canva"],"https://www.canva.com/","Canva"],
+  [["notion"],"https://www.notion.so/","Notion"],
+  [["github"],"https://github.com/","GitHub"],
+  [["stackoverflow"],"https://stackoverflow.com/","Stack Overflow"],
+  [["météo","weather"],"https://www.google.com/search?q=meteo","Météo"]
+ ];
+
+ const demandeOuverture=
+  /\b(ouvre|ouvrir|ouvres|lance|lancer|lances|va sur|aller sur|accede|acceder|affiche|montre|rends toi sur)\b/.test(t);
+
+ if(!demandeOuverture)return null;
+
+ for(const site of sites){
+  const noms=site[0];
+  const url=site[1];
+  const nom=site[2];
+
+  if(noms.some(mot=>{
+   const expression=mot
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
+    .replace(/\s+/g,"\\s+");
+
+   return new RegExp("\\b"+expression+"\\b").test(t);
+  })){
+   journaliserAction("Ouverture de "+nom);
+
+   const fenetre=window.open(url,"_blank");
+
+   if(!fenetre){
+    window.location.href=url;
+   }
+
+   return "Bien sûr, Monsieur. J'ouvre "+nom+".";
+  }
+ }
+
+ // SITE NON RECONNU : recherche automatique
+ const correspondance=t.match(
+  /\b(?:ouvre|ouvrir|ouvres|lance|lancer|va sur|aller sur|accede a|affiche|montre)\s+(?:le site|le site web|le navigateur)?\s*(.+)$/
+ );
+
+ if(correspondance){
+  const recherche=correspondance[1].trim();
+
+  if(recherche){
+   const url="https://www.google.com/search?q="+encodeURIComponent(recherche);
+
+   journaliserAction("Recherche du site : "+recherche);
+
+   const fenetre=window.open(url,"_blank");
+
+   if(!fenetre){
+    window.location.href=url;
+   }
+
+   return "Je recherche le site demandé, Monsieur.";
+  }
+ }
+
+ return null;
+}
+
 
  const parleYoutube=/\b(youtube|you tube)\b/.test(t);
 
