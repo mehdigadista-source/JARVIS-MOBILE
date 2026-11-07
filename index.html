@@ -1366,27 +1366,41 @@ async function appelerIA(texte,contexte=[]){
  return donnees.reply;
 }
 
-function executerCommandeLocale(texte){
- const t=texte.toLowerCase()
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g,"");
 
- if(
-  /\b(youtube|you tube)\b/.test(t) &&
-  /\b(ouvre|ouvrir|lance|lancer|va sur)\b/.test(t)
- ){
-  const fenetre=window.open("https://www.youtube.com/","_blank");
+function executerCommandeLocale(texte){
+ const t=String(texte)
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"")
+  .replace(/[’']/g," ")
+  .replace(/[?!.,]/g," ")
+  .replace(/\s+/g," ")
+  .trim();
+
+ const parleYoutube=/\b(youtube|you tube)\b/.test(t);
+
+ const demandeOuverture=
+  /\b(ouvre|ouvrir|ouvres|lance|lancer|lances|va sur|aller sur|accede|acceder|affiche|ouvrir moi|montre|rends toi sur)\b/.test(t);
+
+ if(parleYoutube && demandeOuverture){
+
+  journaliserAction("Commande : ouverture de YouTube");
+
+  const fenetre=window.open(
+   "https://www.youtube.com/",
+   "_blank"
+  );
 
   if(!fenetre){
-   window.location.assign("https://www.youtube.com/");
+   window.location.href="https://www.youtube.com/";
   }
 
-  journaliserAction("Ouverture de YouTube");
-  return "J'ouvre YouTube, Monsieur.";
+  return "Bien sûr, Monsieur. J'ouvre YouTube.";
  }
 
  return null;
 }
+
  
 async function envoyer(){
  const champ=$("chat-input");
