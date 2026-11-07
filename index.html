@@ -1366,6 +1366,28 @@ async function appelerIA(texte,contexte=[]){
  return donnees.reply;
 }
 
+function executerCommandeLocale(texte){
+ const t=texte.toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"");
+
+ if(
+  /\b(youtube|you tube)\b/.test(t) &&
+  /\b(ouvre|ouvrir|lance|lancer|va sur)\b/.test(t)
+ ){
+  const fenetre=window.open("https://www.youtube.com/","_blank");
+
+  if(!fenetre){
+   window.location.assign("https://www.youtube.com/");
+  }
+
+  journaliserAction("Ouverture de YouTube");
+  return "J'ouvre YouTube, Monsieur.";
+ }
+
+ return null;
+}
+ 
 async function envoyer(){
  const champ=$("chat-input");
  const texte=champ.value.trim();
@@ -1376,6 +1398,14 @@ async function envoyer(){
  ajouterMessage(texte,"user");
 
  if(traiterCommandeMemoire(texte))return;
+ 
+ const commande=executerCommandeLocale(texte);
+
+if(commande){
+ ajouterMessage(commande,"jarvis");
+ if(lectureActive)parler(commande);
+ return;
+}
 
  const contexte=historique.slice(-12);
  ajouterMessage("Analyse en cours...","system");
@@ -1613,6 +1643,24 @@ function ecouterProchainePhrase(){
    }
    return;
   }
+  const commande=executerCommandeLocale(texte);
+
+if(commande){
+ $("voice-caption").textContent=commande;
+
+ if($("voice-tts").checked&&lectureActive){
+  parlerVocal(commande);
+ }else{
+  definirEtatVocal("idle","COMMANDE EXÉCUTÉE");
+
+  if(vocalActif&&$("voice-auto").checked){
+   setTimeout(ecouterProchainePhrase,500);
+  }
+ }
+
+ return;
+}
+  
 
   try{
    const reponse=await appelerIA(texte,historique.slice(-10));
