@@ -1462,6 +1462,30 @@ function nettoyerTexteVocal(texte){
   .trim();
 }
 
+function choisirVoixJARVIS(){
+ const voix = speechSynthesis.getVoices();
+
+ return (
+  voix.find(v => v.lang === "fr-FR" && /Google français|Google French/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR") ||
+  voix.find(v => v.lang.toLowerCase().startsWith("fr")) ||
+  null
+ );
+}
+
+function nettoyerTexteVocal(texte){
+ return String(texte)
+  .replace(/```[\s\S]*?```/g, " bloc de code omis. ")
+  .replace(/\*\*([\s\S]*?)\*\*/g, "$1")
+  .replace(/__([\s\S]*?)__/g, "$1")
+  .replace(/[*_#`>|]/g, " ")
+  .replace(/^\s*[-•]\s*/gm, "")
+  .replace(/https?:\/\/\S+/g, " lien ")
+  .replace(/\s+/g, " ")
+  .trim();
+}
+
 function parler(texte){
  if(!lectureActive || !window.speechSynthesis)return;
 
@@ -1472,12 +1496,12 @@ function parler(texte){
  u.rate = Number($("voice-rate")?.value || 1);
  u.pitch = 1;
 
- const voix = choisirVoixFrancaise();
+ const voix = choisirVoixJARVIS();
  if(voix)u.voice = voix;
 
  speechSynthesis.speak(u);
 }
-
+ 
 function lireDerniereReponse(){
  if(dernierTexte)parler(dernierTexte);
 }
@@ -1647,7 +1671,7 @@ function parlerVocal(texte){
  if(!window.speechSynthesis){
   definirEtatVocal("idle","SYNTHÈSE VOCALE INDISPONIBLE");
 
-  if(vocalActif&&$("voice-auto").checked){
+  if(vocalActif && $("voice-auto").checked){
    ecouterProchainePhrase();
   }
   return;
@@ -1658,15 +1682,16 @@ function parlerVocal(texte){
  definirEtatVocal("speaking","J.A.R.V.I.S RÉPOND");
 
  const u = new SpeechSynthesisUtterance(nettoyerTexteVocal(texte));
- u.lang="fr-FR";
- u.rate=Number($("voice-rate")?.value||1);
- u.pitch=1;
 
-const voix = choisirVoixFrancaise();
-if(voix)u.voice = voix;
- 
- u.onend=()=>{
-  if(vocalActif&&$("voice-auto").checked){
+ u.lang = "fr-FR";
+ u.rate = Number($("voice-rate")?.value || 1);
+ u.pitch = 1;
+
+ const voix = choisirVoixJARVIS();
+ if(voix)u.voice = voix;
+
+ u.onend = ()=>{
+  if(vocalActif && $("voice-auto").checked){
    definirEtatVocal("listening","ÉCOUTE ACTIVE");
    setTimeout(ecouterProchainePhrase,400);
   }else{
@@ -1674,10 +1699,10 @@ if(voix)u.voice = voix;
   }
  };
 
- u.onerror=()=>{
+ u.onerror = ()=>{
   definirEtatVocal("idle","ERREUR VOCALE");
 
-  if(vocalActif&&$("voice-auto").checked){
+  if(vocalActif && $("voice-auto").checked){
    setTimeout(ecouterProchainePhrase,500);
   }
  };
