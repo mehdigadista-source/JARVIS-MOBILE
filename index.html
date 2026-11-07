@@ -1438,6 +1438,16 @@ function choisirVoixFrancaise(){
  );
 }
 
+function choisirVoixFrancaise(){
+ const voix = speechSynthesis.getVoices();
+
+ return (
+  voix.find(v => v.lang === "fr-FR" && /Google français|Google French/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) ||
+  voix.find(v => v.lang === "fr-FR")
+ );
+}
+
 function parler(texte){
  if(!lectureActive || !window.speechSynthesis)return;
 
