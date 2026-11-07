@@ -1484,11 +1484,11 @@ function executerCommandeLocale(texte){
   })){
    journaliserAction("Ouverture de "+nom);
 
-   const fenetre=window.open(url,"_blank");
+  const fenetre=window.open(url,"_blank");
 
-   if(!fenetre){
-    window.location.href=url;
-   }
+if(!fenetre){
+ return "Monsieur, le navigateur a bloqué le nouvel onglet. Autorisez les fenêtres pop-up pour J.A.R.V.I.S.";
+}
 
    return "Bien sûr, Monsieur. J'ouvre "+nom+".";
   }
