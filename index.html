@@ -1427,18 +1427,27 @@ function effacerChat(){
 
 /* SYNTHÈSE VOCALE */
 
+
 function parler(texte){
- if(!lectureActive||!window.speechSynthesis)return;
+ if(!lectureActive || !window.speechSynthesis)return;
 
  speechSynthesis.cancel();
 
- const u=new SpeechSynthesisUtterance(texte);
- u.lang="fr-FR";
- u.rate=Number($("voice-rate")?.value||1);
- u.pitch=1;
+ const u = new SpeechSynthesisUtterance(texte);
+ u.lang = "fr-FR";
+ u.rate = Number($("voice-rate")?.value || 1);
+ u.pitch = 1;
 
- const fr=speechSynthesis.getVoices().find(v=>v.lang==="fr-FR");
- if(fr)u.voice=fr;
+ const voix = speechSynthesis.getVoices();
+
+ const voixGoogle =
+   voix.find(v => v.lang === "fr-FR" && /Google français|Google French/i.test(v.name)) ||
+   voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) ||
+   voix.find(v => v.lang === "fr-FR");
+
+ if(voixGoogle){
+   u.voice = voixGoogle;
+ }
 
  speechSynthesis.speak(u);
 }
