@@ -909,6 +909,70 @@ footer{
 <footer>STARK INDUSTRIES // J.A.R.V.I.S MK-3000 // VERSION 8.0</footer>
 
 <script>
+
+
+// ======================================
+// J.A.R.V.I.S - GOOGLE HOME MINI
+// CONNEXION HOME ASSISTANT
+// ======================================
+
+const JARVIS_HOME = {
+
+  async commander(action, options = {}) {
+    try {
+      const response = await fetch("/api/homeassistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action,
+          ...options
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Erreur de communication");
+      }
+
+      console.log("JARVIS HOME :", result);
+      return result;
+
+    } catch (error) {
+      console.error("JARVIS HOME :", error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  lire(message) {
+    return this.commander("announce", { message });
+  },
+
+  lecture() {
+    return this.commander("play");
+  },
+
+  pause() {
+    return this.commander("pause");
+  },
+
+  arreter() {
+    return this.commander("stop");
+  },
+
+  volume(niveau) {
+    return this.commander("volume", { volume: niveau });
+  }
+};
+
+console.log("J.A.R.V.I.S : module GOOGLE HOME chargé.");
+JARVIS_HOME.lire("Bonjour Monsieur. Le système JARVIS est opérationnel.");
+
 "use strict";
 
 /* CONFIGURATION */
