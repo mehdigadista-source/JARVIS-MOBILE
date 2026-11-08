@@ -1,106 +1,59 @@
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store"
-    }
-  });
-}
 
-export async function onRequestPost({ request, env }) {
-  try {
-    if (!env.HA_TOKEN) {
-      return json({ error: "Jeton Home Assistant manquant." }, 500);
-    }
+export async function onRequestPost(context) {
+  const { request, env } = context;
 
-    const body = await request.json();
-    const action = body.action;
-
-    const services = {
-      volume: {
-        domain: "media_player",
-        service: "volume_set"
-      },
-      play: {
-        domain: "media_player",
-        service: "media_play"
-      },
-      pause: {
-        domain: "media_player",
-        service: "media_pause"
-      },
-      stop: {
-        domain: "media_player",
-        service: "media_stop"
-      }
-    };
-
-    const entity = "media_player.chambre";
-
-    let domain;
-    let service;
-    let data = { entity_id: entity };
-
-    if (action === "volume") {
-      const volume = Number(body.volume);
-
-      if (!Number.isFinite(volume) || volume < 0 || volume > 100) {
-        return json({ error: "Volume invalide." }, 400);
-      }
-
-      domain = "media_player";
-      service = "volume_set";
-      data.volume_level = volume / 100;
-
-    } else if (services[action]) {
-      domain = services[action].domain;
-      service = services[action].service;
-
-    } else if (action === "announce") {
-      const message = String(body.message || "").trim();
-
-      if (!message || message.length > 300) {
-        return json({ error: "Annonce invalide." }, 400);
-      }
-
-      domain = "tts";
-      service = "speak";
-      data = {
-        entity_id: "tts.google_translate_en_com",
-        media_player_entity_id: entity,
-        message
-      };
-
-    } else {
-      return json({ error: "Commande non autorisée." }, 400);
-    }
-
-    const response = await fetch(
-      "http://homeassistant.local:8123/api/services/" +
-      domain + "/" + service,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + env.HA_TOKEN,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }
+  if (!env.JARVIS_GATEWAY_URL || !env.JARVIS_GATEWAY_TOKEN) {
+    return Response.json(
+      { error: "Configuration JARVIS manquante" },
+      { status: 500 }
     );
+  }
 
-    const result = await response.text();
+  try {
+    const body = await request.json();
 
-    if (!response.ok) {
-      return json({
-        error: "Home Assistant a refusé la commande.",
-        details: result.slice(0, 500)
-      }, response.status);
+    const allowedActions = ["play", "pause", "stop", "volume", "announce"];
+
+    if (!allowedActions.includes(body.action)) {
+      return Response.json({ error: "Action non autorisée" }, { status: 400 });
     }
 
-    return json({ success: true, action });
+    if (body.action === "volume") {
+      const volume = Number(body.volume);
+      if (!Number.isFinite(volume) || volume < 0 || volume > 100) {
+        return Response.json({ error: "Volume invalide" }, { status: 400 });
+      }
+    }
+
+    if (body.action === "announce") {
+      if (
+        typeof body.message !== "string" ||
+        !body.message.trim() ||
+        body.message.length > 300
+      ) {
+        return Response.json({ error: "Message invalide" }, { status: 400 });
+      }
+    }
+
+    const gatewayUrl = env.JARVIS_GATEWAY_URL.replace(/\/+$/, "");
+
+    const response = await fetch(`${gatewayUrl}/command`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.JARVIS_GATEWAY_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    return Response.json(result, { status: response.status });
 
   } catch (error) {
-    return json({ error: "Erreur interne : " + error.message }, 500);
+    return Response.json(
+      { error: "Impossible de contacter la passerelle JARVIS" },
+      { status: 502 }
+    );
   }
 }
