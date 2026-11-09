@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>J.A.R.V.I.S — STARK INDUSTRIES V9</title>
+<title>J.A.R.V.I.S — STARK INDUSTRIES V9.1</title>
 
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -374,6 +374,10 @@ box-shadow:0 0 20px white,0 0 40px #00d9ff;
 }
 #voice-orb.listening{
 box-shadow:0 0 35px #00cfff,0 0 85px #008cff88,inset 0 0 40px #00cfff66;
+}
+animation:orbSpin 18s linear infinite;
+}
+#voice-orb.listening{
 animation:orbListen 1.5s ease-in-out infinite;
 }
 #voice-orb.thinking{
@@ -503,6 +507,38 @@ main{padding:24px}
 .leaflet-container{font-family:Arial,sans-serif}.leaflet-control-attribution{font-size:9px!important}
 @media(min-width:760px){.weather-current{grid-template-columns:repeat(4,minmax(0,1fr))}.phone-app-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
+
+/* V9.1 — IMMERSION STARK */
+body{padding-bottom:0;overflow-x:hidden}
+header,.bottom-nav,footer{display:none!important}
+main{max-width:none;padding:0;margin:0}
+#page-home{min-height:100svh;width:100%;}
+#page-home .immersive-home{min-height:100svh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 18px 28px;overflow:hidden;position:relative}
+#page-home .immersive-home:before{content:"";position:absolute;width:min(90vw,650px);height:min(90vw,650px);border-radius:50%;background:radial-gradient(circle,#087cb922 0%,#087cb908 45%,transparent 72%);filter:blur(18px);pointer-events:none}
+.home-overline{font-size:10px;letter-spacing:3px;color:#83a9c1;position:relative}
+.home-overline span{color:var(--cyan)}
+#reactor-wrap{width:100%;height:min(64vh,590px);min-height:320px;display:flex;align-items:center;justify-content:center;padding:0;position:relative;z-index:1}
+#reactor{width:min(76vw,430px);height:min(76vw,430px);min-width:270px;min-height:270px;border-width:2px;box-shadow:0 0 45px #00bfff66,0 0 110px #0088ff22,inset 0 0 60px #00bfff33}
+#reactor:before{inset:12px;border-width:2px}#reactor:after{inset:32px}
+#reactor-core{width:clamp(90px,25vw,145px);height:clamp(90px,25vw,145px);box-shadow:0 0 45px #00cfff,0 0 100px #00aaff88}
+#stark-three{z-index:2}
+.home-brand{font-size:clamp(22px,5vw,32px);font-weight:900;letter-spacing:8px;color:#c7f7ff;text-shadow:0 0 20px #00bfff88;margin-top:2px;position:relative}
+.home-state{font-size:10px;letter-spacing:2px;color:var(--green);margin-top:12px;position:relative}
+.home-hint{font-size:9px;letter-spacing:1.5px;color:#6e8ca4;margin-top:30px;position:relative}
+.home-clock{font-size:13px;letter-spacing:3px;color:#9ec9df;margin-top:12px;position:relative}
+#top-menu-button{top:calc(14px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right));width:50px;height:50px;border-radius:15px;border:1px solid #1c6b91;background:rgba(5,20,34,.88);font-size:24px;backdrop-filter:blur(16px)}
+#stark-drawer{padding-top:calc(22px + env(safe-area-inset-top));padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+.drawer-group{margin:9px 0;border:1px solid #17344c;border-radius:12px;background:#071625;overflow:hidden}
+.drawer-group summary{padding:13px 12px;cursor:pointer;list-style:none;font-size:10px;font-weight:900;letter-spacing:1.4px;color:var(--cyan)}
+.drawer-group summary::-webkit-details-marker{display:none}
+.drawer-group summary:after{content:'＋';float:right;color:#7e9caf}
+.drawer-group[open] summary:after{content:'−'}
+.drawer-group .drawer-link{margin:0;border:0;border-top:1px solid #132b40;border-radius:0;padding:12px 14px;font-size:12px;background:#091a2a}
+.drawer-link.drawer-home{margin:7px 0 13px;background:#0d3450}
+#page-code-lab textarea{min-height:110px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.45;margin:6px 0 12px}
+#page-code-lab iframe{color-scheme:light}
+@media(max-width:430px){#reactor-wrap{height:55vh;min-height:300px}#reactor{width:78vw;height:78vw;min-width:260px;min-height:260px}.home-hint{margin-top:22px}}
+
 </style>
 </head>
 
@@ -512,20 +548,40 @@ main{padding:24px}
 <div id="drawer-shade" onclick="basculerMenuStark(false)"></div>
 <aside id="stark-drawer" aria-label="Menu principal">
 <div class="drawer-head">STARK // NAVIGATION</div>
-<div class="small" style="margin-bottom:14px">CENTRE DE CONTRÔLE J.A.R.V.I.S V9</div>
-<button class="drawer-link" onclick="navV9('home')">⌂　ACCUEIL / SPHÈRE 3D</button>
-<button class="drawer-link" onclick="navV9('assistant')">◉　ASSISTANT INTELLIGENT</button>
-<button class="drawer-link" onclick="navV9('vocal')">🎙　MODE VOCAL</button>
-<button class="drawer-link" onclick="navV9('tasks')">▤　TÂCHES CUMULÉES</button>
-<button class="drawer-link" onclick="navV9('meteo')">☁　MÉTÉO PRÉCISE</button>
-<button class="drawer-link" onclick="navV9('map')">⌖　CARTE EN DIRECT</button>
-<button class="drawer-link" onclick="navV9('images')">✧　GÉNÉRATION D’IMAGES</button>
-<button class="drawer-link" onclick="navV9('phone')">▣　COMMANDES TÉLÉPHONE</button>
-<button class="drawer-link" onclick="navV9('gestures')">✋　GESTES / ACTIVATION</button>
-<button class="drawer-link" onclick="navV9('agenda')">▦　AGENDA</button>
-<button class="drawer-link" onclick="navV9('outils')">⚒　OUTILS</button>
-<button class="drawer-link" onclick="navV9('settings')">⚙　PARAMÈTRES</button>
-<p class="small" style="margin-top:20px">Les autorisations caméra, microphone et position sont toujours demandées au moment de leur utilisation.</p>
+<div class="small" style="margin-bottom:14px">CENTRE DE CONTRÔLE J.A.R.V.I.S V9.1</div>
+<button class="drawer-link drawer-home" onclick="navV9('home')">⌂　ACCUEIL IMMERSIF</button>
+<details class="drawer-group" open><summary>INTELLIGENCE ARTIFICIELLE</summary>
+<button class="drawer-link" onclick="navV9('assistant')">◉　Assistant intelligent</button>
+<button class="drawer-link" onclick="navV9('vocal')">🎙　Conversation vocale</button>
+<button class="drawer-link" onclick="navV9('tasks')">▤　Tâches cumulées</button>
+</details>
+<details class="drawer-group"><summary>MÉTÉO & ENVIRONNEMENT</summary>
+<button class="drawer-link" onclick="navV9('meteo');setTimeout(()=>chargerMeteoV9(),150)">☁　Météo en temps réel</button>
+<button class="drawer-link" onclick="navV9('meteo');setTimeout(()=>chargerMeteoV9(),150)">⌖　Météo à ma position</button>
+<button class="drawer-link" onclick="navV9('meteo');setTimeout(()=>document.getElementById('weather-result')?.scrollIntoView({behavior:'smooth'}),250)">▦　Prévisions & horaires</button>
+</details>
+<details class="drawer-group"><summary>CARTOGRAPHIE</summary>
+<button class="drawer-link" onclick="navV9('map')">⌖　Carte interactive</button>
+<button class="drawer-link" onclick="navV9('map');setTimeout(localiserCarteV9,250)">◎　Ma position GPS</button>
+<button class="drawer-link" onclick="navV9('map');setTimeout(()=>document.getElementById('route-destination')?.focus(),250)">➜　Calculer un itinéraire</button>
+</details>
+<details class="drawer-group"><summary>OUTILS & LABORATOIRE</summary>
+<button class="drawer-link" onclick="navV9('images')">✧　Génération d’images</button>
+<button class="drawer-link" onclick="navV9('code-lab')">⌘　Testeur HTML / CSS / JS</button>
+<button class="drawer-link" onclick="navV9('morse')">· —　Traducteur Morse</button>
+<button class="drawer-link" onclick="navV9('diagnostic')">✓　Diagnostic système</button>
+<button class="drawer-link" onclick="navV9('camera')">▣　Caméra</button>
+<button class="drawer-link" onclick="navV9('gestures')">✋　Gestes & activation</button>
+</details>
+<details class="drawer-group"><summary>ORGANISATION</summary>
+<button class="drawer-link" onclick="navV9('agenda')">▦　Agenda & rappels</button>
+<button class="drawer-link" onclick="navV9('phone')">▣　Passerelle téléphone</button>
+</details>
+<details class="drawer-group"><summary>SYSTÈME</summary>
+<button class="drawer-link" onclick="navV9('settings')">⚙　Paramètres & mémoire</button>
+<button class="drawer-link" onclick="verrouillerApplication();basculerMenuStark(false)">🔒　Verrouiller J.A.R.V.I.S</button>
+</details>
+<p class="small" style="margin-top:20px">Caméra, microphone et position ne s’activent qu’après autorisation.</p>
 </aside>
 
 
@@ -569,55 +625,13 @@ main{padding:24px}
 <!-- ACCUEIL -->
 
 <section class="page active" id="page-home">
-<div class="panel" style="text-align:center">
-<div class="small">STARK INDUSTRIES PERSONAL AI SYSTEM</div>
-<div id="reactor-wrap">
-<div id="reactor"><div id="reactor-core"></div><canvas id="stark-three" aria-hidden="true"></canvas></div>
-</div>
-<h1>BIENVENUE, MONSIEUR</h1>
-<p id="home-greeting">Système Stark opérationnel. En attente de vos instructions.</p>
-<div class="actions">
-<button class="primary" onclick="allerPage('assistant')">OUVRIR J.A.R.V.I.S</button>
-<button onclick="ouvrirModeVocal()">CONVERSATION VOCALE</button>
-</div>
-</div>
-
-<div class="grid">
-<div class="stat"><span>HEURE LOCALE</span><strong id="clock">--:--:--</strong></div>
-<div class="stat"><span>DATE</span><strong id="date">--/--/----</strong></div>
-<div class="stat"><span>BATTERIE</span><strong id="battery">--</strong></div>
-<div class="stat"><span>CONNEXION</span><strong id="connection">--</strong></div>
-<div class="stat"><span>MÉMOIRE WEB</span><strong id="web-memory">--</strong></div>
-</div>
-
-<div class="panel">
-<div class="section-title">
-<h2>CENTRE DE COMMANDES</h2>
-<span class="tag">MK-3000</span>
-</div>
-<div class="grid">
-<button onclick="commandeRapide('Quelle heure est-il ?')">HEURE</button>
-<button onclick="commandeRapide('Quelle est la date aujourd’hui ?')">DATE</button>
-<button onclick="allerPage('agenda')">AGENDA</button>
-<button onclick="allerPage('meteo')">MÉTÉO</button>
-<button onclick="allerPage('camera')">CAMÉRA</button>
-<button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
-<button onclick="allerPage('morse')">TRADUCTEUR MORSE</button>
-<button onclick="allerPage('settings')">PARAMÈTRES</button>
-<button onclick="ouvrirLien('https://www.google.com')">GOOGLE</button>
-<button onclick="ouvrirLien('https://www.youtube.com')">YOUTUBE</button>
-<button onclick="ouvrirLien('https://news.google.com')">ACTUALITÉS</button>
-<button onclick="allerPage('assistant')">ASSISTANT IA</button>
-</div>
-</div>
-
-<div class="panel">
-<h2>ÉTAT DU SYSTÈME</h2>
-<div class="list-item"><span>Intelligence artificielle</span><span id="ia-state" class="tag">Vérification</span></div>
-<div class="list-item"><span>Mémoire locale</span><span class="tag good">Disponible</span></div>
-<div class="list-item"><span>Supabase</span><span id="supabase-state" class="tag">Vérification</span></div>
-<div class="list-item"><span>Reconnaissance vocale</span><span id="speech-state" class="tag">Vérification</span></div>
-<div class="list-item"><span>Stockage navigateur</span><span id="storage-state" class="tag">Vérification</span></div>
+<div class="immersive-home">
+<div class="home-overline">STARK INDUSTRIES <span>//</span> PERSONAL AI SYSTEM</div>
+<div id="reactor-wrap"><div id="reactor"><div id="reactor-core"></div><canvas id="stark-three" aria-hidden="true"></canvas></div></div>
+<div class="home-brand">J.A.R.V.I.S</div>
+<div class="home-state" id="home-greeting">SYSTÈME STARK OPÉRATIONNEL</div>
+<div class="home-hint">APPUYEZ SUR ☰ POUR ACCÉDER AUX MODULES</div>
+<div class="home-clock" id="clock">--:--:--</div>
 </div>
 </section>
 
@@ -687,14 +701,13 @@ main{padding:24px}
 
 <div class="panel" style="margin-top:16px;text-align:left">
 <h2>RÉVEIL VOCAL</h2>
-<p class="small">Le navigateur écoute le mot « Jarvis » tant que cette page reste ouverte et que le microphone est autorisé.</p>
+<p class="small">Le navigateur écoute le mot « Jarvis » tant que cette page reste ouverte et que le microphone est autorisé. Le mode peut s'interrompre si le navigateur passe en arrière-plan.</p>
 <div class="actions">
 <button class="secondary" onclick="activerMotCle()">ACTIVER « JARVIS »</button>
 <button class="danger" onclick="desactiverMotCle()">DÉSACTIVER</button>
 </div>
 <div id="wake-status" class="small" style="margin-top:9px">Mot-clé désactivé.</div>
 </div>
-
 <div style="margin-top:20px;text-align:left">
 <label class="small">
 <input type="checkbox" id="voice-auto" checked style="width:auto">
@@ -719,7 +732,7 @@ Lire les réponses à voix haute
 <section class="page" id="page-agenda">
 <div class="panel">
 <h1>AGENDA INTELLIGENT</h1>
-<p class="muted">Rappels enregistrés sur cet appareil. Les notifications nécessitent votre autorisation.</p>
+<p class="muted">Rappels enregistrés sur cet appareil. Les notifications nécessitent votre autorisation et l'application doit pouvoir fonctionner.</p>
 <input id="reminder-title" placeholder="Nom du rappel">
 <input id="reminder-date" type="datetime-local" style="margin-top:9px">
 <button class="primary" style="width:100%;margin-top:9px" onclick="ajouterRappel()">AJOUTER UN RAPPEL</button>
@@ -741,6 +754,8 @@ Lire les réponses à voix haute
 <h1>OUTILS STARK</h1>
 <div class="grid">
 <button onclick="allerPage('meteo')">MÉTÉO</button>
+<button onclick="allerPage('map')">CARTE</button>
+<button onclick="allerPage('morse')">MORSE</button>
 <button onclick="allerPage('camera')">CAMÉRA</button>
 <button onclick="allerPage('morse')">MORSE</button>
 <button onclick="allerPage('diagnostic')">DIAGNOSTIC</button>
@@ -752,109 +767,64 @@ Lire les réponses à voix haute
 
 <section class="page" id="page-meteo">
 <div class="panel">
-<h1>MÉTÉO PRÉCISE</h1>
+<h1>MÉTÉO</h1>
 <p class="muted">Prévisions via Open-Meteo. Votre position ne sera demandée qu'avec votre autorisation.</p>
 <button class="primary" onclick="chargerMeteoV9()">DÉTECTER MA POSITION</button>
 <div id="weather-result" style="margin-top:15px">Aucune donnée météo chargée.</div>
 </div>
-</section>
-
-<!-- CARTE -->
-
-<section class="page" id="page-map">
 <div class="panel">
-<h1>CARTE INTERACTIVE STARK</h1>
-<p class="muted">Carte OpenStreetMap avec zoom, déplacement et recherche de lieux.</p>
-<div class="map-controls">
-<input id="map-search" placeholder="Rechercher une ville ou une adresse">
-<button onclick="rechercherLieuV9()">RECHERCHER</button>
-<button onclick="localiserCarteV9()">⌖</button>
+<h2>RECHERCHE INTERNET</h2>
+<input id="search-input" placeholder="Que souhaitez-vous rechercher ?">
+<button class="primary" style="width:100%;margin-top:9px" onclick="rechercherInternet()">LANCER LA RECHERCHE</button>
 </div>
-<div id="stark-map"></div>
-<div style="margin-top:12px">
-<input id="route-destination" placeholder="Destination de l'itinéraire">
-<button class="primary" style="width:100%;margin-top:8px" onclick="calculerItineraireV9()">CALCULER L'ITINÉRAIRE</button>
-<div id="route-result" class="small" style="margin-top:10px"></div>
-</div>
-</div>
-</section>
-
-<!-- GÉNÉRATION D'IMAGES -->
-
-<section class="page" id="page-images">
 <div class="panel">
-<h1>STARK IMAGE GENERATOR</h1>
-<p class="muted">Décrivez l'image que vous souhaitez générer.</p>
-<textarea id="image-prompt" placeholder="Exemple : une sphère holographique futuriste dans un laboratoire Stark..."></textarea>
-<button class="primary" style="width:100%;margin-top:9px" onclick="genererImageV9()">GÉNÉRER L'IMAGE</button>
-<div id="image-status" class="small" style="margin-top:10px"></div>
-<div id="image-output" style="margin-top:14px"></div>
+<h2>ACTUALITÉS</h2>
+<button onclick="ouvrirLien('https://news.google.com/home?hl=fr&gl=FR&ceid=FR:fr')">OUVRIR LES ACTUALITÉS</button>
 </div>
 </section>
 
-<!-- COMMANDES TÉLÉPHONE -->
-
-<section class="page" id="page-phone">
-<div class="panel">
-<h1>COMMANDES TÉLÉPHONE</h1>
-<p class="muted">J.A.R.V.I.S peut ouvrir certains liens d'applications compatibles. iOS doit rester déverrouillé et autoriser l'action.</p>
-<div class="phone-app-grid">
-<button onclick="ouvrirAppV9('https://www.youtube.com')">▶ YouTube</button>
-<button onclick="ouvrirAppV9('https://music.apple.com')">♫ Apple Music</button>
-<button onclick="ouvrirAppV9('https://www.instagram.com')">Instagram</button>
-<button onclick="ouvrirAppV9('https://www.snapchat.com')">Snapchat</button>
-<button onclick="ouvrirAppV9('https://www.tiktok.com')">TikTok</button>
-<button onclick="ouvrirAppV9('https://calendar.google.com')">Agenda</button>
-<button onclick="ouvrirAppV9('mailto:')">Mail</button>
-<button onclick="ouvrirAppV9('https://maps.apple.com')">Plans</button>
-</div>
-<p class="small" style="margin-top:12px">Le déverrouillage de l'iPhone et le contournement de Face ID ou du code ne sont pas possibles depuis une page web.</p>
-</div>
-</section>
-
-<!-- GESTES -->
-
-<section class="page" id="page-gestures">
-<div class="panel">
-<h1>GESTES ET ACTIVATION</h1>
-<p class="muted">La caméra ne démarre qu'après votre action. La détection de gestes s'effectue localement dans le navigateur lorsqu'elle est prise en charge.</p>
-<button class="primary" onclick="demarrerGestesV9()">AUTORISER LA CAMÉRA ET DÉMARRER</button>
-<button class="danger" onclick="arreterGestesV9()">ARRÊTER LA CAMÉRA</button>
-<video id="gesture-preview" autoplay muted playsinline></video>
-<div id="gesture-status" class="small" style="margin-top:10px">Caméra inactive.</div>
-<div id="double-clap-status" style="margin-top:10px">Activation par double claquement désactivée.</div>
-</div>
-</section>
 <!-- CAMÉRA -->
 
 <section class="page" id="page-camera">
 <div class="panel">
-<h1>CAMÉRA STARK</h1>
-<p class="muted">La caméra fonctionne uniquement après votre autorisation.</p>
-<video id="camera-preview" autoplay muted playsinline></video>
-<div class="actions" style="margin-top:12px">
+<h1>MODULE CAMÉRA</h1>
+<p class="muted">La caméra fonctionne uniquement après autorisation du navigateur.</p>
+<video id="camera-preview" autoplay playsinline muted></video>
+<div class="actions" style="margin-top:10px">
 <button class="primary" onclick="demarrerCamera()">ACTIVER CAMÉRA</button>
 <button class="danger" onclick="arreterCamera()">ARRÊTER</button>
+<button onclick="prendrePhoto()">CAPTURER</button>
 </div>
-<div id="camera-status" class="small" style="margin-top:10px">Caméra inactive.</div>
+<canvas id="camera-canvas" style="display:none"></canvas>
+<img id="photo-result" alt="Capture caméra" style="display:none;width:100%;margin-top:12px;border-radius:12px">
+<a id="photo-download" style="display:none;color:var(--cyan);margin-top:10px">Enregistrer la capture</a>
+</div>
+
+<div class="panel">
+<h2>LECTEUR DE DOCUMENTS</h2>
+<input type="file" id="document-file" accept=".txt,.csv,.json,.md,.html,.log,image/*">
+<div id="document-result" class="small" style="margin-top:12px">Sélectionnez un fichier texte ou une image.</div>
+<img id="file-preview" alt="Aperçu du fichier">
+<button id="send-document" style="display:none;margin-top:10px" onclick="envoyerDocumentIA()">ENVOYER LE TEXTE À JARVIS</button>
+<p class="small">Les fichiers texte peuvent être résumés par l'IA. Les images sont affichées en aperçu ; leur analyse intelligente nécessite une API compatible avec les images.</p>
 </div>
 </section>
 
-<!-- TRADUCTEUR MORSE -->
+<!-- MORSE -->
 
 <section class="page" id="page-morse">
 <div class="panel">
 <h1>TRADUCTEUR MORSE</h1>
-<textarea id="morse-input" placeholder="Entrez votre texte ou votre code Morse..."></textarea>
+<textarea id="morse-input" placeholder="Écrivez votre message ou votre code Morse..."></textarea>
 <div class="actions" style="margin-top:10px">
-<button class="primary" onclick="texteVersMorse()">TEXTE → MORSE</button>
-<button onclick="morseVersTexte()">MORSE → TEXTE</button>
+<button class="primary" onclick="traduireMorse()">TRADUIRE</button>
+<button onclick="emettreMorse()">ÉMETTRE LE MORSE</button>
 </div>
 <div class="stat" style="margin-top:12px">
 <span>RÉSULTAT</span>
-<div id="morse-result" class="morse-output">---</div>
+<div class="morse-output" id="morse-output">---</div>
 </div>
-<button class="secondary" style="width:100%;margin-top:10px" onclick="copierMorse()">COPIER LE RÉSULTAT</button>
+<button class="secondary" style="margin-top:10px" onclick="arreterMorse()">ARRÊTER LE SIGNAL</button>
 </div>
 </section>
 
@@ -863,19 +833,13 @@ Lire les réponses à voix haute
 <section class="page" id="page-diagnostic">
 <div class="panel">
 <h1>DIAGNOSTIC SYSTÈME</h1>
-<div class="list-item"><span>Navigateur</span><span id="diag-browser">Vérification</span></div>
-<div class="list-item"><span>Connexion internet</span><span id="diag-network">Vérification</span></div>
-<div class="list-item"><span>Reconnaissance vocale</span><span id="diag-voice">Vérification</span></div>
-<div class="list-item"><span>Synthèse vocale</span><span id="diag-tts">Vérification</span></div>
-<div class="list-item"><span>Géolocalisation</span><span id="diag-gps">Vérification</span></div>
-<div class="list-item"><span>Caméra</span><span id="diag-camera">Vérification</span></div>
-<div class="list-item"><span>Stockage</span><span id="diag-storage">Vérification</span></div>
-<button class="primary" style="width:100%;margin-top:14px" onclick="diagnosticComplet()">LANCER LE DIAGNOSTIC</button>
+<p class="muted">Contrôle des fonctions accessibles à l'application web. Ce diagnostic n'est pas un antivirus.</p>
+<button class="primary" style="width:100%" onclick="lancerDiagnostic()">LANCER LE DIAGNOSTIC</button>
+<div id="diagnostic-results" style="margin-top:15px"></div>
 </div>
 <div class="panel">
-<h2>JOURNAL DES ACTIONS</h2>
-<div id="action-log"></div>
-<button class="secondary" style="width:100%;margin-top:10px" onclick="viderJournal()">EFFACER LE JOURNAL</button>
+<h2>CONSEILS DE PERFORMANCE</h2>
+<div id="performance-tips" class="muted">Lancez un diagnostic pour obtenir des conseils.</div>
 </div>
 </section>
 
@@ -883,1463 +847,286 @@ Lire les réponses à voix haute
 
 <section class="page" id="page-settings">
 <div class="panel">
-<h1>PARAMÈTRES STARK</h1>
-<h2>PERSONNALISATION</h2>
-<div class="actions">
-<button onclick="changerThemeV9('blue')">BLEU STARK</button>
-<button onclick="changerThemeV9('green')">VERT</button>
-<button onclick="changerThemeV9('purple')">VIOLET</button>
+<h1>PERSONNALISATION STARK</h1>
+
+<label class="small">Nom de l'assistant</label>
+<input id="assistant-name" value="J.A.R.V.I.S" style="margin:7px 0">
+<button onclick="sauverParametres()">ENREGISTRER LE NOM</button>
+
+<div style="margin-top:16px">
+<label class="small">Couleur du système</label>
+<select id="theme-select" onchange="changerTheme(this.value)">
+<option value="blue">BLEU STARK</option>
+<option value="green">VERT ÉNERGIE</option>
+<option value="purple">VIOLET FUTURISTE</option>
+</select>
+</div>
+
+<div style="margin-top:16px">
+<label class="small">Vitesse de la voix</label>
+<select id="voice-rate">
+<option value="0.85">LENTE</option>
+<option value="1" selected>NORMALE</option>
+<option value="1.15">RAPIDE</option>
+</select>
+</div>
+
+<div class="list-item">
+<span>Lecture vocale</span>
+<button class="secondary" onclick="basculerLecture()">ACTIVER / DÉSACTIVER</button>
+</div>
+<div class="list-item">
+<span>Mode sombre</span>
+<span class="tag good">ACTIF</span>
+</div>
+<div class="list-item">
+<span>Connexion Supabase</span>
+<span id="settings-supabase" class="tag">Vérification</span>
 </div>
 </div>
 
 <div class="panel">
-<h2>SÉCURITÉ</h2>
-<p class="small">Le code protège l'accès à l'interface. Il ne remplace pas le verrouillage de l'appareil.</p>
-<input id="old-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Ancien code">
-<input id="new-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Nouveau code à 6 chiffres" style="margin-top:8px">
-<input id="confirm-new-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Confirmer le nouveau code" style="margin-top:8px">
-<button class="primary" style="width:100%;margin-top:10px" onclick="modifierPINV9()">MODIFIER LE CODE</button>
-<div id="pin-change-status" class="small" style="margin-top:8px"></div>
+<h2>COMPTE SUPABASE</h2>
+<p class="small">Connexion facultative pour synchroniser la mémoire entre vos appareils.</p>
+<input id="account-email" type="email" placeholder="Adresse e-mail">
+<div class="actions" style="margin-top:9px">
+<button onclick="connexionSupabase()">ENVOYER LE LIEN DE CONNEXION</button>
+<button class="secondary" onclick="deconnexionSupabase()">DÉCONNEXION</button>
+</div>
+<div id="account-status" class="small" style="margin-top:9px">Compte non vérifié.</div>
 </div>
 
 <div class="panel">
-<h2>CONNEXIONS EXTERNES</h2>
-<div class="list-item"><span>Groq / IA</span><span class="tag">API serveur</span></div>
-<div class="list-item"><span>Supabase</span><span class="tag">Configuration serveur</span></div>
-<div class="list-item"><span>Apple Music</span><span class="tag">Connexion à autoriser</span></div>
-<div class="list-item"><span>Mail et calendrier</span><span class="tag">OAuth requis</span></div>
-<div class="list-item"><span>Génération d'images</span><span class="tag">API serveur requise</span></div>
-<div class="list-item"><span>Home Assistant</span><span class="tag">Worker sécurisé</span></div>
+<h2>MÉMOIRE INTELLIGENTE</h2>
+<div id="memory-count" class="muted">0 souvenir local</div>
+<input id="memory-search" placeholder="Rechercher dans les souvenirs..." oninput="afficherSouvenirs()">
+<button class="secondary" onclick="afficherSouvenirs()" style="margin-top:8px">ACTUALISER LA MÉMOIRE</button>
+<div id="memory-list" style="margin-top:10px"></div>
+<button class="danger" onclick="effacerSouvenirs()" style="margin-top:10px">EFFACER LA MÉMOIRE LOCALE</button>
 </div>
 
 <div class="panel">
-<h2>MÉMOIRE LOCALE</h2>
-<div id="memory-list"></div>
-<button class="secondary" style="width:100%;margin-top:10px" onclick="viderMemoireLocale()">EFFACER LA MÉMOIRE LOCALE</button>
+<h2>SÉCURITÉ — MOT DE PASSE</h2>
+
+<p class="small">
+Votre code personnel comporte exactement 6 chiffres.
+Il est obligatoire pour accéder à J.A.R.V.I.S.
+</p>
+
+<input id="pin-current" type="password"
+inputmode="numeric" maxlength="6"
+placeholder="Code actuel">
+
+<input id="pin-new" type="password"
+inputmode="numeric" maxlength="6"
+placeholder="Nouveau code à 6 chiffres"
+style="margin-top:8px">
+
+<input id="pin-confirm" type="password"
+inputmode="numeric" maxlength="6"
+placeholder="Confirmer le nouveau code"
+style="margin-top:8px">
+
+<button class="primary" style="width:100%;margin-top:10px"
+onclick="configurerPIN()">
+MODIFIER MON MOT DE PASSE
+</button>
+
+<button class="secondary" style="width:100%;margin-top:9px"
+onclick="verrouillerApplication()">
+VERROUILLER J.A.R.V.I.S
+</button>
+
+<div id="pin-status" class="small" style="margin-top:10px">
+Vérification de la sécurité...
+</div>
+</div>
+
+<div class="panel">
+<div class="section-title"><h2>JOURNAL DES ACTIONS</h2><button class="danger" onclick="effacerJournal()">EFFACER</button></div>
+<p class="small">Le journal conserve les événements de l'application sur cet appareil, sans enregistrer le contenu de vos messages.</p>
+<div id="action-log"></div>
+</div>
+<div class="panel">
+<h2>À PROPOS</h2>
+<p>J.A.R.V.I.S — STARK INDUSTRIES<br>Version 9.1 — MK-3000<br>Interface personnelle expérimentale.</p>
+<p class="small">Les données locales restent dans le stockage du navigateur. Les échanges avec l'IA nécessitent Internet. Certaines fonctions dépendent des autorisations du navigateur.</p>
 </div>
 </section>
 
+
+<!-- V9 : TÂCHES CUMULÉES -->
+<section class="page" id="page-tasks">
+<div class="panel">
+<h1>FILE DE MISSIONS STARK</h1>
+<p class="muted">Ajoutez plusieurs tâches et demandez à J.A.R.V.I.S de les traiter dans l’ordre. Seules les actions prises en charge par l’application seront exécutées.</p>
+<div class="chat-input"><input id="task-input" placeholder="Ex. : Vérifier la météo demain"><button onclick="ajouterTacheV9()">AJOUTER</button></div>
+<div class="actions" style="margin-top:10px"><button class="primary" onclick="executerFileTachesV9()">EXÉCUTER LA FILE</button><button class="secondary" onclick="viderTachesV9()">VIDER</button></div>
+<div id="task-progress" class="small" style="margin-top:12px">Aucune mission en cours.</div>
+</div>
+<div class="panel"><div class="section-title"><h2>MISSIONS ENREGISTRÉES</h2><span class="tag" id="task-count">0</span></div><div id="task-list"></div></div>
+<div class="panel"><h2>COMMANDE MULTI-ACTIONS</h2><p class="small">Exemple : « Enchaîne : affiche la météo ; ouvre YouTube ; affiche la carte ».</p><button class="secondary" style="width:100%" onclick="$('chat-input').value='Enchaîne : affiche la météo ; ouvre YouTube ; affiche la carte';navV9('assistant');$('chat-input').focus()">INSÉRER UN EXEMPLE</button></div>
+</section>
+
+<!-- V9 : CARTE -->
+<section class="page" id="page-map">
+<div class="panel">
+<h1>CARTE INTERACTIVE EN DIRECT</h1>
+<p class="muted">Carte OpenStreetMap. La position GPS n’est utilisée qu’après votre autorisation. Déplacez la carte, zoomez et recherchez un lieu.</p>
+<div class="map-controls"><input id="map-search" placeholder="Rechercher une ville ou une adresse"><button class="primary" onclick="rechercherLieuV9()">CHERCHER</button><button onclick="localiserCarteV9()">⌖ GPS</button></div>
+<div class="actions" style="margin:0 0 10px"><button onclick="zoomCarteV9(1)">ZOOM +</button><button onclick="zoomCarteV9(-1)">ZOOM −</button><button class="secondary" onclick="effacerItineraireV9()">EFFACER TRAJET</button></div>
+<div id="stark-map" role="application" aria-label="Carte interactive"></div>
+<div id="map-status" class="small" style="margin-top:10px">Carte prête. Autorisez la position pour afficher votre emplacement.</div>
+</div>
+<div class="panel"><h2>CALCULER UN ITINÉRAIRE</h2><input id="route-destination" placeholder="Destination (ex. Montpellier)"/><button class="primary" style="width:100%;margin-top:9px" onclick="calculerItineraireV9()">CALCULER DEPUIS MA POSITION</button><div id="route-result" class="small" style="margin-top:10px"></div></div>
+</section>
+
+<!-- V9 : IMAGES -->
+<section class="page" id="page-images">
+<div class="panel"><h1>STARK IMAGE LAB</h1><p class="muted">Décrivez l’image souhaitée. La génération nécessite une route serveur sécurisée <code>/api/image</code> reliée à un fournisseur d’images. Aucune clé secrète ne doit être placée dans ce fichier.</p>
+<textarea id="image-prompt" placeholder="Décris l’image à créer…"></textarea>
+<button class="primary" style="width:100%;margin-top:10px" onclick="genererImageV9()">GÉNÉRER L’IMAGE</button>
+<div id="image-status" class="small" style="margin-top:10px">En attente d’une description.</div><div id="image-output" style="margin-top:12px"></div>
+</div>
+</section>
+
+<!-- V9 : TÉLÉPHONE -->
+<section class="page" id="page-phone">
+<div class="panel"><h1>PASSERELLE TÉLÉPHONE</h1><p class="muted">Sur iPhone, les applications compatibles peuvent s’ouvrir via leurs liens officiels ou leurs schémas d’application. iOS demandera parfois une confirmation. Le déverrouillage du téléphone reste exclusivement sous le contrôle d’Apple et de son propriétaire.</p>
+<div class="phone-app-grid">
+<button onclick="ouvrirAppMobileV9('https://music.apple.com/','music://')">♫ APPLE MUSIC</button>
+<button onclick="ouvrirAppMobileV9('https://www.youtube.com/','youtube://')">▶ YOUTUBE</button>
+<button onclick="ouvrirAppMobileV9('https://www.instagram.com/','instagram://app')">◎ INSTAGRAM</button>
+<button onclick="ouvrirAppMobileV9('https://www.tiktok.com/','snssdk1233://')">♪ TIKTOK</button>
+<button onclick="ouvrirAppMobileV9('https://www.snapchat.com/','snapchat://')">◉ SNAPCHAT</button>
+<button onclick="ouvrirAppMobileV9('https://discord.com/app','discord://')">◈ DISCORD</button>
+<button onclick="ouvrirAppMobileV9('https://mail.google.com/','googlegmail://')">✉ GMAIL</button>
+<button onclick="ouvrirAppMobileV9('https://calendar.google.com/','')">▦ AGENDA</button>
+<button onclick="ouvrirAppMobileV9('https://www.google.com/maps/','comgooglemaps://')">⌖ GOOGLE MAPS</button>
+<button onclick="ouvrirAppMobileV9('https://www.google.com/','')">G GOOGLE</button>
+</div>
+<p id="phone-status" class="small" style="margin-top:12px">Choisissez une application. L’ouverture dépend de sa présence et des autorisations du système.</p>
+</div>
+<div class="panel"><h2>COMMANDES RAPIDES</h2><div class="actions"><button onclick="location.href='tel:'">TÉLÉPHONE</button><button onclick="location.href='sms:'">MESSAGES</button><button onclick="location.href='mailto:'">E-MAIL</button></div><p class="small">Ces raccourcis ouvrent les applications système compatibles. Ils ne lisent ni n’envoient de messages sans action de votre part.</p></div>
+</section>
+
+<!-- V9 : GESTES -->
+<section class="page" id="page-gestures">
+<div class="panel"><h1>INTERACTION PAR GESTES</h1><p class="muted">La caméra ne démarre qu’après votre clic. Le module peut détecter des gestes simples de la main localement. Il ne réalise aucune reconnaissance faciale ni identification de personne.</p>
+<video id="gesture-preview" autoplay playsinline muted></video>
+<div class="actions" style="margin-top:10px"><button class="primary" onclick="demarrerGestesV9()">ACTIVER LA CAMÉRA / GESTES</button><button class="danger" onclick="arreterGestesV9()">ARRÊTER</button></div>
+<div id="gesture-status" class="small" style="margin-top:10px">Détection désactivée.</div>
+</div>
+<div class="panel"><h2>ACTIVATION PAR DOUBLE CLAQUEMENT</h2><p class="muted">Option expérimentale : le microphone reste actif uniquement pendant que vous l’avez explicitement démarré. La détection s’arrête en quittant ce module ou en appuyant sur Arrêter.</p>
+<div id="double-clap-status">Microphone non activé.</div><div class="actions" style="margin-top:10px"><button class="primary" onclick="demarrerDoubleClapV9()">ACTIVER</button><button class="danger" onclick="arreterDoubleClapV9()">ARRÊTER</button></div>
+</div>
+</section>
+
+
+<!-- LABORATOIRE DE CODE : aperçu isolé et sans accès au stockage principal -->
+<section class="page" id="page-code-lab">
+<div class="panel">
+<h1>STARK CODE LAB</h1>
+<p class="muted">Testez du HTML, du CSS et du JavaScript dans un aperçu isolé. Le bac à sable n’a pas accès au stockage, aux cookies ou au DOM de J.A.R.V.I.S et bloque les connexions réseau depuis le code testé.</p>
+<label class="small" for="code-html">HTML</label>
+<textarea id="code-html" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="<h1>Bonjour, Monsieur</h1>
+<p>Mon premier test</p>"></textarea>
+<label class="small" for="code-css">CSS</label>
+<textarea id="code-css" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="body { font-family: Arial; color: #087cb9; }"></textarea>
+<label class="small" for="code-js">JavaScript</label>
+<textarea id="code-js" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="console.log('Test J.A.R.V.I.S');"></textarea>
+<div class="actions" style="margin-top:10px">
+<button class="primary" onclick="executerTestCodeV9()">▶ EXÉCUTER LE TEST</button>
+<button class="secondary" onclick="chargerExempleCodeV9()">EXEMPLE</button>
+<button class="danger" onclick="effacerCodeV9()">EFFACER</button>
+</div>
+<div id="code-test-status" class="small" style="margin-top:12px">Prêt. Le code ne sera pas injecté dans l’application principale.</div>
+</div>
+<div class="panel">
+<div class="section-title"><h2>APERÇU DU RÉSULTAT</h2><span class="tag">SANDBOX</span></div>
+<iframe id="code-preview" title="Aperçu isolé du code" sandbox="allow-scripts" referrerpolicy="no-referrer" style="width:100%;height:300px;background:#fff;border:1px solid var(--line);border-radius:12px"></iframe>
+<h2 style="margin-top:14px">CONSOLE DE TEST</h2>
+<pre id="code-console" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto;background:#030a12;border:1px solid var(--line);border-radius:10px;padding:12px;color:#bcecff;font-size:12px">Les messages de console apparaîtront ici.</pre>
+</div>
+</section>
+
+
 </main>
 
-<nav class="bottom-nav">
-<button class="nav-btn active" data-page="home" onclick="allerPage('home')"><b>⌂</b>ACCUEIL</button>
-<button class="nav-btn" data-page="assistant" onclick="allerPage('assistant')"><b>◉</b>ASSISTANT</button>
-<button class="nav-btn" data-page="vocal" onclick="allerPage('vocal')"><b>🎙</b>VOCAL</button>
-<button class="nav-btn" data-page="agenda" onclick="allerPage('agenda')"><b>▦</b>AGENDA</button>
-<button class="nav-btn" data-page="outils" onclick="allerPage('outils')"><b>⚒</b>OUTILS</button>
-</nav>
-
-<footer>
-STARK INDUSTRIES // J.A.R.V.I.S MK-3000<br>
-VERSION 9.0 ULTIMATE
-</footer>
 
 <script>
 "use strict";
 
-/* CONFIGURATION GÉNÉRALE */
+/* CONFIGURATION */
 
 const CLE_MEMOIRE="jarvis_memoire";
 const CLE_CHAT="jarvis_chat_v8";
 const CLE_RAPPELS="jarvis_automations";
-const CLE_PIN="jarvis_pin_v8";
-const CLE_JOURNAL="jarvis_journal_v9";
+const CLE_NOM="jarvis_assistant_name";
+const CLE_TTS="jarvis_tts_v8";
+const CLE_THEME="jarvis_theme_v8";
+const CLE_JOURNAL="jarvis_action_log_v1";
+const CLE_PIN="jarvis_pin_hash_v1";
 
 let clientSupabase=null;
 let utilisateur=null;
-let lectureActive=true;
-let vocalActif=false;
+let lectureActive=localStorage.getItem(CLE_TTS)!=="false";
+let historique=[];
+let dernierTexte="";
+let fluxCamera=null;
 let reconnaissance=null;
-let cameraStream=null;
-let gestureStream=null;
-let mapV9=null;
-let mapMarkerV9=null;
-let mapRouteV9=null;
-let derniereReponse="";
-let tasksV9=[];
-let taskRunningV9=false;
-let wakeRecognition=null;
-let wakeActive=false;
-let derniereCommandeVocale="";
-let dernierTexteVocal="";
-let mediaRecorder=null;
-let animationReactor=null;
-
-/* OUTILS */
+let vocalActif=false;
+let audioMorse=null;
+let contexteDocument="";
+let minuterieRappels=null;
+let reconnaissanceMotCle=null;
+let motCleActif=false;
+let journalActions=lireJSON(CLE_JOURNAL,[]);
 
 const $=id=>document.getElementById(id);
 
-function afficherMessage(id,texte){
-const element=$(id);
-if(element)element.textContent=texte;
+function lireJSON(cle,defaut){
+try{return JSON.parse(localStorage.getItem(cle))??defaut}
+catch{return defaut}
 }
 
-function journaliser(action){
-try{
-const logs=JSON.parse(localStorage.getItem(CLE_JOURNAL)||"[]");
-logs.unshift({
-date:new Date().toLocaleString("fr-FR"),
-action:String(action).slice(0,250)
-});
-localStorage.setItem(CLE_JOURNAL,JSON.stringify(logs.slice(0,80)));
-afficherJournal();
-}catch(e){}
+const memoireLocale=lireJSON(CLE_MEMOIRE,[]);
+const rappels=lireJSON(CLE_RAPPELS,[]);
+historique=lireJSON(CLE_CHAT,[]);
+
+function alerte(message){window.alert(message)}
+
+function sauvegarderChat(){
+localStorage.setItem(CLE_CHAT,JSON.stringify(historique.slice(-40)));
 }
 
-function afficherJournal(){
-const zone=$("action-log");
-if(!zone)return;
-const logs=JSON.parse(localStorage.getItem(CLE_JOURNAL)||"[]");
-zone.innerHTML="";
-logs.forEach(item=>{
-const div=document.createElement("div");
-div.className="log-entry";
-const date=document.createElement("time");
-date.textContent=item.date;
-const contenu=document.createElement("div");
-contenu.textContent=item.action;
-div.append(date,contenu);
-zone.appendChild(div);
-});
-}
-
-function viderJournal(){
-localStorage.removeItem(CLE_JOURNAL);
-afficherJournal();
-}
-
-function ajouterMessage(texte,type="jarvis"){
-const zone=$("messages");
-if(!zone)return;
-const div=document.createElement("div");
-div.className="message "+type;
-div.textContent=texte;
-zone.appendChild(div);
-zone.scrollTop=zone.scrollHeight;
-}
-
-function chargerChat(){
-try{
-const historique=JSON.parse(localStorage.getItem(CLE_CHAT)||"[]");
-const zone=$("messages");
-if(!zone)return;
-zone.innerHTML="";
-historique.slice(-40).forEach(item=>{
-ajouterMessage(item.text,item.type);
-});
-}catch(e){}
-}
-
-function sauvegarderChat(texte,type){
-try{
-const historique=JSON.parse(localStorage.getItem(CLE_CHAT)||"[]");
-historique.push({text:texte,type});
-localStorage.setItem(CLE_CHAT,JSON.stringify(historique.slice(-80)));
-}catch(e){}
-}
-
-function nettoyerTexte(texte){
-return String(texte||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
+function sauvegarderMemoire(){
+localStorage.setItem(CLE_MEMOIRE,JSON.stringify(memoireLocale));
+actualiserCompteurMemoire();
 }
 
 /* NAVIGATION */
 
-function basculerMenuStark(force){
-const drawer=$("stark-drawer");
-const shade=$("drawer-shade");
-if(!drawer||!shade)return;
-const ouvrir=typeof force==="boolean"?force:!drawer.classList.contains("open");
-drawer.classList.toggle("open",ouvrir);
-shade.classList.toggle("show",ouvrir);
-}
-
-function navV9(nom){
-basculerMenuStark(false);
-allerPage(nom);
-}
-
 function allerPage(nom){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-const cible=$("page-"+nom);
-if(cible)cible.classList.add("active");
-document.querySelectorAll(".nav-btn").forEach(b=>{
-b.classList.toggle("active",b.dataset.page===nom);
-});
-if(nom==="map")setTimeout(initialiserCarteV9,150);
-if(nom==="settings")afficherMemoire();
-if(nom==="diagnostic")diagnosticComplet();
-journaliser("Ouverture de la page "+nom);
+
+const page=$("page-"+nom);
+if(page)page.classList.add("active");
+
+
+if(nom==="agenda")afficherRappels();
+if(nom==="settings")actualiserCompteurMemoire();
+if(nom==="assistant")setTimeout(()=>$("chat-input").focus(),100);
+
 window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function ouvrirLien(url){
-try{
-const w=window.open(url,"_blank","noopener,noreferrer");
-if(!w)location.href=url;
-}catch(e){
-location.href=url;
-}
+window.open(url,"_blank","noopener,noreferrer");
 }
 
-function ouvrirAppV9(url){
-journaliser("Ouverture d'un lien d'application");
-ouvrirLien(url);
-}
-
-function commandeRapide(texte){
-allerPage("assistant");
-$("chat-input").value=texte;
-envoyer();
-}
-
-/* HORLOGE ET BATTERIE */
+/* TABLEAU DE BORD */
 
 function actualiserHorloge(){
-const maintenant=new Date();
-afficherMessage("clock",maintenant.toLocaleTimeString("fr-FR"));
-afficherMessage("date",maintenant.toLocaleDateString("fr-FR"));
-}
-setInterval(actualiserHorloge,1000);
-actualiserHorloge();
 
-if(navigator.getBattery){
-navigator.getBattery().then(b=>{
-const maj=()=>afficherMessage("battery",Math.round(b.level*100)+" %");
-maj();
-b.addEventListener("levelchange",maj);
-}).catch(()=>afficherMessage("battery","Indisponible"));
-}else afficherMessage("battery","Non disponible");
-
-afficherMessage("connection",navigator.onLine?"EN LIGNE":"HORS LIGNE");
-window.addEventListener("online",()=>afficherMessage("connection","EN LIGNE"));
-window.addEventListener("offline",()=>afficherMessage("connection","HORS LIGNE"));
-
-/* VERROUILLAGE PIN */
-
-function afficherEtatPIN(){
-const pin=localStorage.getItem(CLE_PIN);
-$("pin-setup-zone").style.display=pin?"none":"block";
-$("pin-unlock-zone").style.display=pin?"block":"none";
-$("lock-screen").classList.add("visible");
-}
-
-function creerPINInitial(){
-const pin=$("setup-pin").value;
-const confirm=$("setup-pin-confirm").value;
-if(!/^\d{6}$/.test(pin)){
-afficherMessage("lock-error","Le code doit contenir exactement 6 chiffres.");
-return;
-}
-if(pin!==confirm){
-afficherMessage("lock-error","Les deux codes ne correspondent pas.");
-return;
-}
-localStorage.setItem(CLE_PIN,pin);
-afficherMessage("lock-error","");
-afficherMessage("global-status","● SYSTÈME DÉVERROUILLÉ");
-$("lock-screen").classList.remove("visible");
-journaliser("Code PIN initial créé");
-}
-
-function deverrouillerApplication(){
-const pin=$("unlock-pin").value;
-if(pin!==localStorage.getItem(CLE_PIN)){
-afficherMessage("lock-error","Code incorrect.");
-$("unlock-pin").value="";
-return;
-}
-afficherMessage("lock-error","");
-$("lock-screen").classList.remove("visible");
-journaliser("Session ouverte");
-}
-
-function modifierPINV9(){
-const ancien=$("old-pin").value;
-const nouveau=$("new-pin").value;
-const confirmation=$("confirm-new-pin").value;
-if(ancien!==localStorage.getItem(CLE_PIN)){
-afficherMessage("pin-change-status","Ancien code incorrect.");
-return;
-}
-if(!/^\d{6}$/.test(nouveau)){
-afficherMessage("pin-change-status","Le nouveau code doit contenir 6 chiffres.");
-return;
-}
-if(nouveau!==confirmation){
-afficherMessage("pin-change-status","Les codes ne correspondent pas.");
-return;
-}
-localStorage.setItem(CLE_PIN,nouveau);
-$("old-pin").value="";
-$("new-pin").value="";
-$("confirm-new-pin").value="";
-afficherMessage("pin-change-status","Code modifié.");
-journaliser("Code PIN modifié");
-}
-
-/* INITIALISATION */
-
-window.addEventListener("load",()=>{
-afficherEtatPIN();
-chargerChat();
-afficherJournal();
-actualiserHorloge();
-afficherMessage("network-status",navigator.onLine?"Connexion active":"Hors ligne");
-afficherMessage("storage-state",typeof localStorage!=="undefined"?"Disponible":"Indisponible");
-afficherMessage("supabase-state","Configuration serveur requise");
-afficherMessage("ia-state","API serveur requise");
-afficherMessage("speech-state",("SpeechRecognition" in window||"webkitSpeechRecognition" in window)?"Disponible":"Non disponible");
-afficherMessage("web-memory","Locale");
-demarrerReactor3DV9();
-initialiserTachesV9();
-});
-
-/* THÈMES */
-
-function changerThemeV9(theme){
-document.body.classList.remove("theme-green","theme-purple");
-if(theme==="green")document.body.classList.add("theme-green");
-if(theme==="purple")document.body.classList.add("theme-purple");
-localStorage.setItem("jarvis_theme_v9",theme);
-journaliser("Thème changé : "+theme);
-}
-
-/* MÉMOIRE LOCALE */
-
-function lireMemoire(){
-try{return JSON.parse(localStorage.getItem(CLE_MEMOIRE)||"[]");}
-catch(e){return [];}
-}
-
-function afficherMemoire(){
-const zone=$("memory-list");
-if(!zone)return;
-const memoire=lireMemoire();
-zone.innerHTML="";
-if(!memoire.length){
-zone.textContent="Aucun souvenir enregistré.";
-return;
-}
-memoire.forEach((item,index)=>{
-const div=document.createElement("div");
-div.className="memory-entry";
-div.textContent=typeof item==="string"?item:JSON.stringify(item);
-zone.appendChild(div);
-});
-}
-
-function viderMemoireLocale(){
-if(!confirm("Effacer la mémoire locale de J.A.R.V.I.S ?"))return;
-localStorage.removeItem(CLE_MEMOIRE);
-afficherMemoire();
-journaliser("Mémoire locale effacée");
-}
-
-/* ASSISTANT INTELLIGENT */
-
-async function appelerIA(texte){
-const reponse=await fetch("/api/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-messages:[
-{
-role:"system",
-content:"Tu es J.A.R.V.I.S, l'assistant personnel de Monsieur. Tu réponds en français, avec précision, dans un style professionnel et concis. Tu ne prétends jamais avoir effectué une action que tu n'as pas réellement effectuée."
-},
-{role:"user",content:texte}
-]
-})
-});
-if(!reponse.ok)throw new Error("Le serveur IA ne répond pas.");
-const data=await reponse.json();
-return data.reply||data.response||data.choices?.[0]?.message?.content||"Je n'ai pas reçu de réponse exploitable.";
-}
-
-async function envoyer(){
-const input=$("chat-input");
-if(!input)return;
-const texte=input.value.trim();
-if(!texte)return;
-input.value="";
-ajouterMessage(texte,"user");
-sauvegarderChat(texte,"user");
-journaliser("Commande envoyée : "+texte);
-
-try{
-const resultat=await traiterCommandeV9(texte);
-if(resultat){
-ajouterMessage(resultat,"jarvis");
-sauvegarderChat(resultat,"jarvis");
-derniereReponse=resultat;
-if($("voice-tts")?.checked)parlerVocalV9(resultat);
-return;
-}
-
-ajouterMessage("Analyse de votre demande…","system");
-const reponse=await appelerIA(texte);
-ajouterMessage(reponse,"jarvis");
-sauvegarderChat(reponse,"jarvis");
-derniereReponse=reponse;
-if($("voice-tts")?.checked)parlerVocalV9(reponse);
-}catch(e){
-const message="Une erreur est survenue : "+e.message;
-ajouterMessage(message,"jarvis");
-journaliser(message);
-}
-}
-
-async function traiterCommandeV9(texte){
-const t=texte.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-
-if(t.includes("quelle heure")||t.includes("donne l'heure")){
-return "Il est actuellement "+new Date().toLocaleTimeString("fr-FR")+".";
-}
-
-if(t.includes("quelle date")||t.includes("date du jour")){
-return "Nous sommes le "+new Date().toLocaleDateString("fr-FR")+".";
-}
-
-if(t.includes("ouvre la carte")||t.includes("affiche la carte")){
-allerPage("map");
-return "J'ouvre la carte interactive, Monsieur.";
-}
-
-if(t.includes("meteo")||t.includes("temps qu'il fait")||t.includes("va-t-il pleuvoir")){
-allerPage("meteo");
-await chargerMeteoV9(false);
-return $("weather-result")?.innerText||"J'ai ouvert le module météo.";
-}
-
-if(t.includes("ouvre youtube")){
-ouvrirAppV9("https://www.youtube.com");
-return "Ouverture de YouTube.";
-}
-
-if(t.includes("ouvre google")){
-ouvrirAppV9("https://www.google.com");
-return "Ouverture de Google.";
-}
-
-if(t.includes("ouvre apple music")||t.includes("lance apple music")){
-ouvrirAppV9("https://music.apple.com");
-return "Ouverture d'Apple Music.";
-}
-
-if(t.includes("ouvre instagram")){
-ouvrirAppV9("https://www.instagram.com");
-return "Ouverture d'Instagram.";
-}
-
-if(t.includes("ouvre tiktok")){
-ouvrirAppV9("https://www.tiktok.com");
-return "Ouverture de TikTok.";
-}
-
-if(t.includes("ouvre snapchat")){
-ouvrirAppV9("https://www.snapchat.com");
-return "Ouverture de Snapchat.";
-}
-
-if(t.includes("ouvre l'agenda")||t.includes("ouvre mon agenda")){
-allerPage("agenda");
-return "J'ouvre votre agenda.";
-}
-
-if(t.includes("ouvre les parametres")){
-allerPage("settings");
-return "J'ouvre les paramètres.";
-}
-
-if(t.includes("arrete")||t.includes("silence jarvis")){
-speechSynthesis?.cancel();
-return "Synthèse vocale arrêtée.";
-}
-
-return null;
-}
-
-function commandeRapide(texte){
-allerPage("assistant");
-$("chat-input").value=texte;
-envoyer();
-}
-
-function effacerChat(){
-if(!confirm("Effacer l'historique de la conversation ?"))return;
-localStorage.removeItem(CLE_CHAT);
-$("messages").innerHTML="";
-ajouterMessage("Historique effacé. Je suis prêt, Monsieur.","jarvis");
-}
-
-/* SYNTHÈSE VOCALE */
-
-function parlerVocalV9(texte){
-if(!("speechSynthesis" in window))return;
-speechSynthesis.cancel();
-const phrase=nettoyerTexte(texte);
-if(!phrase)return;
-const utterance=new SpeechSynthesisUtterance(phrase);
-utterance.lang="fr-FR";
-utterance.rate=0.94;
-utterance.pitch=0.88;
-
-const voix=speechSynthesis.getVoices();
-const francaise=voix.find(v=>v.lang==="fr-FR"&&/homme|henri|remy/i.test(v.name))
-||voix.find(v=>v.lang.startsWith("fr"));
-if(francaise)utterance.voice=francaise;
-
-utterance.onstart=()=>{
-$("voice-orb")?.classList.add("speaking");
-afficherMessage("voice-status","J.A.R.V.I.S PARLE");
-};
-utterance.onend=()=>{
-$("voice-orb")?.classList.remove("speaking");
-afficherMessage("voice-status","SYSTÈME EN ATTENTE");
-};
-speechSynthesis.speak(utterance);
-}
-
-function lireDerniereReponse(){
-if(derniereReponse)parlerVocalV9(derniereReponse);
-}
-
-/* RECONNAISSANCE VOCALE */
-
-function creerReconnaissanceV9(){
-const API=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!API)return null;
-const r=new API();
-r.lang="fr-FR";
-r.continuous=false;
-r.interimResults=false;
-return r;
-}
-
-function demarrerMicro(){
-const r=creerReconnaissanceV9();
-if(!r){
-ajouterMessage("La reconnaissance vocale n'est pas prise en charge par ce navigateur.","system");
-return;
-}
-reconnaissance=r;
-r.onstart=()=>ajouterMessage("Je vous écoute, Monsieur.","system");
-r.onerror=e=>ajouterMessage("Microphone : "+e.error,"system");
-r.onresult=e=>{
-const texte=e.results[0][0].transcript;
-$("chat-input").value=texte;
-envoyer();
-};
-r.start();
-}
-
-function ouvrirModeVocal(){
-allerPage("vocal");
-}
-
-function demarrerConversationVocale(){
-if(vocalActif)return;
-const r=creerReconnaissanceV9();
-if(!r){
-afficherMessage("voice-caption","Reconnaissance vocale indisponible.");
-return;
-}
-reconnaissance=r;
-vocalActif=true;
-$("voice-orb").classList.add("listening");
-afficherMessage("voice-status","JE VOUS ÉCOUTE");
-afficherMessage("voice-caption","Parlez maintenant, Monsieur.");
-
-r.onresult=async e=>{
-const texte=e.results[0][0].transcript;
-afficherMessage("voice-caption","Vous : "+texte);
-$("chat-input").value=texte;
-const resultat=await traiterCommandeV9(texte);
-try{
-const reponse=resultat||await appelerIA(texte);
-derniereReponse=reponse;
-afficherMessage("voice-caption",reponse);
-if($("voice-tts")?.checked)parlerVocalV9(reponse);
-}catch(err){
-afficherMessage("voice-caption","Erreur : "+err.message);
-}
-};
-
-r.onerror=e=>{
-afficherMessage("voice-caption","Microphone : "+e.error);
-if(e.error==="not-allowed")arreterConversationVocale();
-};
-
-r.onend=()=>{
-if(vocalActif&&$("voice-auto")?.checked){
-setTimeout(()=>{
-if(vocalActif){
-try{r.start()}catch(e){}
-}
-},500);
-}else{
-$("voice-orb")?.classList.remove("listening");
-}
-};
-try{r.start()}catch(e){}
-journaliser("Conversation vocale activée");
-}
-
-function arreterConversationVocale(){
-vocalActif=false;
-try{reconnaissance?.stop()}catch(e){}
-try{speechSynthesis.cancel()}catch(e){}
-$("voice-orb")?.classList.remove("listening","speaking","thinking");
-afficherMessage("voice-status","SYSTÈME EN VEILLE");
-afficherMessage("voice-caption","Conversation vocale arrêtée.");
-}
-
-/* MOT-CLÉ JARVIS */
-
-function activerMotCle(){
-if(wakeActive)return;
-const r=creerReconnaissanceV9();
-if(!r){
-afficherMessage("wake-status","Reconnaissance vocale indisponible.");
-return;
-}
-wakeRecognition=r;
-wakeActive=true;
-r.continuous=true;
-r.interimResults=true;
-afficherMessage("wake-status","Écoute du mot-clé activée. Gardez cette page ouverte.");
-
-r.onresult=e=>{
-for(let i=e.resultIndex;i<e.results.length;i++){
-if(!e.results[i].isFinal)continue;
-const texte=e.results[i][0].transcript.toLowerCase();
-if(texte.includes("jarvis")){
-desactiverMotCle();
-demarrerConversationVocale();
-break;
-}
-}
-};
-r.onerror=()=>afficherMessage("wake-status","Écoute interrompue. Réactivez le mot-clé.");
-try{r.start()}catch(e){}
-}
-
-function desactiverMotCle(){
-wakeActive=false;
-try{wakeRecognition?.stop()}catch(e){}
-wakeRecognition=null;
-afficherMessage("wake-status","Mot-clé désactivé.");
-}
-
-/* TÂCHES CUMULÉES */
-
-function initialiserTachesV9(){
-try{
-tasksV9=JSON.parse(localStorage.getItem("jarvis_tasks_v9")||"[]");
-}catch(e){tasksV9=[]}
-afficherTachesV9();
-}
-
-function sauvegarderTachesV9(){
-localStorage.setItem("jarvis_tasks_v9",JSON.stringify(tasksV9));
-}
-
-function ajouterTacheV9(){
-const input=$("new-task");
-if(!input)return;
-const texte=input.value.trim();
-if(!texte)return;
-tasksV9.push({
-id:Date.now()+Math.random(),
-texte,
-terminee:false
-});
-input.value="";
-sauvegarderTachesV9();
-afficherTachesV9();
-journaliser("Tâche ajoutée : "+texte);
-}
-
-function afficherTachesV9(){
-const zone=$("task-list");
-if(!zone)return;
-zone.innerHTML="";
-if(!tasksV9.length){
-zone.textContent="Aucune tâche enregistrée.";
-return;
-}
-tasksV9.forEach(t=>{
-const ligne=document.createElement("div");
-ligne.className="task-row";
-const nom=document.createElement("span");
-nom.textContent=(t.terminee?"✓ ":"")+t.texte;
-if(t.terminee)nom.style.textDecoration="line-through";
-const terminer=document.createElement("button");
-terminer.textContent=t.terminee?"ANNULER":"FAIT";
-terminer.onclick=()=>{
-t.terminee=!t.terminee;
-sauvegarderTachesV9();
-afficherTachesV9();
-};
-const supprimer=document.createElement("button");
-supprimer.textContent="×";
-supprimer.onclick=()=>{
-tasksV9=tasksV9.filter(x=>x.id!==t.id);
-sauvegarderTachesV9();
-afficherTachesV9();
-};
-ligne.append(nom,terminer,supprimer);
-zone.appendChild(ligne);
-});
-}
-
-async function executerTachesV9(){
-if(taskRunningV9)return;
-taskRunningV9=true;
-try{
-for(const t of tasksV9.filter(x=>!x.terminee)){
-ajouterMessage("Exécution de la tâche : "+t.texte,"system");
-try{
-const reponse=await appelerIA(t.texte);
-ajouterMessage(reponse,"jarvis");
-t.terminee=true;
-sauvegarderTachesV9();
-afficherTachesV9();
-}catch(e){
-ajouterMessage("La tâche a échoué : "+e.message,"system");
-break;
-}
-}
-}finally{
-taskRunningV9=false;
-}
-}
-/* PAGE DES TÂCHES */
-
-function creerPageTachesV9(){
-if($("page-tasks"))return;
-
-const page=document.createElement("section");
-page.className="page";
-page.id="page-tasks";
-
-page.innerHTML=`
-<div class="panel">
-<h1>GESTIONNAIRE DE TÂCHES STARK</h1>
-<p class="muted">Ajoutez plusieurs tâches et traitez-les dans l'ordre.</p>
-<input id="new-task" placeholder="Nouvelle tâche à ajouter">
-<button class="primary" style="width:100%;margin-top:9px" onclick="ajouterTacheV9()">AJOUTER</button>
-<button class="secondary" style="width:100%;margin-top:9px" onclick="executerTachesV9()">TRAITER LES TÂCHES</button>
-</div>
-<div class="panel">
-<h2>LISTE DES TÂCHES</h2>
-<div id="task-list"></div>
-</div>
-`;
-
-$("page-home").parentElement.insertBefore(page,$("page-assistant"));
-}
-
-const ancienneInitialisationTachesV9=initialiserTachesV9;
-initialiserTachesV9=function(){
-creerPageTachesV9();
-ancienneInitialisationTachesV9();
-};
-
-/* MÉTÉO PRÉCISE */
-
-function positionGPSV9(){
-return new Promise((resolve,reject)=>{
-if(!navigator.geolocation){
-reject(new Error("Géolocalisation non disponible."));
-return;
-}
-
-navigator.geolocation.getCurrentPosition(
-position=>resolve({
-lat:position.coords.latitude,
-lon:position.coords.longitude
-}),
-error=>reject(error),
-{
-enableHighAccuracy:true,
-timeout:15000,
-maximumAge:300000
-}
-);
-});
-}
-
-async function chargerMeteoV9(dire=true){
-const zone=$("weather-result");
-if(!zone)return;
-
-zone.textContent="Recherche de votre position…";
-
-try{
-const position=await positionGPSV9();
-const url="https://api.open-meteo.com/v1/forecast"
-+"?latitude="+position.lat
-+"&longitude="+position.lon
-+"&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,precipitation,rain,showers,weather_code,wind_speed_10m,wind_gusts_10m"
-+"&hourly=temperature_2m,precipitation_probability,precipitation,weather_code"
-+"&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max"
-+"&timezone=auto&forecast_days=3";
-
-const response=await fetch(url);
-if(!response.ok)throw new Error("Service météo indisponible.");
-
-const data=await response.json();
-const c=data.current;
-const d=data.daily;
-
-const description=descriptionMeteoV9(c.weather_code);
-const temperature=Math.round(c.temperature_2m);
-const ressenti=Math.round(c.apparent_temperature);
-
-let ville="Votre position";
-try{
-const geo=await fetch(
-"https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="
-+position.lat+"&lon="+position.lon
-);
-if(geo.ok){
-const g=await geo.json();
-ville=g.address.city||g.address.town||g.address.village||g.address.county||ville;
-}
-}catch(e){}
-
-let html=`
-<div class="stat">
-<span>${ville.toUpperCase()}</span>
-<strong>${temperature} °C</strong>
-<p>${description}</p>
-<div class="small">Ressenti : ${ressenti} °C</div>
-</div>
-
-<div class="weather-current">
-<div class="weather-cell">
-<span class="small">HUMIDITÉ</span>
-<strong>${c.relative_humidity_2m}%</strong>
-</div>
-<div class="weather-cell">
-<span class="small">VENT</span>
-<strong>${c.wind_speed_10m} km/h</strong>
-</div>
-<div class="weather-cell">
-<span class="small">RAFALES</span>
-<strong>${c.wind_gusts_10m} km/h</strong>
-</div>
-<div class="weather-cell">
-<span class="small">PRÉCIPITATIONS</span>
-<strong>${c.precipitation} mm</strong>
-</div>
-</div>
-
-<h2 style="margin-top:20px">PRÉVISIONS DES PROCHAINS JOURS</h2>
-`;
-
-for(let i=0;i<d.time.length;i++){
-html+=`
-<div class="forecast-row">
-<span>${new Date(d.time[i]).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric"})}</span>
-<span>${Math.round(d.temperature_2m_min[i])}° / ${Math.round(d.temperature_2m_max[i])}°</span>
-<span>${d.precipitation_probability_max[i]}% pluie</span>
-</div>
-`;
-}
-
-html+='<p class="small">Source : Open-Meteo. Prévisions indicatives.</p>';
-zone.innerHTML=html;
-
-journaliser("Météo actualisée pour "+ville);
-
-if(dire){
-parlerVocalV9(
-"Monsieur, voici la météo à "+ville+". "
-+description+". Il fait "+temperature+" degrés. "
-+"Le ressenti est de "+ressenti+" degrés. "
-+"L'humidité est de "+c.relative_humidity_2m+" pour cent. "
-+"Le vent souffle à "+c.wind_speed_10m+" kilomètres par heure."
-);
-}
-
-}catch(e){
-zone.textContent="Impossible de récupérer la météo : "+e.message;
-journaliser("Erreur météo : "+e.message);
-}
-}
-
-function descriptionMeteoV9(code){
-const descriptions={
-0:"Ciel dégagé",
-1:"Principalement dégagé",
-2:"Partiellement nuageux",
-3:"Couvert",
-45:"Brouillard",
-48:"Brouillard givrant",
-51:"Bruine légère",
-53:"Bruine modérée",
-55:"Bruine dense",
-61:"Pluie faible",
-63:"Pluie modérée",
-65:"Pluie forte",
-71:"Neige faible",
-73:"Neige modérée",
-75:"Neige forte",
-80:"Averses faibles",
-81:"Averses modérées",
-82:"Averses fortes",
-95:"Orage",
-96:"Orage avec grêle faible",
-99:"Orage avec grêle forte"
-};
-return descriptions[code]||"Conditions météorologiques variables";
-}
-
-/* CARTE INTERACTIVE */
-
-function initialiserCarteV9(){
-if(mapV9)return;
-const element=$("stark-map");
-if(!element||!window.L)return;
-
-mapV9=L.map(element).setView([43.6108,3.8767],11);
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-maxZoom:19,
-attribution:"© OpenStreetMap contributors"
-}).addTo(mapV9);
-
-mapMarkerV9=L.marker([43.6108,3.8767])
-.addTo(mapV9)
-.bindPopup("Centre de la carte");
-
-setTimeout(()=>mapV9.invalidateSize(),250);
-}
-
-async function localiserCarteV9(){
-try{
-initialiserCarteV9();
-const p=await positionGPSV9();
-const coord=[p.lat,p.lon];
-
-mapV9.setView(coord,15);
-
-if(mapMarkerV9)mapMarkerV9.setLatLng(coord);
-else mapMarkerV9=L.marker(coord).addTo(mapV9);
-
-mapMarkerV9.bindPopup("Votre position actuelle").openPopup();
-journaliser("Position affichée sur la carte");
-}catch(e){
-afficherMessage("route-result","Position indisponible : "+e.message);
-}
-}
-
-async function rechercherLieuV9(){
-const query=$("map-search").value.trim();
-if(!query)return;
-
-initialiserCarteV9();
-
-try{
-const response=await fetch(
-"https://nominatim.openstreetmap.org/search?format=jsonv2&q="
-+encodeURIComponent(query)
-+"&limit=1"
-);
-
-const result=await response.json();
-if(!result.length){
-afficherMessage("route-result","Lieu introuvable.");
-return;
-}
-
-const lieu=result[0];
-const coord=[Number(lieu.lat),Number(lieu.lon)];
-
-mapV9.setView(coord,15);
-
-if(mapMarkerV9)mapMarkerV9.setLatLng(coord);
-else mapMarkerV9=L.marker(coord).addTo(mapV9);
-
-mapMarkerV9.bindPopup(lieu.display_name).openPopup();
-afficherMessage("route-result",lieu.display_name);
-}catch(e){
-afficherMessage("route-result","Erreur de recherche.");
-}
-}
-
-async function calculerItineraireV9(){
-const destination=$("route-destination").value.trim();
-if(!destination)return;
-
-try{
-const position=await positionGPSV9();
-
-const response=await fetch(
-"https://nominatim.openstreetmap.org/search?format=jsonv2&q="
-+encodeURIComponent(destination)
-+"&limit=1"
-);
-
-const result=await response.json();
-if(!result.length){
-afficherMessage("route-result","Destination introuvable.");
-return;
-}
-
-const dest=result[0];
-const url="https://router.project-osrm.org/route/v1/driving/"
-+position.lon+","+position.lat+";"
-+dest.lon+","+dest.lat
-+"?overview=full&geometries=geojson";
-
-const routeResponse=await fetch(url);
-const routeData=await routeResponse.json();
-
-if(!routeData.routes?.length){
-afficherMessage("route-result","Aucun itinéraire disponible.");
-return;
-}
-
-initialiserCarteV9();
-
-if(mapRouteV9)mapV9.removeLayer(mapRouteV9);
-
-const route=routeData.routes[0];
-mapRouteV9=L.geoJSON(route.geometry,{
-style:{color:"#00cfff",weight:5,opacity:.85}
-}).addTo(mapV9);
-
-mapV9.fitBounds(mapRouteV9.getBounds(),{padding:[20,20]});
-
-const km=(route.distance/1000).toFixed(1);
-const minutes=Math.round(route.duration/60);
-
-afficherMessage(
-"route-result",
-"Distance estimée : "+km+" km. Durée estimée : "+minutes+" minutes. Trafic en direct non inclus."
-);
-
-journaliser("Itinéraire calculé vers "+destination);
-
-}catch(e){
-afficherMessage("route-result","Impossible de calculer cet itinéraire : "+e.message);
-}
-}
-
-/* GÉNÉRATION D'IMAGES */
-
-async function genererImageV9(){
-const prompt=$("image-prompt").value.trim();
-const status=$("image-status");
-const output=$("image-output");
-
-if(!prompt){
-status.textContent="Veuillez décrire votre image.";
-return;
-}
-
-status.textContent="Demande envoyée au serveur…";
-output.innerHTML="";
-
-try{
-const response=await fetch("/api/image",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({prompt})
-});
-
-if(!response.ok){
-throw new Error("Le serveur de génération d'images n'est pas configuré.");
-}
-
-const data=await response.json();
-const url=data.url||data.image_url;
-
-if(!url)throw new Error("Aucune image reçue.");
-
-const image=document.createElement("img");
-image.src=url;
-image.alt="Image générée par J.A.R.V.I.S";
-output.appendChild(image);
-
-status.textContent="Image reçue.";
-journaliser("Image générée");
-
-}catch(e){
-status.textContent=e.message;
-}
-}
-
-/* COMMANDES CAMÉRA */
-
-async function demarrerCamera(){
-try{
-if(!navigator.mediaDevices?.getUserMedia){
-throw new Error("Caméra non disponible dans ce navigateur.");
-}
-
-cameraStream=await navigator.mediaDevices.getUserMedia({
-video:{facingMode:"environment"},
-audio:false
-});
-
-$("camera-preview").srcObject=cameraStream;
-afficherMessage("camera-status","Caméra active.");
-journaliser("Caméra activée avec autorisation");
-}catch(e){
-afficherMessage("camera-status","Accès caméra refusé ou indisponible : "+e.message);
-}
-}
-
-function arreterCamera(){
-if(cameraStream){
-cameraStream.getTracks().forEach(track=>track.stop());
-cameraStream=null;
-}
-$("camera-preview").srcObject=null;
-afficherMessage("camera-status","Caméra arrêtée.");
-}
-
-/* CAMÉRA GESTUELLE */
-
-async function demarrerGestesV9(){
-try{
-if(!navigator.mediaDevices?.getUserMedia){
-throw new Error("Caméra indisponible.");
-}
-
-gestureStream=await navigator.mediaDevices.getUserMedia({
-video:{facingMode:"user"},
-audio:false
-});
-
-const video=$("gesture-preview");
-video.srcObject=gestureStream;
-video.style.display="block";
-
-afficherMessage(
-"gesture-status",
-"Caméra activée. Le flux vidéo est affiché localement. La reconnaissance des gestes nécessite un module spécialisé supplémentaire."
-);
-
-journaliser("Caméra gestuelle activée");
-}catch(e){
-afficherMessage("gesture-status","Impossible d'activer la caméra : "+e.message);
-}
-}
-
-function arreterGestesV9(){
-if(gestureStream){
-gestureStream.getTracks().forEach(track=>track.stop());
-gestureStream=null;
-}
-$("gesture-preview").srcObject=null;
-$("gesture-preview").style.display="none";
-afficherMessage("gesture-status","Caméra arrêtée.");
-}
-
-/* RAPPELS */
-
-function lireRappels(){
-try{
-return JSON.parse(localStorage.getItem(CLE_RAPPELS)||"[]");
-}catch(e){return []}
-}
-
-function sauvegarderRappels(rappels){
-localStorage.setItem(CLE_RAPPELS,JSON.stringify(rappels));
-}
-
-function ajouterRappel(){
-const titre=$("reminder-title").value.trim();
-const date=$("reminder-date").value;
-
-if(!titre||!date){
-alert("Veuillez indiquer un titre et une date.");
-return;
-}
-
-const rappels=lireRappels();
-rappels.push({
-id:Date.now(),
-titre,
-date,
-fait:false
-});
-
-sauvegarderRappels(rappels);
-$("reminder-title").value="";
-afficherRappels();
-journaliser("Rappel ajouté : "+titre);
-}
-
-function afficherRappels(){
-const zone=$("reminder-list");
-if(!zone)return;
-
-zone.innerHTML="";
-const rappels=lireRappels();
-
-if(!rappels.length){
-zone.textContent="Aucun rappel enregistré.";
-return;
-}
-
-rappels.sort((a,b)=>new Date(a.date)-new Date(b.date));
-
-rappels.forEach(r=>{
-const div=document.createElement("div");
-div.className="list-item";
-
-const texte=document.createElement("span");
-texte.textContent=r.titre+" — "+new Date(r.date).toLocaleString("fr-FR");
-
-const supprimer=document.createElement("button");
-supprimer.textContent="SUPPRIMER";
-supprimer.onclick=()=>{
-sauvegarderRappels(lireRappels().filter(x=>x.id!==r.id));
-afficherRappels();
-};
-
-div.append(texte,supprimer);
-zone.appendChild(div);
-});
-}
-
-async function demanderNotifications(){
-if(!("Notification" in window)){
-alert("Notifications non prises en charge.");
-return;
-}
-
-const permission=await Notification.requestPermission();
-alert("Autorisation des notifications : "+permission);
-}
-
-function verifierRappels(){
-const rappels=lireRappels();
-const maintenant=Date.now();
-
-rappels.forEach(r=>{
-if(!r.fait&&new Date(r.date).getTime()<=maintenant){
-r.fait=true;
-if("Notification" in window&&Notification.permission==="granted"){
-new Notification("J.A.R.V.I.S — Rappel",{
-body:r.titre
-});
-}
-journaliser("Rappel arrivé à échéance : "+r.titre);
-}
-});
-
-sauvegarderRappels(rappels);
-afficherRappels();
-}
-
-function exporterAgendaICS(){
-const rappels=lireRappels();
-
-const formatDate=date=>{
-return new Date(date).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
-};
-
-let contenu="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//STARK//JARVIS//FR\r\n";
-
-rappels.forEach(r=>{
-contenu+="BEGIN:VEVENT\r\n";
-contenu+="UID:"+r.id+"@jarvis\r\n";
-contenu+="DTSTAMP:"+formatDate(new Date())+"\r\n";
-contenu+="DTSTART:"+formatDate(r.date)+"\r\n";
-contenu+="SUMMARY:"+r.titre.replace(/[,;]/g," ")+"\r\n";
-contenu+="END:VEVENT\r\n";
-});
-
-contenu+="END:VCALENDAR";
-
-const blob=new Blob([contenu],{type:"text/calendar;charset=utf-8"});
-const url=URL.createObjectURL(blob);
-const lien=document.createElement("a");
-lien.href=url;
-lien.download="agenda-jarvis.ics";
-lien.click();
-URL.revokeObjectURL(url);
-}
-
-/* TRADUCTEUR MORSE */
-
-const MORSE_V9={
-A:".-",B:"-...",C:"-.-.",D:"-..",E:".",
-F:"..-.",G:"--.",H:"....",I:"..",J:".---",
-K:"-.-",L:".-..",M:"--",N:"-.",O:"---",
-P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",
-U:"..-",V:"...-",W:".--",X:"-..-",
-Y:"-.--",Z:"--..",
-"0":"-----","1":".----","2":"..---",
-"3":"...--","4":"....-","5":".....",
-"6":"-....","7":"--...","8":"---..",
-"9":"----."
-};
-
-function texteVersMorse(){
-const texte=$("morse-input").value.toUpperCase();
-const resultat=texte.split("").map(c=>{
-if(c===" ")return "/";
-return MORSE_V9[c]||"";
-}).join(" ");
-
-afficherMessage("morse-result",resultat);
-}
-
-function morseVersTexte(){
-const inverse=Object.fromEntries(
-Object.entries(MORSE_V9).map(([k,v])=>[v,k])
-);
-
-const texte=$("morse-input").value.trim();
-const resultat=texte.split(" / ").map(mot=>
-mot.split(" ").map(code=>inverse[code]||"?").join("")
-).join(" ");
-
-afficherMessage("morse-result",resultat);
-}
-
-function copierMorse(){
-const texte=$("morse-result").textContent;
-if(navigator.clipboard){
-navigator.clipboard.writeText(texte)
-.then(()=>alert("Résultat copié."));
-}
-}
-
-/* DIAGNOSTIC */
-
-function diagnosticComplet(){
-afficherMessage("diag-browser",navigator.userAgent);
-afficherMessage("diag-network",navigator.onLine?"Connecté":"Hors ligne");
-afficherMessage("diag-voice",("SpeechRecognition" in window||"webkitSpeechRecognition" in window)?"Disponible":"Indisponible");
-afficherMessage("diag-tts","speechSynthesis" in window?"Disponible":"Indisponible");
-afficherMessage("diag-gps","geolocation" in navigator?"Disponible":"Indisponible");
-afficherMessage("diag-camera",navigator.mediaDevices?.getUserMedia?"Disponible":"Indisponible");
-afficherMessage("diag-storage",typeof localStorage!=="undefined"?"Disponible":"Indisponible");
-}
-
-/* SPHÈRE 3D */
-
-function demarrerReactor3DV9(){
-const canvas=$("stark-three");
-if(!canvas||!window.THREE)return;
-
-try{
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(60,1,.1,100);
-const renderer=new THREE.WebGLRenderer({
-canvas,
-alpha:true,
-antialias:true
-});
-
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-
-const geometry=new THREE.BufferGeometry();
-const positions=[];
-
-for(let i=0;i<450;i++){
-const angle=Math.random()*Math.PI*2;
-const hauteur=(Math.random()-.5)*2;
-const rayon=1.2+Math.random()*.7;
-
-positions.push(
-Math.cos(angle)*rayon,
-hauteur,
-Math.sin(angle)*rayon
-);
-}
-
-geometry.setAttribute(
-"position",
-new THREE.Float32BufferAttribute(positions,3)
-);
-
-const material=new THREE.PointsMaterial({
-color:0x49eaff,
-size:.025,
-transparent:true,
-opacity:.8
-});
-
-const particules=new THREE.Points(geometry,material);
-scene.add(particules);
-camera.position.z=4;
-
-function redimensionner(){
-const rect=canvas.getBoundingClientRect();
-const width=Math.max(1,rect.width);
-const height=Math.max(1,rect.height);
-renderer.setSize(width,height,false);
-camera.aspect=width/height;
-camera.updateProjectionMatrix();
-}
-
-redimensionner();
-window.addEventListener("resize",redimensionner);
-
-function animer(){
-animationReactor=requestAnimationFrame(animer);
-particules.rotation.y+=.0025;
-particules.rotation.x+=.0008;
-renderer.render(scene,camera);
-}
-
-animer();
-}catch(e){
-console.warn("Sphère 3D indisponible :",e);
-}
-}
-
-/* INITIALISATION FINALE */
-
-window.addEventListener("load",()=>{
-afficherRappels();
-verifierRappels();
-diagnosticComplet();
-
-if(localStorage.getItem("jarvis_theme_v9")){
-changerThemeV9(localStorage.getItem("jarvis_theme_v9"));
-}
-
-if($("chat-input")){
-$("chat-input").addEventListener("keydown",e=>{
-if(e.key==="Enter")envoyer();
-});
-}
-
-if($("map-search")){
-$("map-search").addEventListener("keydown",e=>{
-if(e.key==="Enter")rechercherLieuV9();
-});
-}
-
-journaliser("J.A.R.V.I.S V9 initialisé");
-});
-
-setInterval(verifierRappels,30000);
-
-/* ARRÊT PROPRE */
-
-window.addEventListener("pagehide",()=>{
-arreterConversationVocale();
-desactiverMotCle();
-arreterCamera();
-arreterGestesV9();
-
-if(animationReactor){
-cancelAnimationFrame(animationReactor);
-}
-});
-
-</script>
-</body>
-</html>
+const d=new Date(); $("clock").textContent=d.toLocaleTimeString("fr-FR"); $("date").textContent=d.toLocaleDateString("fr-FR"); } setInterval(actualiserHorloge,1000); actualiserHorloge(); function actualiserMemoireWeb(){ const cible=$("web-memory");if(!cible)return; const mem=performance.memory; cible.textContent=mem?Math.round(mem.usedJSHeapSize/1048576)+" Mo (web)":"Non exposÃ©e"; } setInterval(actualiserMemoireWeb,5000);actualiserMemoireWeb(); if(navigator.getBattery){ navigator.getBattery().then(b=>{ const maj=()=>{ $("battery").textContent=Math.round(b.level*100)+" %"; }; maj(); b.addEventListener("levelchange",maj); }).catch(()=>$("battery").textContent="Indisponible"); }else{ $("battery").textContent="Indisponible"; } function actualiserConnexion(){ const enLigne=navigator.onLine; $("connection").textContent=enLigne?"EN LIGNE":"HORS LIGNE"; $("network-status").textContent=enLigne?"Internet disponible":"Connexion absente"; $("network-status").style.color=enLigne?"var(--green)":"var(--red)"; $("global-status").textContent=enLigne?"â— SYSTEM ONLINE":"â— OFFLINE"; } window.addEventListener("online",actualiserConnexion); window.addEventListener("offline",actualiserConnexion); actualiserConnexion(); function verifierStockage(){ try{ localStorage.setItem("__jarvis_test","1"); localStorage.removeItem("__jarvis_test"); $("storage-state").textContent="DISPONIBLE"; $("storage-state").className="tag good"; }catch(e){ $("storage-state").textContent="INDISPONIBLE"; $("storage-state").className="tag warn"; } } verifierStockage(); $("speech-state").textContent= (window.SpeechRecognition||window.webkitSpeechRecognition)?"DISPONIBLE":"NON DISPONIBLE"; /* SERVICES GROQ ET SUPABASE */ async function initialiserServices(){ try{ const r=await fetch("/api/config",{cache:"no-store"}); if(!r.ok)throw new Error("Configuration serveur indisponible"); const config=await r.json(); if(config.url&&config.key&&window.supabase){ clientSupabase=window.supabase.createClient(config.url,config.key); $("supabase-state").textContent="CONFIGURÃ‰"; $("supabase-state").className="tag good"; $("settings-supabase").textContent="CONFIGURÃ‰"; const {data}=await clientSupabase.auth.getSession(); utilisateur=data.session?.user||null; actualiserCompte(); if(utilisateur)await chargerSouvenirsDistants(); }else{ throw new Error("Configuration Supabase incomplÃ¨te"); } }catch(e){ $("supabase-state").textContent="NON CONNECTÃ‰"; $("supabase-state").className="tag warn"; $("settings-supabase").textContent="NON CONNECTÃ‰"; } $("ia-state").textContent=navigator.onLine?"PRÃŠTE Ã€ TESTER":"HORS LIGNE"; $("ia-state").className="tag"; } initialiserServices(); async function connexionSupabase(){ if(!clientSupabase){ alerte("Supabase n'est pas configurÃ©."); return; } const email=$("account-email").value.trim(); if(!email||!email.includes("@")){ alerte("Entrez une adresse e-mail valide."); return; } try{ const {error}=await clientSupabase.auth.signInWithOtp({ email, options:{emailRedirectTo:location.origin} }); if(error)throw error; $("account-status").textContent="Lien de connexion envoyÃ©. Consultez votre boÃ®te e-mail."; }catch(e){ $("account-status").textContent="Erreur : "+e.message; } } async function deconnexionSupabase(){ if(!clientSupabase)return; await clientSupabase.auth.signOut(); utilisateur=null; $("account-status").textContent="DÃ©connectÃ©."; } function actualiserCompte(){ $("account-status").textContent=utilisateur? "ConnectÃ© : "+utilisateur.email: "Compte non connectÃ©."; } async function chargerSouvenirsDistants(){ if(!clientSupabase||!utilisateur)return; try{ const {data,error}=await clientSupabase .from("jarvis_memory") .select("id,memory,category,created_at") .eq("owner_id",utilisateur.id) .order("created_at",{ascending:false}) .limit(50); if(error)throw error; data.forEach(item=>{ if(!memoireLocale.some(m=>m.texte===item.memory)){ memoireLocale.push({ texte:item.memory, source:"supabase", date:item.created_at }); } }); sauvegarderMemoire(); }catch(e){ console.warn("MÃ©moire distante :",e.message); } } /* MÃ‰MOIRE INTELLIGENTE */ async function enregistrerSouvenir(texte){ const propre=texte.trim(); if(!propre)return; if(memoireLocale.some(m=>m.texte.toLowerCase()===propre.toLowerCase())){ ajouterMessage("Cette information est dÃ©jÃ  dans ma mÃ©moire.","jarvis"); return; } memoireLocale.unshift({ texte:propre, date:new Date().toISOString() }); sauvegarderMemoire(); journaliserAction("Souvenir ajoutÃ© Ã  la mÃ©moire"); if(clientSupabase&&utilisateur){ try{ const {error}=await clientSupabase.from("jarvis_memory").insert({ memory:propre, category:"personnel", owner_id:utilisateur.id }); if(error)console.warn("Synchronisation mÃ©moire :",error.message); }catch(e){ console.warn(e); } } ajouterMessage("Information enregistrÃ©e dans ma mÃ©moire, Monsieur.","jarvis"); } function chercherSouvenir(question){ const mots=question.toLowerCase().split(/\W+/).filter(m=>m.length>2); return memoireLocale.filter(s=> mots.some(m=>s.texte.toLowerCase().includes(m)) ).slice(0,8); } function afficherSouvenirs(){ const zone=$("memory-list"); const recherche=$("memory-search").value.trim().toLowerCase(); zone.innerHTML=""; const liste=memoireLocale .map((m,i)=>({...m,index:i})) .filter(m=>!recherche||m.texte.toLowerCase().includes(recherche)); if(!liste.length){ zone.textContent="Aucun souvenir correspondant."; return; } liste.forEach(m=>{ const div=document.createElement("div"); div.className="memory-entry"; const texte=document.createElement("div"); texte.textContent=m.texte; const btn=document.createElement("button"); btn.className="danger"; btn.textContent="SUPPRIMER"; btn.style.marginTop="8px"; btn.onclick=()=>{ memoireLocale.splice(m.index,1); sauvegarderMemoire(); afficherSouvenirs(); }; div.append(texte,btn); zone.appendChild(div); }); } async function effacerSouvenirs(){ if(!confirm("Effacer les souvenirs enregistrÃ©s localement ?"))return; memoireLocale.splice(0,memoireLocale.length); sauvegarderMemoire(); afficherSouvenirs(); } /* CHAT ET INTELLIGENCE ARTIFICIELLE */ function journaliserAction(action){ const entree={action, date:new Date().toISOString()}; journalActions.unshift(entree); journalActions=journalActions.slice(0,100); try{localStorage.setItem(CLE_JOURNAL,JSON.stringify(journalActions));}catch(e){} if($("action-log"))afficherJournal(); } function afficherJournal(){ const zone=$("action-log"); if(!zone)return; zone.innerHTML=""; if(!journalActions.length){zone.textContent="Aucune action enregistrÃ©e.";return;} journalActions.slice(0,30).forEach(item=>{ const div=document.createElement("div");div.className="log-entry"; const time=document.createElement("time");time.textContent=new Date(item.date).toLocaleString("fr-FR"); const label=document.createElement("span");label.textContent=item.action; div.append(time,label);zone.append(div); }); } function effacerJournal(){ if(!confirm("Effacer le journal des actions ?"))return; journalActions=[];localStorage.removeItem(CLE_JOURNAL);afficherJournal(); } function ajouterMessage(texte,type="jarvis"){ const zone=$("messages"); const div=document.createElement("div"); div.className="message "+type; div.textContent=texte; zone.appendChild(div); zone.scrollTop=zone.scrollHeight; if(type==="jarvis")dernierTexte=texte; } function systemePrompt(){ const souvenirs=memoireLocale .slice(0,40) .map(m=>"- "+m.texte) .join("\n"); const nom=localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S"; return `Tu es ${nom}, un assistant personnel inspirÃ© de Stark Industries. Tu rÃ©ponds toujours en franÃ§ais, avec politesse et prÃ©cision. Tu appelles l'utilisateur "Monsieur". Tu comprends les fautes de frappe. Tu ne prÃ©tends jamais avoir effectuÃ© une action que tu ne peux pas faire. Tu expliques clairement les limites d'une application web sur iPhone. Tu ne prÃ©tends pas lire les SMS, contrÃ´ler les autres applications ou effectuer un scan antivirus. Tu ne prÃ©tends pas analyser les images si elles ne t'ont pas Ã©tÃ© transmises par un service compatible. Si l'utilisateur dit "Jarvis ?", rÃ©ponds exactement : "SystÃ¨me Stark opÃ©rationnel. Code JARVIS-3000 acceptÃ©." Souvenirs disponibles : ${souvenirs||"Aucun souvenir enregistrÃ©."}`; } function traiterCommandeMemoire(texte){ const t=texte.trim(); const bas=t.toLowerCase(); const commandes=[ "retiens que ", "souviens-toi que ", "mÃ©morise que ", "memorise que " ]; for(const cmd of commandes){ if(bas.startsWith(cmd)){ enregistrerSouvenir(t.slice(cmd.length)); return true; } } if( bas==="que sais-tu de moi ?"|| bas==="qu'est-ce que tu sais de moi ?" ){ const liste=memoireLocale .slice(0,20) .map(m=>"â€¢ "+m.texte) .join("\n"); ajouterMessage( liste||"Je n'ai pas encore de souvenirs enregistrÃ©s.", "jarvis" ); return true; } return false; } async function appelerIA(texte,contexte=[]){ if(!navigator.onLine){ throw new Error("Connexion Internet nÃ©cessaire."); } const messagesIA=[ {role:"system",content:systemePrompt()}, ...contexte.slice(-12), {role:"user",content:texte} ]; const reponse=await fetch("/api/chat",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({messages:messagesIA}) }); const donnees=await reponse.json(); if(!reponse.ok){ throw new Error(donnees.details||donnees.error||"Erreur serveur"); } if(!donnees.reply){ throw new Error("Aucune rÃ©ponse reÃ§ue."); } return donnees.reply; } function executerCommandeLocale(texte){ const t=String(texte) .toLowerCase() .normalize("NFD") .replace(/[\u0300-\u036f]/g,"") .replace(/[â€™']/g," ") .replace(/[?!.,]/g," ") .replace(/\s+/g," ") .trim(); const sites=[ [["google"],"https://www.google.com/","Google"], [["youtube","you tube"],"https://www.youtube.com/","YouTube"], [["gmail","google mail"],"https://mail.google.com/","Gmail"], [["google maps","maps"],"https://maps.google.com/","Google Maps"], [["google drive","drive"],"https://drive.google.com/","Google Drive"], [["google docs","docs"],"https://docs.google.com/","Google Docs"], [["google sheets","sheets"],"https://sheets.google.com/","Google Sheets"], [["google slides","slides"],"https://slides.google.com/","Google Slides"], [["google agenda","google calendar","calendar"],"https://calendar.google.com/","Google Agenda"], [["google traduction","google translate","translate"],"https://translate.google.com/","Google Traduction"], [["google photos","photos"],"https://photos.google.com/","Google Photos"], [["google meet","meet"],"https://meet.google.com/","Google Meet"], [["google classroom","classroom"],"https://classroom.google.com/","Google Classroom"], [["google earth","earth"],"https://earth.google.com/","Google Earth"], [["google actualites","google news"],"https://news.google.com/","Google ActualitÃ©s"], [["google play","play store"],"https://play.google.com/","Google Play"], [["google keep","keep"],"https://keep.google.com/","Google Keep"], [["google forms","forms"],"https://forms.google.com/","Google Forms"], [["instagram","insta"],"https://www.instagram.com/","Instagram"], [["tiktok","tik tok"],"https://www.tiktok.com/","TikTok"], [["snapchat","snap"],"https://www.snapchat.com/","Snapchat"], [["facebook"],"https://www.facebook.com/","Facebook"], [["messenger"],"https://www.messenger.com/","Messenger"], [["whatsapp","whats app"],"https://web.whatsapp.com/","WhatsApp"], [["discord"],"https://discord.com/app","Discord"], [["twitter","x"],"https://x.com/","X"], [["threads"],"https://www.threads.com/","Threads"], [["reddit"],"https://www.reddit.com/","Reddit"], [["pinterest"],"https://www.pinterest.com/","Pinterest"], [["linkedin"],"https://www.linkedin.com/","LinkedIn"], [["telegram"],"https://web.telegram.org/","Telegram"], [["twitch"],"https://www.twitch.tv/","Twitch"], [["tumblr"],"https://www.tumblr.com/","Tumblr"], [["netflix"],"https://www.netflix.com/","Netflix"], [["prime video","amazon prime"],"https://www.primevideo.com/","Prime Video"], [["disney plus","disney"],"https://www.disneyplus.com/","Disney+"], [["max","hbo"],"https://www.max.com/","Max"], [["crunchyroll"],"https://www.crunchyroll.com/","Crunchyroll"], [["spotify"],"https://open.spotify.com/","Spotify"], [["deezer"],"https://www.deezer.com/","Deezer"], [["soundcloud"],"https://soundcloud.com/","SoundCloud"], [["apple music"],"https://music.apple.com/","Apple Music"], [["steam"],"https://store.steampowered.com/","Steam"], [["epic games","epic"],"https://store.epicgames.com/","Epic Games"], [["roblox"],"https://www.roblox.com/","Roblox"], [["minecraft"],"https://www.minecraft.net/","Minecraft"], [["playstation","psn"],"https://www.playstation.com/","PlayStation"], [["xbox"],"https://www.xbox.com/","Xbox"], [["riot games","riot"],"https://www.riotgames.com/","Riot Games"], [["fortnite"],"https://www.fortnite.com/","Fortnite"], [["chatgpt","chat gpt"],"https://chatgpt.com/","ChatGPT"], [["openai"],"https://openai.com/","OpenAI"], [["claude"],"https://claude.ai/","Claude"], [["gemini"],"https://gemini.google.com/","Gemini"], [["perplexity"],"https://www.perplexity.ai/","Perplexity"], [["copilot"],"https://copilot.microsoft.com/","Copilot"], [["deepseek"],"https://chat.deepseek.com/","DeepSeek"], [["amazon"],"https://www.amazon.fr/","Amazon"], [["ebay"],"https://www.ebay.fr/","eBay"], [["aliexpress"],"https://www.aliexpress.com/","AliExpress"], [["shein"],"https://fr.shein.com/","Shein"], [["temu"],"https://www.temu.com/","Temu"], [["leboncoin","boncoin"],"https://www.leboncoin.fr/","Leboncoin"], [["vinted"],"https://www.vinted.fr/","Vinted"], [["cdiscount"],"https://www.cdiscount.com/","Cdiscount"], [["fnac"],"https://www.fnac.com/","Fnac"], [["wikipedia","wikipÃ©dia"],"https://fr.wikipedia.org/","WikipÃ©dia"], [["microsoft"],"https://www.microsoft.com/","Microsoft"], [["outlook"],"https://outlook.live.com/","Outlook"], [["icloud"],"https://www.icloud.com/","iCloud"], [["canva"],"https://www.canva.com/","Canva"], [["notion"],"https://www.notion.so/","Notion"], [["github"],"https://github.com/","GitHub"], [["stackoverflow"],"https://stackoverflow.com/","Stack Overflow"], [["mÃ©tÃ©o","weather"],"https://www.google.com/search?q=meteo","MÃ©tÃ©o"] ]; const demandeOuverture= /\b(ouvre|ouvrir|ouvres|lance|lancer|lances|va sur|aller sur|accede|acceder|affiche|montre|rends toi sur)\b/.test(t); if(!demandeOuverture)return null; for(const site of sites){ const noms=site[0]; const url=site[1]; const nom=site[2]; if(noms.some(mot=>{ const expression=mot .normalize("NFD") .replace(/[\u0300-\u036f]/g,"") .replace(/[.*+?^${}()|[\]\\]/g,"\\$&") .replace(/\s+/g,"\\s+"); return new RegExp("\\b"+expression+"\\b").test(t); })){ journaliserAction("Ouverture de "+nom); const fenetre=window.open(url,"_blank"); if(!fenetre){ return "Monsieur, le navigateur a bloquÃ© le nouvel onglet. Autorisez les fenÃªtres pop-up pour J.A.R.V.I.S."; } return "Bien sÃ»r, Monsieur. J'ouvre "+nom+"."; } } const correspondance=t.match( /\b(?:ouvre|ouvrir|ouvres|lance|lancer|va sur|aller sur|accede a|affiche|montre)\s+(?:le site|le site web|le navigateur)?\s*(.+)$/ ); if(correspondance){ const recherche=correspondance[1].trim(); if(recherche){ const url="https://www.google.com/search?q="+encodeURIComponent(recherche); journaliserAction("Recherche du site : "+recherche); const fenetre=window.open(url,"_blank"); if(!fenetre){ window.location.href=url; } return "Je recherche le site demandÃ©, Monsieur."; } } return null; } async function envoyer(){ const champ=$("chat-input"); const texte=champ.value.trim(); if(!texte)return; champ.value=""; ajouterMessage(texte,"user"); if(traiterCommandeMemoire(texte))return; const commande=executerCommandeLocale(texte); if(commande){ ajouterMessage(commande,"jarvis"); if(lectureActive)parler(commande); return; } const contexte=historique.slice(-12); ajouterMessage("Analyse en cours...","system"); try{ const reponse=await appelerIA(texte,contexte); const dernier=$("messages").lastElementChild; if(dernier?.classList.contains("system"))dernier.remove(); ajouterMessage(reponse,"jarvis"); historique.push( {role:"user",content:texte}, {role:"assistant",content:reponse} ); sauvegarderChat(); if(lectureActive)parler(reponse); }catch(e){ const dernier=$("messages").lastElementChild; if(dernier?.classList.contains("system"))dernier.remove(); ajouterMessage("Erreur : "+e.message,"jarvis"); } } $("chat-input").addEventListener("keydown",e=>{ if(e.key==="Enter")envoyer(); }); function commandeRapide(texte){ allerPage("assistant"); $("chat-input").value=texte; envoyer(); } function effacerChat(){ if(!confirm("Effacer l'historique de cette conversation ?"))return; historique=[]; sauvegarderChat(); $("messages").innerHTML=""; ajouterMessage("Historique effacÃ©. Je suis prÃªt, Monsieur.","jarvis"); } /* SYNTHÃˆSE VOCALE */ function choisirVoixFrancaise(){ const voix = speechSynthesis.getVoices(); return ( voix.find(v => v.lang === "fr-FR" && /Google franÃ§ais|Google French/i.test(v.name)) || voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) || voix.find(v => v.lang === "fr-FR") ); } function choisirVoixFrancaise(){ const voix = speechSynthesis.getVoices(); return ( voix.find(v => v.lang === "fr-FR" && /Google franÃ§ais|Google French/i.test(v.name)) || voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) || voix.find(v => v.lang === "fr-FR") ); } function nettoyerTexteVocal(texte){ return texte .replace(/\*\*(.*?)\*\*/g, "$1") .replace(/\*(.*?)\*/g, "$1") .replace(/__(.*?)__/g, "$1") .replace(/_(.*?)_/g, "$1") .replace(/~~(.*?)~~/g, "$1") .replace(/`{1,3}([\s\S]*?)`{1,3}/g, "$1") .replace(/^#{1,6}\s*/gm, "") .replace(/^\s*[-â€¢]\s*/gm, "") .replace(/\s+/g, " ") .trim(); } function choisirVoixJARVIS(){ const voix = speechSynthesis.getVoices(); return ( voix.find(v => v.lang === "fr-FR" && /Google franÃ§ais|Google French/i.test(v.name)) || voix.find(v => v.lang === "fr-FR" && /Microsoft.*(Paul|Henri|Thomas)/i.test(v.name)) || voix.find(v => v.lang === "fr-FR") || voix.find(v => v.lang.toLowerCase().startsWith("fr")) || null ); } function nettoyerTexteVocal(texte){ return String(texte) .replace(/```[\s\S]*?```/g, " bloc de code omis. ") .replace(/\*\*([\s\S]*?)\*\*/g, "$1") .replace(/__([\s\S]*?)__/g, "$1") .replace(/[*_#`>|]/g, " ") .replace(/^\s*[-â€¢]\s*/gm, "") .replace(/https?:\/\/\S+/g, " lien ") .replace(/\s+/g, " ") .trim(); } function parler(texte){ if(!lectureActive || !window.speechSynthesis)return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(nettoyerTexteVocal(texte)); u.lang = "fr-FR"; u.rate = Number($("voice-rate")?.value || 1); u.pitch = 1; const voix = choisirVoixJARVIS(); if(voix)u.voice = voix; speechSynthesis.speak(u); } function lireDerniereReponse(){ if(dernierTexte)parler(dernierTexte); } function basculerLecture(){ lectureActive=!lectureActive; localStorage.setItem(CLE_TTS,String(lectureActive)); if(!lectureActive&&window.speechSynthesis){ speechSynthesis.cancel(); } alerte("Lecture vocale "+(lectureActive?"activÃ©e":"dÃ©sactivÃ©e")+"."); } /* RECONNAISSANCE VOCALE */ function creerReconnaissance(){ const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR)return null; const r=new SR(); r.lang="fr-FR"; r.interimResults=false; r.continuous=false; return r; } function demarrerMicro(){ const r=creerReconnaissance(); if(!r){ alerte("Reconnaissance vocale non prise en charge par ce navigateur."); return; } r.onresult=e=>{ const texte=e.results[0][0].transcript; $("chat-input").value=texte; envoyer(); }; r.onerror=e=>alerte("Microphone : "+e.error); try{ r.start(); }catch(e){ alerte("Impossible de dÃ©marrer le microphone."); } } /* RÃ‰ACTEUR VOCAL */ function definirEtatVocal(etat,message){ const orb=$("voice-orb"); const status=$("voice-status"); const reactor=$("voice-reactor-state"); if(orb){ orb.classList.remove("listening","thinking","speaking"); if(etat)orb.classList.add(etat); } if(status&&message)status.textContent=message; if(reactor){ const etats={ listening:"Ã‰COUTE ACTIVE", thinking:"ANALYSE EN COURS", speaking:"RÃ‰PONSE VOCALE", idle:"EN ATTENTE" }; reactor.textContent=etats[etat]||"INITIALISÃ‰"; } } async function demarrerConversationVocale(){ if(vocalActif)return; reconnaissance=creerReconnaissance(); if(!reconnaissance){ alerte("La reconnaissance vocale n'est pas disponible ici."); return; } vocalActif=true; $("voice-caption").textContent="Je vous Ã©coute, Monsieur."; definirEtatVocal("listening","Ã‰COUTE ACTIVE"); ecouterProchainePhrase(); } function ecouterProchainePhrase(){ if(!vocalActif||!reconnaissance)return; reconnaissance.onresult=async e=>{ const texte=e.results[0][0].transcript.trim(); $("voice-caption").textContent="Vous : "+texte; definirEtatVocal("thinking","ANALYSE EN COURS"); if(traiterCommandeMemoireVocale(texte)){ if(vocalActif&&$("voice-auto").checked){ setTimeout(ecouterProchainePhrase,500); } return; } const commande=executerCommandeLocale(texte); if(commande){ $("voice-caption").textContent=commande; if($("voice-tts").checked&&lectureActive){ parlerVocal(commande); }else{ definirEtatVocal("idle","COMMANDE EXÃ‰CUTÃ‰E"); if(vocalActif&&$("voice-auto").checked){ setTimeout(ecouterProchainePhrase,500); } } return; } try{ const reponse=await appelerIA(texte,historique.slice(-10)); historique.push( {role:"user",content:texte}, {role:"assistant",content:reponse} ); sauvegarderChat(); $("voice-caption").textContent=reponse; if($("voice-tts").checked&&lectureActive){ parlerVocal(reponse); }else{ definirEtatVocal("idle","RÃ‰PONSE TERMINÃ‰E"); if(vocalActif&&$("voice-auto").checked){ setTimeout(ecouterProchainePhrase,500); } } }catch(err){ $("voice-caption").textContent="Erreur : "+err.message; definirEtatVocal("idle","ERREUR DE CONNEXION"); if(vocalActif&&$("voice-auto").checked){ setTimeout(ecouterProchainePhrase,1000); } } }; reconnaissance.onerror=()=>{ if(vocalActif){ definirEtatVocal("idle","MICRO INDISPONIBLE"); arreterConversationVocale(); } }; reconnaissance.onend=()=>{ if(vocalActif&&$("voice-status").textContent==="Ã‰COUTE ACTIVE"){ setTimeout(ecouterProchainePhrase,300); } }; try{ reconnaissance.start(); }catch(e){ vocalActif=false; definirEtatVocal("idle","ERREUR MICRO"); } } function parlerVocal(texte){ if(!window.speechSynthesis){ definirEtatVocal("idle","SYNTHÃˆSE VOCALE INDISPONIBLE"); if(vocalActif && $("voice-auto").checked){ ecouterProchainePhrase(); } return; } speechSynthesis.cancel(); definirEtatVocal("speaking","J.A.R.V.I.S RÃ‰POND"); const u = new SpeechSynthesisUtterance(nettoyerTexteVocal(texte)); u.lang = "fr-FR"; u.rate = Number($("voice-rate")?.value || 1); u.pitch = 1; const voix = choisirVoixJARVIS(); if(voix)u.voice = voix; u.onend = ()=>{ if(vocalActif && $("voice-auto").checked){ definirEtatVocal("listening","Ã‰COUTE ACTIVE"); setTimeout(ecouterProchainePhrase,400); }else{ definirEtatVocal("idle","RÃ‰PONSE TERMINÃ‰E"); } }; u.onerror = ()=>{ definirEtatVocal("idle","ERREUR VOCALE"); if(vocalActif && $("voice-auto").checked){ setTimeout(ecouterProchainePhrase,500); } }; speechSynthesis.speak(u); } function traiterCommandeMemoireVocale(texte){ const t=texte.trim(); const b=t.toLowerCase(); for(const cmd of [ "retiens que ", "souviens-toi que ", "mÃ©morise que ", "memorise que " ]){ if(b.startsWith(cmd)){ enregistrerSouvenir(t.slice(cmd.length).trim()); return true; } } return false; } function arreterConversationVocale(){ vocalActif=false; if(reconnaissance){ try{reconnaissance.abort()}catch(e){} } if(window.speechSynthesis){ speechSynthesis.cancel(); } definirEtatVocal("idle","MODE VOCAL ARRÃŠTÃ‰"); $("voice-caption").textContent="Conversation terminÃ©e."; } function ouvrirModeVocal(){ allerPage("vocal"); demarrerConversationVocale(); } /* RÃ‰VEIL PAR MOT-CLÃ‰ â€” PAGE ACTIVE UNIQUEMENT */ function activerMotCle(){ const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alerte("Le rÃ©veil vocal n'est pas pris en charge par ce navigateur.");return;} if(motCleActif)return; reconnaissanceMotCle=new SR(); reconnaissanceMotCle.lang="fr-FR"; reconnaissanceMotCle.continuous=true; reconnaissanceMotCle.interimResults=false; reconnaissanceMotCle.onresult=e=>{ for(let i=e.resultIndex;i{ $("wake-status").textContent="Ã‰coute interrompue par le navigateur. RÃ©activez le mot-clÃ© si nÃ©cessaire."; motCleActif=false; }; reconnaissanceMotCle.onend=()=>{ if(motCleActif){ try{reconnaissanceMotCle.start()}catch(e){} } }; try{ reconnaissanceMotCle.start(); motCleActif=true; $("wake-status").textContent="Mot-clÃ© actif. Dites Â« Jarvis Â». Gardez cette page ouverte."; journaliserAction("RÃ©veil vocal activÃ©"); }catch(e){ motCleActif=false; $("wake-status").textContent="Impossible d'activer le microphone."; } } function desactiverMotCle(){ motCleActif=false; if(reconnaissanceMotCle){ try{ reconnaissanceMotCle.onend=null; reconnaissanceMotCle.abort(); }catch(e){} reconnaissanceMotCle=null; } const zone=$("wake-status"); if(zone)zone.textContent="Mot-clÃ© dÃ©sactivÃ©."; } /* VERROUILLAGE LOCAL PAR CODE PIN */ /* PROTECTION OBLIGATOIRE J.A.R.V.I.S */ async function hacherPIN(pin){ if(!window.crypto?.subtle){ throw new Error("Une connexion HTTPS est nÃ©cessaire."); } const hash=await crypto.subtle.digest( "SHA-256", new TextEncoder().encode(pin) ); return Array.from(new Uint8Array(hash)) .map(b=>b.toString(16).padStart(2,"0")) .join(""); } /* PREMIÃˆRE CONFIGURATION */ async function creerPINInitial(){ const pin=$("setup-pin").value; const confirmation=$("setup-pin-confirm").value; if(!/^\d{6}$/.test(pin)){ $("lock-error").textContent="Le code doit contenir exactement 6 chiffres."; return; } if(pin!==confirmation){ $("lock-error").textContent="Les deux codes ne correspondent pas."; return; } try{ const hash=await hacherPIN(pin); localStorage.setItem(CLE_PIN,hash); $("setup-pin").value=""; $("setup-pin-confirm").value=""; $("lock-error").textContent=""; $("pin-setup-zone").style.display="none"; $("pin-unlock-zone").style.display="block"; $("unlock-pin").focus(); journaliserAction("Mot de passe initial crÃ©Ã©"); }catch(e){ $("lock-error").textContent=e.message; } } /* DÃ‰VERROUILLAGE */ async function deverrouillerApplication(){ const pin=$("unlock-pin").value; if(!/^\d{6}$/.test(pin)){ $("lock-error").textContent="Entrez les 6 chiffres de votre code."; return; } try{ const attendu=localStorage.getItem(CLE_PIN); const fourni=await hacherPIN(pin); if(attendu&&fourni===attendu){ $("lock-screen").classList.remove("visible"); $("unlock-pin").value=""; $("lock-error").textContent=""; journaliserAction("Authentification rÃ©ussie"); }else{ $("lock-error").textContent="Code incorrect. AccÃ¨s refusÃ©."; $("unlock-pin").value=""; $("unlock-pin").focus(); } }catch(e){ $("lock-error").textContent=e.message; } } /* MODIFICATION DU MOT DE PASSE */ async function configurerPIN(){ const actuel=$("pin-current").value; const nouveau=$("pin-new").value; const confirmation=$("pin-confirm").value; if(!/^\d{6}$/.test(actuel)){ alerte("Entrez votre code actuel Ã  6 chiffres."); return; } if(!/^\d{6}$/.test(nouveau)){ alerte("Le nouveau code doit contenir exactement 6 chiffres."); return; } if(nouveau!==confirmation){ alerte("Les deux nouveaux codes ne correspondent pas."); return; } try{ const ancienHash=await hacherPIN(actuel); const hashEnregistre=localStorage.getItem(CLE_PIN); if(ancienHash!==hashEnregistre){ alerte("Votre code actuel est incorrect."); return; } const nouveauHash=await hacherPIN(nouveau); localStorage.setItem(CLE_PIN,nouveauHash); $("pin-current").value=""; $("pin-new").value=""; $("pin-confirm").value=""; $("pin-status").textContent="Mot de passe modifiÃ© avec succÃ¨s."; journaliserAction("Mot de passe modifiÃ©"); alerte("Votre nouveau code est enregistrÃ©."); }catch(e){ alerte(e.message); } } /* VERROUILLAGE MANUEL */ function verrouillerApplication(){ if(!localStorage.getItem(CLE_PIN)){ alerte("Aucun mot de passe n'est configurÃ©."); return; } $("lock-screen").classList.add("visible"); $("pin-setup-zone").style.display="none"; $("pin-unlock-zone").style.display="block"; $("lock-error").textContent=""; $("unlock-pin").value=""; journaliserAction("Interface verrouillÃ©e"); $("unlock-pin").focus(); } /* INITIALISATION OBLIGATOIRE */ function verifierVerrouillage(){ const configure=!!localStorage.getItem(CLE_PIN); $("lock-screen").classList.add("visible"); if(configure){ $("pin-setup-zone").style.display="none"; $("pin-unlock-zone").style.display="block"; $("pin-status").textContent="Protection active : mot de passe obligatoire."; }else{ $("pin-setup-zone").style.display="block"; $("pin-unlock-zone").style.display="none"; $("pin-status").textContent="CrÃ©ation obligatoire de votre premier mot de passe."; } } /* EXPORT AGENDA AU FORMAT CALENDAR */ function exporterAgendaICS(){ if(!rappels.length){ alerte("Aucun rappel Ã  exporter."); return; } const formatDate=value=> new Date(value).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")+"Z"; const echapper=value=> String(value) .replace(/\\/g,"\\\\") .replace(/;/g,"\\;") .replace(/,/g,"\\,") .replace(/\n/g,"\\n"); const evenements=rappels.filter(r=>!r.fait).map(r=> "BEGIN:VEVENT\r\nUID:"+r.id+"@jarvis.local\r\nDTSTAMP:"+formatDate(new Date())+ "\r\nDTSTART:"+formatDate(r.date)+"\r\nSUMMARY:"+echapper(r.titre)+"\r\nEND:VEVENT" ); if(!evenements.length){ alerte("Tous les rappels sont terminÃ©s."); return; } const contenu= "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//JARVIS//AGENDA//FR\r\n"+ evenements.join("\r\n")+ "\r\nEND:VCALENDAR"; const blob=new Blob([contenu],{type:"text/calendar;charset=utf-8"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="agenda-jarvis.ics"; a.click(); URL.revokeObjectURL(url); journaliserAction("Agenda exportÃ© au format ICS"); } /* AGENDA */ function sauvegarderRappels(){ localStorage.setItem(CLE_RAPPELS,JSON.stringify(rappels)); } function ajouterRappel(){ const titre=$("reminder-title").value.trim(); const date=$("reminder-date").value; if(!titre||!date){ alerte("Indiquez un titre et une date."); return; } const timestamp=new Date(date).getTime(); if(!Number.isFinite(timestamp)||timestamp<=Date.now()){ alerte("Choisissez une date future."); return; } rappels.push({ id:Date.now(), titre, date, fait:false, notifie:false }); sauvegarderRappels(); afficherRappels(); journaliserAction("Rappel ajoutÃ©"); $("reminder-title").value=""; $("reminder-date").value=""; } function afficherRappels(){ const zone=$("reminder-list"); zone.innerHTML=""; if(!rappels.length){ zone.textContent="Aucun rappel."; return; } rappels.sort((a,b)=>new Date(a.date)-new Date(b.date)); rappels.forEach(r=>{ const div=document.createElement("div"); div.className="list-item"; const txt=document.createElement("div"); const strong=document.createElement("strong"); strong.textContent=r.titre; const date=document.createElement("div"); date.className="small"; date.textContent=new Date(r.date).toLocaleString("fr-FR"); txt.append(strong,date); const actions=document.createElement("div"); const done=document.createElement("button"); done.textContent=r.fait?"Ã€ faire":"TerminÃ©"; done.onclick=()=>{ r.fait=!r.fait; sauvegarderRappels(); afficherRappels(); }; const del=document.createElement("button"); del.className="danger"; del.textContent="Ã—"; del.onclick=()=>{ const i=rappels.findIndex(x=>x.id===r.id); if(i>=0)rappels.splice(i,1); sauvegarderRappels(); afficherRappels(); }; actions.append(done,del); div.append(txt,actions); zone.append(div); }); } async function demanderNotifications(){ if(!("Notification" in window)){ alerte("Notifications non prises en charge."); return; } const p=await Notification.requestPermission(); alerte("Autorisation des notifications : "+p); } function verifierRappels(){ const maintenant=Date.now(); rappels.forEach(r=>{ if(!r.fait&&!r.notifie&&new Date(r.date).getTime()<=maintenant){ r.notifie=true; r.fait=true; if("Notification" in window&&Notification.permission==="granted"){ new Notification("J.A.R.V.I.S â€” Rappel",{body:r.titre}); }else{ alerte("Rappel : "+r.titre); } sauvegarderRappels(); } }); } minuterieRappels=setInterval(verifierRappels,15000); afficherRappels(); /* MÃ‰TÃ‰O */ async function chargerMeteo(){ const zone=$("weather-result"); zone.textContent="Recherche de votre position..."; if(!navigator.geolocation){ zone.textContent="GÃ©olocalisation non disponible."; return; } navigator.geolocation.getCurrentPosition(async pos=>{ try{ const lat=pos.coords.latitude; const lon=pos.coords.longitude; const url= `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`; const r=await fetch(url); if(!r.ok)throw new Error("Service mÃ©tÃ©o indisponible"); const d=await r.json(); const c=d.current; zone.innerHTML=""; const titre=document.createElement("h2"); titre.textContent="CONDITIONS ACTUELLES"; const temp=document.createElement("div"); temp.className="morse-output"; temp.textContent=Math.round(c.temperature_2m)+" Â°C"; const details=document.createElement("p"); details.textContent= "Ressenti : "+Math.round(c.apparent_temperature)+ " Â°C Â· HumiditÃ© : "+c.relative_humidity_2m+ " % Â· Vent : "+c.wind_speed_10m+" km/h"; zone.append(titre,temp,details); d.daily.time.forEach((jour,i)=>{ const p=document.createElement("p"); p.textContent= new Date(jour+"T12:00:00").toLocaleDateString("fr-FR",{ weekday:"long",day:"numeric",month:"long" })+ " : "+ Math.round(d.daily.temperature_2m_min[i])+ " Ã  "+ Math.round(d.daily.temperature_2m_max[i])+ " Â°C"; zone.append(p); }); }catch(e){ zone.textContent="Erreur mÃ©tÃ©o : "+e.message; } },err=>{ zone.textContent="Position non autorisÃ©e ou indisponible : "+err.message; },{enableHighAccuracy:false,timeout:10000}); } function rechercherInternet(){ const q=$("search-input").value.trim(); if(!q)return; ouvrirLien("https://www.google.com/search?q="+encodeURIComponent(q)); } /* CAMÃ‰RA */ async function demarrerCamera(){ try{ if(!navigator.mediaDevices?.getUserMedia){ throw new Error("CamÃ©ra non prise en charge."); } fluxCamera=await navigator.mediaDevices.getUserMedia({ video:{facingMode:"environment"}, audio:false }); $("camera-preview").srcObject=fluxCamera; journaliserAction("CamÃ©ra activÃ©e"); }catch(e){ alerte("Impossible d'activer la camÃ©ra : "+e.message); } } function arreterCamera(){ if(fluxCamera){ fluxCamera.getTracks().forEach(t=>t.stop()); journaliserAction("CamÃ©ra dÃ©sactivÃ©e"); fluxCamera=null; } $("camera-preview").srcObject=null; } function prendrePhoto(){ const video=$("camera-preview"); if(!video.videoWidth){ alerte("Activez d'abord la camÃ©ra."); return; } const canvas=$("camera-canvas"); canvas.width=video.videoWidth; canvas.height=video.videoHeight; canvas.getContext("2d").drawImage(video,0,0); const url=canvas.toDataURL("image/png"); $("photo-result").src=url; $("photo-result").style.display="block"; $("photo-download").href=url; $("photo-download").download="jarvis-capture.png"; $("photo-download").style.display="inline-block"; } /* LECTEUR DE DOCUMENTS */ $("document-file").addEventListener("change",async e=>{ const file=e.target.files[0]; if(!file)return; const zone=$("document-result"); contexteDocument=""; $("send-document").style.display="none"; if(file.type.startsWith("image/")){ const url=URL.createObjectURL(file); $("file-preview").src=url; $("file-preview").style.display="block"; zone.textContent= "Image chargÃ©e : "+file.name+ ". AperÃ§u disponible ; analyse visuelle non activÃ©e."; return; } $("file-preview").style.display="none"; if(file.size>1024*1024){ zone.textContent="Fichier trop volumineux (limite : 1 Mo)."; return; } try{ contexteDocument=await file.text(); zone.textContent= "Fichier chargÃ© : "+file.name+ " ("+contexteDocument.length+" caractÃ¨res)."; $("send-document").style.display="inline-block"; }catch(err){ zone.textContent="Impossible de lire ce fichier."; } }); function envoyerDocumentIA(){ if(!contexteDocument)return; allerPage("assistant"); $("chat-input").value= "Analyse et rÃ©sume ce document, puis explique les Ã©lÃ©ments importants :\n\n"+ contexteDocument.slice(0,12000); envoyer(); } /* TRADUCTEUR MORSE */ const MORSE={ A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.", H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.", O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-", V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..", "0":"-----","1":".----","2":"..---","3":"...--","4":"....-", "5":".....","6":"-....","7":"--...","8":"---..","9":"----.", ".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--", "'":".----.","(":"-.--.",")":"-.--.-","&":".-...", ":":"---...",";":"-.-.-.","=":"-...-","+":".-.-.", "-":"-....-","_":"..--.-",'"':".-..-.", "/":"-..-." }; const inverseMorse=Object.fromEntries( Object.entries(MORSE).map(([k,v])=>[v,k]) ); function estMorse(t){ return /^[.\-/\s]+$/.test(t)&&/[.-]/.test(t); } function traduireMorse(){ const t=$("morse-input").value.trim().toUpperCase(); if(!t)return; let resultat; if(estMorse(t)){ resultat=t.split(" / ").map(mot=> mot.trim().split(/\s+/).map(code=>inverseMorse[code]||"ï¿½").join("") ).join(" "); }else{ resultat=t.split("").map(c=> c===" " ? "/" : MORSE[c]||"" ).filter(Boolean).join(" "); } $("morse-output").textContent=resultat||"CaractÃ¨res non reconnus"; } function emettreMorse(){ arreterMorse(); const t=$("morse-output").textContent; if(!t||t==="---"){ alerte("Traduisez un message avant l'Ã©mission."); return; } const ctx=new (window.AudioContext||window.webkitAudioContext)(); audioMorse=ctx; let temps=ctx.currentTime+.1; const unit=.12; for(const c of t){ if(c==="."){ sonMorse(ctx,temps,unit); temps+=unit*2; }else if(c==="-"){ sonMorse(ctx,temps,unit*3); temps+=unit*4; }else if(c===" "){ temps+=unit*2; }else if(c==="/"){ temps+=unit*5; } } } function sonMorse(ctx,debut,duree){ const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.frequency.value=650; gain.gain.setValueAtTime(.0001,debut); gain.gain.exponentialRampToValueAtTime(.18,debut+.01); gain.gain.setValueAtTime(.18,debut+duree-.01); gain.gain.exponentialRampToValueAtTime(.0001,debut+duree); osc.connect(gain); gain.connect(ctx.destination); osc.start(debut); osc.stop(debut+duree); } function arreterMorse(){ if(audioMorse){ audioMorse.close().catch(()=>{}); audioMorse=null; } } /* DIAGNOSTIC ET SÃ‰CURITÃ‰ */ async function lancerDiagnostic(){ const zone=$("diagnostic-results"); zone.innerHTML=""; const tests=[ ["Connexion Internet",()=>navigator.onLine], ["Stockage local",()=>{ localStorage.setItem("__test","ok"); localStorage.removeItem("__test"); return true; }], ["SynthÃ¨se vocale",()=>!!window.speechSynthesis], ["Reconnaissance vocale",()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition)], ["CamÃ©ra disponible",()=>!!navigator.mediaDevices?.getUserMedia], ["GÃ©olocalisation",()=>!!navigator.geolocation], ["Notifications",()=>("Notification" in window)], ["MÃ©moire locale",()=>Array.isArray(memoireLocale)], ["Connexion sÃ©curisÃ©e",()=>window.isSecureContext] ]; let ok=0; for(const [nom,test] of tests){ let valide=false; try{ valide=!!test(); }catch(e){} if(valide)ok++; const div=document.createElement("div"); div.className="list-item"; const a=document.createElement("span"); a.textContent=nom; const b=document.createElement("span"); b.className=valide?"good":"warn"; b.textContent=valide?"DISPONIBLE":"INDISPONIBLE"; div.append(a,b); zone.append(div); } const total=document.createElement("p"); total.textContent=ok+" / "+tests.length+" contrÃ´les disponibles."; zone.prepend(total); $("performance-tips").textContent= "Fermez les onglets inutilisÃ©s, gardez votre navigateur Ã  jour, vÃ©rifiez les autorisations de camÃ©ra et de microphone et Ã©vitez de laisser plusieurs conversations vocales ouvertes. Ce diagnostic ne recherche pas les virus."; } /* PERSONNALISATION */ function sauverParametres(){ const nom=$("assistant-name").value.trim()||"J.A.R.V.I.S"; localStorage.setItem(CLE_NOM,nom); alerte("ParamÃ¨tres enregistrÃ©s."); } function changerTheme(theme){ document.body.classList.remove("theme-green","theme-purple"); if(theme==="green")document.body.classList.add("theme-green"); if(theme==="purple")document.body.classList.add("theme-purple"); localStorage.setItem(CLE_THEME,theme); } /* FERMETURE PROPRE */ window.addEventListener("pagehide",()=>{ arreterCamera(); arreterConversationVocale(); arreterMorse(); desactiverMotCle(); }); window.addEventListener("online",()=>{ $("ia-state").textContent="PRÃŠTE Ã€ TESTER"; }); window.addEventListener("offline",()=>{ $("ia-state").textContent="HORS LIGNE"; }); /* RESTAURATION DES PARAMÃˆTRES */ $("assistant-name").value= localStorage.getItem(CLE_NOM)||"J.A.R.V.I.S"; const themeSauve=localStorage.getItem(CLE_THEME)||"blue"; $("theme-select").value=themeSauve; changerTheme(themeSauve); actualiserCompteurMemoire(); afficherJournal(); verifierVerrouillage(); /* RESTAURATION DE LA CONVERSATION */ if(historique.length){ $("messages").innerHTML=""; historique.slice(-20).forEach(m=>{ if(m.role==="user")ajouterMessage(m.content,"user"); if(m.role==="assistant")ajouterMessage(m.content,"jarvis"); }); } /* ========================================================== J.A.R.V.I.S V9 â€” MODULES Ã‰TENDUS ========================================================== */ function basculerMenuStark(force){ const d=$('stark-drawer'),shade=$('drawer-shade');if(!d||!shade)return; const open=typeof force==='boolean'?force:!d.classList.contains('open'); d.classList.toggle('open',open);shade.classList.toggle('show',open); } function navV9(page){basculerMenuStark(false);allerPage(page);if(page==='map')setTimeout(initialiserCarteV9,180);if(page==='home')setTimeout(initialiserSphereV9,100);if(page==='code-lab')setTimeout(()=>{if(!$('code-preview').srcdoc)effacerCodeV9()},80)} /* SphÃ¨re 3D : rendu dÃ©coratif local, sans camÃ©ra */ let sphereV9=null, sphereFrameV9=0; function initialiserSphereV9(){ const canvas=$('stark-three');if(!canvas||!window.THREE||sphereV9)return; const wrap=$('reactor');if(!wrap)return; try{ const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7)); const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(42,1,.1,100);camera.position.z=5; const group=new THREE.Group();scene.add(group); const globe=new THREE.Mesh(new THREE.IcosahedronGeometry(1.12,2),new THREE.MeshBasicMaterial({color:0x12bdf5,wireframe:true,transparent:true,opacity:.58}));group.add(globe); const inner=new THREE.Mesh(new THREE.SphereGeometry(.77,32,32),new THREE.MeshBasicMaterial({color:0x0877ad,transparent:true,opacity:.09}));group.add(inner); const count=420,positions=new Float32Array(count*3);for(let i=0;i{const w=wrap.clientWidth||300,h=wrap.clientHeight||220;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};resize(); const animate=()=>{sphereFrameV9=requestAnimationFrame(animate);group.rotation.y+=.0028;group.rotation.x=Math.sin(Date.now()*.00025)*.08;renderer.render(scene,camera)};animate(); sphereV9={renderer,resize};window.addEventListener('resize',resize); }catch(e){console.warn('SphÃ¨re 3D indisponible',e)} } window.addEventListener('load',()=>{initialiserSphereV9();afficherTachesV9()}); /* TÃ¢ches cumulÃ©es : stockage local + exÃ©cution sÃ©quentielle des commandes prises en charge */ const CLE_TACHES_V9='jarvis_tasks_v9';let tachesV9=lireJSON(CLE_TACHES_V9,[]);let fileActiveV9=false; function sauverTachesV9(){localStorage.setItem(CLE_TACHES_V9,JSON.stringify(tachesV9));afficherTachesV9()} function ajouterTacheV9(){const i=$('task-input'),v=i.value.trim();if(!v)return;tachesV9.push({id:Date.now()+Math.random(),texte:v,faite:false});i.value='';sauverTachesV9();journaliserAction('Mission ajoutÃ©e Ã  la file')} function supprimerTacheV9(id){tachesV9=tachesV9.filter(t=>t.id!==id);sauverTachesV9()} function afficherTachesV9(){const zone=$('task-list');if(!zone)return;zone.innerHTML='';$('task-count').textContent=tachesV9.length; if(!tachesV9.length){zone.textContent='Aucune mission enregistrÃ©e.';return}tachesV9.forEach(t=>{const row=document.createElement('div');row.className='task-row';const cb=document.createElement('input');cb.type='checkbox';cb.style.width='auto';cb.checked=!!t.faite;cb.onchange=()=>{t.faite=cb.checked;sauverTachesV9()};const label=document.createElement('span');label.textContent=t.texte;const del=document.createElement('button');del.className='danger';del.textContent='Ã—';del.onclick=()=>supprimerTacheV9(t.id);row.append(cb,label,del);zone.append(row)})} function viderTachesV9(){if(!confirm('Vider toutes les missions enregistrÃ©es ?'))return;tachesV9=[];sauverTachesV9()} async function executerActionV9(texte){ const t=texte.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); if(/meteo|temperature|temps qu'il fait|prevision/.test(t)){await chargerMeteoV9(false);return 'MÃ©tÃ©o actualisÃ©e.'} if(/carte|itineraire|position|gps/.test(t)){allerPage('map');setTimeout(initialiserCarteV9,180);if(/itineraire/.test(t))return 'Carte ouverte. Indiquez la destination dans le module itinÃ©raire.';return 'Carte interactive ouverte.'} if(/ouvre|ouvrir|lance|va sur|affiche/.test(t)){const r=executerCommandeLocale(texte);if(r)return r} if(/heure/.test(t))return 'Il est '+new Date().toLocaleTimeString('fr-FR')+'.'; if(/date/.test(t))return 'Nous sommes le '+new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'.'; const rep=await appelerIA(texte,historique.slice(-8));return rep; } async function executerFileTachesV9(){if(fileActiveV9)return;const todo=tachesV9.filter(t=>!t.faite);if(!todo.length){$('task-progress').textContent='Aucune mission en attente.';return}fileActiveV9=true;try{for(let n=0;n{$('map-status').textContent='Point sÃ©lectionnÃ© : '+e.latlng.lat.toFixed(5)+', '+e.latlng.lng.toFixed(5)});setTimeout(()=>carteV9.invalidateSize(),100)} function zoomCarteV9(delta){initialiserCarteV9();if(carteV9)carteV9.setZoom(carteV9.getZoom()+delta)} function marquerPositionV9(lat,lon,label,estGPS=false){initialiserCarteV9();if(estGPS)positionV9=[lat,lon];if(marqueurV9)marqueurV9.remove();marqueurV9=L.marker([lat,lon]).addTo(carteV9).bindPopup(label||'Position').openPopup();carteV9.setView([lat,lon],14)} function localiserCarteV9(){initialiserCarteV9();if(!navigator.geolocation){$('map-status').textContent='GÃ©olocalisation indisponible.';return}$('map-status').textContent='Demande de positionâ€¦';navigator.geolocation.getCurrentPosition(p=>{marquerPositionV9(p.coords.latitude,p.coords.longitude,'Votre position (GPS)',true);$('map-status').textContent='Position actualisÃ©e avec prÃ©cision estimÃ©e Ã  '+Math.round(p.coords.accuracy)+' m.'},e=>$('map-status').textContent='Position non disponible : '+e.message,{enableHighAccuracy:true,timeout:15000,maximumAge:30000})} async function geocoderV9(q){const u='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q);const r=await fetch(u,{headers:{'Accept-Language':'fr'}});if(!r.ok)throw new Error('Recherche cartographique indisponible');const a=await r.json();if(!a.length)throw new Error('Lieu introuvable');return {lat:Number(a[0].lat),lon:Number(a[0].lon),name:a[0].display_name}} async function rechercherLieuV9(){const q=$('map-search').value.trim();if(!q)return;initialiserCarteV9();$('map-status').textContent='Recherche de '+q+'â€¦';try{const p=await geocoderV9(q);marquerPositionV9(p.lat,p.lon,p.name);$('map-status').textContent=p.name}catch(e){$('map-status').textContent=e.message}} function effacerItineraireV9(){if(itineraireV9){itineraireV9.remove();itineraireV9=null}$('route-result').textContent='ItinÃ©raire effacÃ©.'} async function calculerItineraireV9(){const dest=$('route-destination').value.trim();if(!dest){$('route-result').textContent='Saisissez une destination.';return}if(!positionV9){$('route-result').textContent='DÃ©terminez dâ€™abord votre position GPS.';return}try{$('route-result').textContent='Calcul de lâ€™itinÃ©raireâ€¦';const d=await geocoderV9(dest);const u=`https://router.project-osrm.org/route/v1/driving/${positionV9[1]},${positionV9[0]};${d.lon},${d.lat}?overview=full&geometries=geojson`;const r=await fetch(u);if(!r.ok)throw new Error('Calcul dâ€™itinÃ©raire indisponible');const data=await r.json();if(!data.routes?.length)throw new Error('Aucun itinÃ©raire trouvÃ©');if(itineraireV9)itineraireV9.remove();itineraireV9=L.geoJSON(data.routes[0].geometry,{style:{color:'#00bfff',weight:5,opacity:.85}}).addTo(carteV9);carteV9.fitBounds(itineraireV9.getBounds(),{padding:[25,25]});const km=(data.routes[0].distance/1000).toFixed(1),min=Math.round(data.routes[0].duration/60);$('route-result').textContent=`${d.name} â€” ${km} km, environ ${min} min en voiture (estimation du service dâ€™itinÃ©raire, trafic en temps rÃ©el non inclus).`}catch(e){$('route-result').textContent=e.message}} /* MÃ©tÃ©o dÃ©taillÃ©e Open-Meteo */ const codesMeteoV9={0:'Ciel dÃ©gagÃ©',1:'Principalement dÃ©gagÃ©',2:'Partiellement nuageux',3:'Couvert',45:'Brouillard',48:'Brouillard givrant',51:'Bruine lÃ©gÃ¨re',53:'Bruine modÃ©rÃ©e',55:'Bruine dense',61:'Pluie faible',63:'Pluie modÃ©rÃ©e',65:'Pluie forte',71:'Neige faible',73:'Neige modÃ©rÃ©e',75:'Neige forte',80:'Averses faibles',81:'Averses modÃ©rÃ©es',82:'Averses fortes',95:'Orage',96:'Orage et grÃªle faible',99:'Orage et grÃªle forte'}; async function chargerMeteoV9(parler=true){const zone=$('weather-result');if(!zone)return;zone.textContent='Obtention de votre position et des prÃ©visionsâ€¦';if(!navigator.geolocation){zone.textContent='La gÃ©olocalisation nâ€™est pas prise en charge.';return}navigator.geolocation.getCurrentPosition(async pos=>{try{const {latitude:lat,longitude:lon}=pos.coords;const u=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=5`;const r=await fetch(u);if(!r.ok)throw new Error('Service mÃ©tÃ©o indisponible');const d=await r.json(),c=d.current;let lieu='Votre position';try{const rev=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,{headers:{'Accept-Language':'fr'}});if(rev.ok){const j=await rev.json();lieu=j.address?.city||j.address?.town||j.address?.village||j.address?.municipality||j.name||lieu}}catch{} zone.innerHTML='';const h=document.createElement('h2');h.textContent='MAINTENANT â€” '+lieu;zone.append(h);const desc=document.createElement('p');desc.textContent=(codesMeteoV9[c.weather_code]||'Conditions mÃ©tÃ©o')+' Â· Mise Ã  jour : '+new Date(c.time).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});zone.append(desc);const grid=document.createElement('div');grid.className='weather-current';const vals=[['TempÃ©rature',Math.round(c.temperature_2m)+' Â°C'],['Ressenti',Math.round(c.apparent_temperature)+' Â°C'],['HumiditÃ©',c.relative_humidity_2m+' %'],['Vent',Math.round(c.wind_speed_10m)+' km/h'],['Rafales',Math.round(c.wind_gusts_10m)+' km/h'],['Direction',Math.round(c.wind_direction_10m)+'Â°'],['Pluie actuelle',c.precipitation+' mm'],['Pression',Math.round(c.pressure_msl)+' hPa']];vals.forEach(([a,b])=>{const cell=document.createElement('div');cell.className='weather-cell';const l=document.createElement('span');l.className='small';l.textContent=a;const v=document.createElement('strong');v.textContent=b;cell.append(l,v);grid.append(cell)});zone.append(grid);const sub=document.createElement('h2');sub.style.marginTop='18px';sub.textContent='PRÃ‰VISIONS SUR 5 JOURS';zone.append(sub);d.daily.time.forEach((day,i)=>{const row=document.createElement('div');row.className='forecast-row';const date=new Date(day+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'});row.textContent=`${date} â€” ${codesMeteoV9[d.daily.weather_code[i]]||'Conditions variables'} â€” ${Math.round(d.daily.temperature_2m_min[i])}Â° / ${Math.round(d.daily.temperature_2m_max[i])}Â° â€” pluie max ${d.daily.precipitation_probability_max[i]??'â€”'}%`;zone.append(row)});const now=new Date();const hourIdx=d.hourly.time.findIndex(t=>new Date(t).getTime()>=now.getTime());const hourlyTitle=document.createElement('h2');hourlyTitle.style.marginTop='18px';hourlyTitle.textContent='PROCHAINES HEURES';zone.append(hourlyTitle);for(let i=Math.max(0,hourIdx);i{zone.textContent='Position refusÃ©e ou indisponible : '+e.message+'. Autorisez la localisation dans les rÃ©glages du navigateur.'},{enableHighAccuracy:true,timeout:15000,maximumAge:300000})} /* Recherche vocale mÃ©tÃ©o et commandes de carte */ function rechercherAppleMusicV9(texte){const q=texte.replace(/\b(sur\s+)?apple\s+music\b/ig,'').replace(/\b(joue|lance|mets|met|cherche|recherche|trouve|sur|dans|moi|de la|du|de)\b/ig,' ').replace(/[Â«Â»]/g,' ').trim();const terme=q||'DÃ©couvertes';const url='https://music.apple.com/fr/search?term='+encodeURIComponent(terme);window.open(url,'_blank','noopener,noreferrer');return 'Jâ€™ouvre Apple Music sur la recherche : '+terme+'.';} const envoyerV8=window.envoyer; window.envoyer=async function(){const champ=$('chat-input');const texte=champ?.value.trim();if(!texte)return;const normal=texte.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); if(/^encha[iÃ®]ne\s*:/i.test(texte)||/^encha[iÃ®]ne\b/i.test(normal)){champ.value='';ajouterMessage(texte,'user');const liste=texte.replace(/^encha[iÃ®]ne\s*:?/i,'').split(/[;\n]+/).map(x=>x.trim()).filter(Boolean);if(!liste.length){ajouterMessage('PrÃ©cisez les actions Ã  enchaÃ®ner, sÃ©parÃ©es par des points-virgules.','jarvis');return}for(let i=0;i{if(document.visibilityState==='visible')$('phone-status').textContent='Si lâ€™application ne sâ€™est pas ouverte, utilisez le lien web correspondant.'},1300)}else{window.open(url,'_blank','noopener,noreferrer');$('phone-status').textContent='Lien ouvert. Si lâ€™application est installÃ©e, iOS ou Android peut proposer de lâ€™utiliser.'}} /* Geste de la main via MediaPipe â€” activation volontaire */ let handsV9=null,gestureStreamV9=null,gestureLoopV9=false,lastGestureV9=0; async function demarrerGestesV9(){try{const v=$('gesture-preview');if(!navigator.mediaDevices?.getUserMedia)throw new Error('CamÃ©ra indisponible');$('gesture-status').textContent='Demande dâ€™autorisation camÃ©raâ€¦';gestureStreamV9=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});v.srcObject=gestureStreamV9;v.style.display='block';await v.play();if(!window.Hands){await chargerScriptV9('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');}handsV9=new Hands({locateFile:f=>'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+f});handsV9.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.65,minTrackingConfidence:.6});handsV9.onResults(res=>{if(!res.multiHandLandmarks?.length){$('gesture-status').textContent='Aucune main dÃ©tectÃ©e.';return}const lm=res.multiHandLandmarks[0];const fingers=[8,12,16,20].filter((tip,i)=>lm[tip].y2500){if(fingers>=4){$('gesture-status').textContent='Paume ouverte dÃ©tectÃ©e â€” commande : accueil.';lastGestureV9=now;allerPage('home')}else if(fingers===2){$('gesture-status').textContent='Deux doigts dÃ©tectÃ©s â€” commande : assistant.';lastGestureV9=now;allerPage('assistant')}else{$('gesture-status').textContent='Main dÃ©tectÃ©e. Geste non associÃ©.'}}});gestureLoopV9=true;const tick=async()=>{if(!gestureLoopV9)return;try{await handsV9.send({image:v})}catch(e){}requestAnimationFrame(tick)};tick();$('gesture-status').textContent='DÃ©tection active : paume ouverte = accueil, deux doigts = assistant.';journaliserAction('DÃ©tection de gestes activÃ©e')}catch(e){$('gesture-status').textContent='Impossible dâ€™activer les gestes : '+e.message;arreterGestesV9()}} function chargerScriptV9(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Chargement du module de gestes impossible'));document.head.append(s)})} function arreterGestesV9(){gestureLoopV9=false;if(gestureStreamV9)gestureStreamV9.getTracks().forEach(t=>t.stop());gestureStreamV9=null;if(handsV9){try{handsV9.close()}catch{}handsV9=null}const v=$('gesture-preview');if(v){v.srcObject=null;v.style.display='none'}if($('gesture-status'))$('gesture-status').textContent='DÃ©tection dÃ©sactivÃ©e.'} /* Double claquement â€” Ã©coute audio opt-in, uniquement au premier plan */ let clapStreamV9=null,clapCtxV9=null,clapFrameV9=0,clapPeaksV9=[],clapLastV9=0; async function demarrerDoubleClapV9(){try{clapStreamV9=await navigator.mediaDevices.getUserMedia({audio:true});clapCtxV9=new (window.AudioContext||window.webkitAudioContext)();const src=clapCtxV9.createMediaStreamSource(clapStreamV9),an=clapCtxV9.createAnalyser();an.fftSize=512;src.connect(an);const data=new Uint8Array(an.frequencyBinCount);$('double-clap-status').textContent='Ã‰coute active au premier plan. Deux claquements rapprochÃ©s activent le mode vocal.';const loop=()=>{if(!clapCtxV9)return;an.getByteTimeDomainData(data);let sum=0;for(let i=0;i.24&&now-clapLastV9>260){clapPeaksV9.push(now);clapPeaksV9=clapPeaksV9.filter(t=>now-t<900);clapLastV9=now;if(clapPeaksV9.length>=2){clapPeaksV9=[];$('double-clap-status').textContent='Double claquement dÃ©tectÃ© : activation du mode vocal.';arreterDoubleClapV9();navV9('vocal');demarrerConversationVocale();return}}clapFrameV9=requestAnimationFrame(loop)};loop()}catch(e){$('double-clap-status').textContent='Microphone indisponible : '+e.message;arreterDoubleClapV9()}} function arreterDoubleClapV9(){if(clapFrameV9)cancelAnimationFrame(clapFrameV9);clapFrameV9=0;if(clapStreamV9)clapStreamV9.getTracks().forEach(t=>t.stop());clapStreamV9=null;if(clapCtxV9){clapCtxV9.close().catch(()=>{});clapCtxV9=null}if($('double-clap-status'))$('double-clap-status').textContent='Microphone non activÃ©.'} document.addEventListener('visibilitychange',()=>{if(document.hidden){arreterDoubleClapV9();arreterGestesV9()}}); window.addEventListener('pagehide',()=>{arreterDoubleClapV9();arreterGestesV9()}); /* Remplace la mÃ©tÃ©o V8 par la version dÃ©taillÃ©e */ window.chargerMeteo=chargerMeteoV9; /* ========================================================== V9.1 â€” LABORATOIRE DE CODE EN IFRAME SANDBOX ========================================================== */ const codeConsoleV9=[]; function afficherConsoleCodeV9(){const z=$('code-console');if(z)z.textContent=codeConsoleV9.length?codeConsoleV9.join('\n'):'Aucun message.'} function executerTestCodeV9(){ const frame=$('code-preview');if(!frame)return; const html=$('code-html').value.replace(//gi,''); const css=$('code-css').value.replace(/<\/style/gi,'<\\/style'); const js=$('code-js').value.replace(/<\/script/gi,'<\\/script'); codeConsoleV9.length=0; $('code-test-status').textContent='ExÃ©cution du test dans un bac Ã  sable isolÃ©â€¦'; afficherConsoleCodeV9(); const csp="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"; const payload=`${html}
