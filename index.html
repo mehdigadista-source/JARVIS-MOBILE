@@ -1177,11 +1177,11 @@ window.open(url,"_blank","noopener,noreferrer");
 /* TABLEAU DE BORD */
 
 function actualiserHorloge(){
+const horloge=$("clock");
+if(horloge){
+horloge.textContent=new Date().toLocaleTimeString("fr-FR");
 }
-
-return donnees.reply;
 }
-
 
 
 
@@ -2477,6 +2477,24 @@ b.textContent=valide?"DISPONIBLE":"INDISPONIBLE";
 div.append(a,b);
 zone.append(div);
 }
+
+const resultat=document.createElement("p");
+resultat.className="small";
+resultat.textContent="Diagnostic terminé : "+ok+"/"+tests.length+" fonctions disponibles.";
+zone.append(resultat);
+
+$("performance-tips").textContent=
+ok===tests.length
+? "Toutes les fonctions testées sont disponibles."
+: "Certaines fonctions nécessitent une autorisation ou un navigateur compatible.";
+}
+
+/* INITIALISATION DE J.A.R.V.I.S */
+
+verifierVerrouillage();
+
+actualiserHorloge();
+setInterval(actualiserHorloge,1000);
 
 </script>
 </body>
