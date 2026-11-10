@@ -2,1291 +2,1096 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#060b14">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>J.A.R.V.I.S — STARK CORE V10</title>
+<title>J.A.R.V.I.S — STARK INDUSTRIES V10.0</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
 
 <style>
 :root{
- --bg:#050a13;--panel:#0b1524;--line:#183b58;
- --cyan:#39d9ff;--blue:#168cff;--text:#e8f5ff;
- --muted:#8aa6bd;--green:#46e6a5;--red:#ff667a;
+ --bg:#050a13;--panel:#0b1423;--panel2:#101e31;
+ --blue:#1676ff;--cyan:#00d9ff;--text:#e8f4ff;
+ --muted:#8297ad;--line:#183451;--green:#24e59a;
+ --red:#ff526b;--orange:#ffb347;
 }
 *{box-sizing:border-box}
-body{
- margin:0;background:radial-gradient(ellipse at 50% 0,#102b46,#07111e 45%,#040810);
- color:var(--text);font-family:Segoe UI,Arial,sans-serif;
-}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;overflow:hidden}
 button,input,textarea,select{font:inherit}
-button{
- cursor:pointer;color:var(--text);background:#10263b;
- border:1px solid #245477;border-radius:11px;padding:10px 13px;
-}
-button:hover{border-color:var(--cyan);background:#15334e}
-button:disabled{opacity:.45;cursor:not-allowed}
-.primary{background:linear-gradient(120deg,#087cc4,#1553a4)}
-.danger{border-color:#7c3445;color:#ffb6c0}
-.hidden{display:none!important}
-.muted{color:var(--muted)}
-.small{font-size:12px}
-header{
- height:68px;display:flex;align-items:center;justify-content:space-between;
- padding:0 20px;border-bottom:1px solid #18364e;
- background:#06101be8;position:sticky;top:0;z-index:20;
-}
-.brand{font-weight:800;letter-spacing:3px}
-.brand span{color:var(--cyan)}
-.topright{display:flex;gap:10px;align-items:center}
-.status-dot{
- width:8px;height:8px;border-radius:50%;display:inline-block;
- background:var(--green);box-shadow:0 0 12px var(--green);
-}
-.layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:calc(100vh - 68px)}
-aside{padding:18px 12px;border-right:1px solid #18364e;background:#07111d}
-nav{display:grid;gap:7px}
-nav button{text-align:left;background:transparent;border-color:transparent;color:#9db8ce}
-nav button.active,nav button:hover{background:#10263b;border-color:#245477;color:white}
-.nav-label{font-size:10px;letter-spacing:2px;color:#55748d;padding:18px 10px 5px}
-main{padding:22px;min-width:0;max-width:1500px;width:100%;margin:auto}
-.page{display:none}
+button{cursor:pointer}
+#app{height:100dvh;display:flex;flex-direction:column;position:relative;
+ background:radial-gradient(circle at 50% 35%,#102746 0,#07111f 38%,#050a13 75%)}
+header{height:62px;display:flex;align-items:center;justify-content:space-between;
+ padding:0 18px;border-bottom:1px solid var(--line);background:#07111deF;z-index:5}
+.brand{font-weight:900;letter-spacing:3px;color:var(--cyan)}
+.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:2px;margin-top:4px}
+.header-right{display:flex;align-items:center;gap:10px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+ box-shadow:0 0 12px var(--green);display:inline-block}
+.icon-btn,.btn{border:1px solid var(--line);color:var(--text);background:#10223a;
+ border-radius:10px;padding:10px 14px}
+.icon-btn:hover,.btn:hover{border-color:var(--cyan);box-shadow:0 0 15px #00d9ff33}
+#main{flex:1;min-height:0;overflow:auto;padding:16px}
+.page{display:none;max-width:1200px;margin:auto;animation:fade .2s ease}
 .page.active{display:block}
-.eyebrow{font-size:11px;letter-spacing:2.5px;color:var(--cyan);font-weight:700}
-.page-title{font-size:clamp(23px,3vw,34px);margin:7px 0 18px}
-.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
-.card{
- background:linear-gradient(145deg,#0d1b2c,#081321);
- border:1px solid var(--line);border-radius:17px;padding:17px;
- box-shadow:0 12px 35px #0004;min-width:0;
-}
-.span-12{grid-column:span 12}
-.span-8{grid-column:span 8}
-.span-6{grid-column:span 6}
-.span-4{grid-column:span 4}
-.card h3{font-size:13px;letter-spacing:1.4px;margin:0 0 13px;color:#bfeeff}
-.metric{font-size:25px;font-weight:700}
-.submetric{font-size:12px;color:var(--muted);margin-top:5px}
-.hero{
- min-height:300px;display:grid;grid-template-columns:1fr 1fr;
- align-items:center;gap:20px;
-}
-.reactor-wrap{display:grid;place-items:center;min-height:270px}
-.reactor{
- width:min(240px,65vw);aspect-ratio:1;border-radius:50%;
- background:radial-gradient(circle,#bdfaff 0 3%,#40dfff 4% 7%,#087fc0 10% 14%,#061c35 28%,#06111f 52%,transparent 54%);
- box-shadow:0 0 25px #24cfff,0 0 75px #087bc8aa,inset 0 0 30px #36dfff55;
- animation:pulse 3s ease-in-out infinite;position:relative;
-}
-.reactor:before,.reactor:after{
- content:"";position:absolute;inset:9%;border:2px solid #42dfff88;
- border-radius:50%;box-shadow:0 0 18px #16bfff;animation:spin 12s linear infinite;
-}
-.reactor:after{inset:19%;border-style:dashed;animation:spin 18s linear infinite reverse}
-@keyframes pulse{50%{filter:brightness(1.25);transform:scale(1.025)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.chatbox{height:340px;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:8px 3px}
-.bubble{max-width:88%;padding:11px 13px;border-radius:13px;white-space:pre-wrap;line-height:1.45;font-size:14px}
-.bubble.jarvis{align-self:flex-start;background:#10263b;border:1px solid #1d5477}
-.bubble.user{align-self:flex-end;background:#123d62;border:1px solid #2679ad}
-.bubble .who{font-size:10px;letter-spacing:1px;color:var(--cyan);margin-bottom:5px}
-.chat-controls{display:flex;gap:8px;margin-top:10px}
-.chat-controls input{flex:1;min-width:0}
-input,textarea,select{
- background:#06111e;color:var(--text);border:1px solid #24445e;
- border-radius:10px;padding:11px;width:100%;outline:none;
-}
-input:focus,textarea:focus{border-color:var(--cyan)}
-textarea{resize:vertical;min-height:90px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.row>*{flex:0 0 auto}
-.row .grow{flex:1 1 180px}
-.list{display:grid;gap:8px}
-.item{
- display:flex;gap:10px;align-items:center;justify-content:space-between;
- padding:11px;border:1px solid #1b3a53;border-radius:11px;background:#091827;
-}
-.item-main{min-width:0}
-.item-title{font-weight:600;overflow-wrap:anywhere}
-.item-meta{font-size:11px;color:var(--muted);margin-top:4px}
-.tag{font-size:10px;color:var(--cyan);border:1px solid #276084;padding:3px 7px;border-radius:20px}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.kpi{padding:12px;background:#091827;border:1px solid #1b3a53;border-radius:12px}
-.kpi strong{font-size:20px;display:block}
-.kpi span{font-size:11px;color:var(--muted)}
-.memory-orbit{
- height:180px;border:1px solid #1a4561;border-radius:14px;
- display:grid;place-items:center;
- background:radial-gradient(circle,#0c3852,#071321 65%);
-}
-.memory-core{width:115px;height:115px;border:1px solid #42dfff;border-radius:50%;
- display:grid;place-items:center;text-align:center;
- box-shadow:0 0 30px #1dbfff,inset 0 0 25px #1dbfff;
- color:#d9faff;font-weight:700;letter-spacing:2px}
-#camera-video{width:100%;max-height:320px;background:#02060b;border-radius:12px;object-fit:cover}
-footer{padding:20px;text-align:center;color:#55748d;font-size:10px;letter-spacing:1px}
-#toast{
- position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
- background:#102c42;border:1px solid #36bce9;border-radius:12px;
- padding:11px 16px;z-index:99;box-shadow:0 8px 30px #0008;
- max-width:90%;font-size:13px;
-}
-#lock-screen{
- position:fixed;inset:0;background:#030811f5;z-index:100;
- display:grid;place-items:center;padding:20px;
-}
-@media(max-width:850px){
- .layout{grid-template-columns:1fr}
- aside{border-right:0;border-bottom:1px solid #18364e;padding:8px;overflow:auto}
- nav{display:flex;gap:6px;width:max-content}
- nav button{white-space:nowrap;padding:8px 10px;font-size:12px}
- .nav-label{display:none}
- main{padding:14px}
- .span-8,.span-6,.span-4{grid-column:span 12}
- .hero{grid-template-columns:1fr}
- .reactor-wrap{min-height:210px}
- .reactor{width:180px}
-}
-@media(max-width:460px){
- .chat-controls{flex-wrap:wrap}
- .chat-controls input{flex-basis:100%}
- .kpis{grid-template-columns:1fr 1fr}
- .bubble{max-width:96%}
+@keyframes fade{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+.section-title{font-size:12px;letter-spacing:3px;color:var(--cyan);margin:8px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:linear-gradient(145deg,#101e31,#091321);border:1px solid var(--line);
+ border-radius:15px;padding:16px;min-width:0;box-shadow:0 8px 30px #0003}
+.card h3{font-size:11px;letter-spacing:2px;color:var(--muted);margin:0 0 12px}
+.muted{color:var(--muted);font-size:12px}
+#home{text-align:center;min-height:100%;display:flex;flex-direction:column;align-items:center}
+#reactor-wrap{width:min(65vw,390px);height:min(65vw,390px);min-width:250px;min-height:250px;
+ position:relative;margin:5px auto 12px}
+#reactor-canvas{width:100%;height:100%;display:block}
+.reactor-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;pointer-events:none;text-shadow:0 0 15px #00d9ff}
+.reactor-label strong{font-size:clamp(22px,5vw,36px);letter-spacing:5px}
+.reactor-label span{font-size:9px;letter-spacing:3px;color:var(--cyan);margin-top:7px}
+.home-sub{font-size:11px;color:var(--muted);letter-spacing:3px}
+.home-status{margin:16px auto;color:var(--green);font-size:11px;letter-spacing:2px}
+.quick-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0}
+.btn.primary{background:linear-gradient(120deg,#0759bd,#087eaa);border-color:#00bfff}
+.btn.danger{border-color:#773044;color:#ff8191;background:#2a111c}
+.btn.success{border-color:#1d7157;color:var(--green)}
+#drawer-shade{display:none;position:fixed;inset:0;background:#0009;z-index:8}
+#drawer-shade.show{display:block}
+#stark-drawer{position:fixed;z-index:9;top:0;bottom:0;left:0;width:min(300px,84vw);
+ background:#091525;border-right:1px solid var(--line);padding:20px;
+ transform:translateX(-105%);transition:.25s;overflow:auto}
+#stark-drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.nav-btn{display:block;width:100%;text-align:left;margin:6px 0;padding:13px;
+ border:1px solid transparent;background:#0d1c2d;color:var(--text);border-radius:10px}
+.nav-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+#chat-log{height:min(54vh,500px);overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px}
+.message{padding:12px 14px;border-radius:12px;max-width:90%;white-space:pre-wrap;line-height:1.5;font-size:14px}
+.message.user{align-self:flex-end;background:#103d69;border:1px solid #1d70b5}
+.message.jarvis{align-self:flex-start;background:#101f31;border:1px solid var(--line)}
+.chat-compose{display:flex;gap:8px;margin-top:12px}
+input,textarea,select{background:#071321;color:var(--text);border:1px solid var(--line);
+ border-radius:9px;padding:12px;outline:none;min-width:0}
+input:focus,textarea:focus,select:focus{border-color:var(--cyan)}
+.chat-compose input{flex:1}
+.task-row,.memory-row,.log-row{display:flex;gap:10px;align-items:center;justify-content:space-between;
+ padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.task-row span,.memory-row span{overflow-wrap:anywhere;flex:1}
+.small-btn{padding:6px 9px;border-radius:7px;border:1px solid var(--line);
+ color:var(--text);background:#10243b}
+#voice-orb{width:180px;height:180px;border-radius:50%;margin:28px auto;
+ border:2px solid var(--cyan);display:grid;place-items:center;
+ box-shadow:0 0 35px #00d9ff33,inset 0 0 30px #00d9ff22;
+ font-size:35px;color:var(--cyan)}
+#voice-orb.listening{animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 55px #00d9ff99,inset 0 0 35px #00d9ff66}}
+#lock-screen{position:fixed;inset:0;z-index:30;background:#050a13;display:none;
+ align-items:center;justify-content:center;padding:20px}
+.lock-card{width:min(360px,100%);text-align:center;background:#0b1727;border:1px solid var(--line);
+ border-radius:18px;padding:25px}
+#memory-canvas{width:100%;height:300px;border:1px solid var(--line);border-radius:12px}
+#camera-preview{width:100%;max-height:350px;object-fit:contain;background:#000;border-radius:10px}
+footer{border-top:1px solid var(--line);padding:8px;text-align:center;color:#536b84;
+ font-size:9px;letter-spacing:2px}
+@media(max-width:650px){
+ header{height:55px;padding:0 10px}#main{padding:10px}.grid{grid-template-columns:1fr}
+ .brand{font-size:13px}.header-right .muted{display:none}
+ #chat-log{height:52vh}.card{padding:13px}
 }
 </style>
 </head>
 
 <body>
-
+<div id="app">
 <header>
- <div class="brand">J.A.R.V.I.S <span>// STARK CORE V10</span></div>
- <div class="topright">
-  <span class="status-dot"></span>
-  <span class="small muted" id="global-status">SYSTÈME PRÊT</span>
-  <button id="lock-btn">VERROUILLER</button>
+ <div class="brand">J.A.R.V.I.S <small>STARK INDUSTRIES // MK-3000 // V10.0</small></div>
+ <div class="header-right">
+  <span class="muted"><i class="status-dot"></i> <span id="header-status">EN VEILLE</span></span>
+  <button class="icon-btn" onclick="basculerMenuStark()">☰</button>
  </div>
 </header>
 
-<div class="layout">
-
-<aside>
- <nav id="nav">
-  <div class="nav-label">SYSTÈME</div>
-  <button class="active" data-page="home">◈ Tableau de bord</button>
-  <button data-page="chat">◉ Conversation</button>
-  <button data-page="tasks">▤ Tâches & agenda</button>
-  <button data-page="memory">✧ Mémoire active</button>
-  <div class="nav-label">MODULES</div>
-  <button data-page="voice">♫ Audio & vocal</button>
-  <button data-page="camera">◎ Caméra</button>
-  <button data-page="morse">⌁ Morse</button>
-  <button data-page="labs">⌘ Laboratoire</button>
-  <button data-page="connections">⇄ Connexions</button>
-  <button data-page="settings">⚙ Paramètres</button>
- </nav>
+<div id="drawer-shade" onclick="basculerMenuStark(false)"></div>
+<aside id="stark-drawer">
+ <div class="drawer-head"><strong style="color:var(--cyan);letter-spacing:3px">STARK MENU</strong>
+  <button class="icon-btn" onclick="basculerMenuStark(false)">✕</button></div>
+ <button class="nav-btn" onclick="navV10('home')">⌂ ACCUEIL</button>
+ <button class="nav-btn" onclick="navV10('chat')">◈ ASSISTANT</button>
+ <button class="nav-btn" onclick="navV10('voice')">◉ MODE VOCAL</button>
+ <button class="nav-btn" onclick="navV10('tasks')">▤ TÂCHES & RAPPELS</button>
+ <button class="nav-btn" onclick="navV10('memory')">✧ MÉMOIRE VISUELLE</button>
+ <button class="nav-btn" onclick="navV10('tools')">⚙ OUTILS</button>
+ <button class="nav-btn" onclick="navV10('camera')">▣ CAMÉRA</button>
+ <button class="nav-btn" onclick="navV10('map')">⌖ POSITION & CARTE</button>
+ <button class="nav-btn" onclick="navV10('settings')">☷ PARAMÈTRES</button>
+ <button class="nav-btn" onclick="verrouillerApplication()">🔒 VERROUILLER</button>
+ <p class="muted" style="margin-top:25px">SYSTÈME LOCAL • V10.0</p>
 </aside>
 
-<main>
+<main id="main">
 
-<!-- TABLEAU DE BORD -->
-<section class="page active" id="page-home">
- <div class="eyebrow">STARK INDUSTRIES // PERSONAL AI SYSTEM</div>
- <div class="page-title">CENTRE DE COMMANDEMENT</div>
-
- <div class="grid">
-  <div class="card span-8 hero">
-   <div>
-    <div class="eyebrow">RÉACTEUR CENTRAL</div>
-    <h2 style="font-size:26px;margin:9px 0">Bonjour, Monsieur.</h2>
-    <p class="muted">Tous les modules locaux sont prêts. Les services distants seront vérifiés au démarrage.</p>
-    <div class="row">
-     <button class="primary" onclick="go('chat')">OUVRIR J.A.R.V.I.S</button>
-     <button onclick="go('voice')">MODE VOCAL</button>
-    </div>
-   </div>
-   <div class="reactor-wrap"><div class="reactor"></div></div>
+<section id="page-home" class="page active">
+ <div id="home">
+  <div class="section-title">SYSTÈME STARK // INTERFACE PRINCIPALE</div>
+  <div id="reactor-wrap">
+   <canvas id="reactor-canvas"></canvas>
+   <div class="reactor-label"><strong>J.A.R.V.I.S</strong><span>STARK CORE • ONLINE</span></div>
   </div>
-
-  <div class="card span-4">
-   <h3>ÉTAT DU SYSTÈME</h3>
-   <div class="metric" id="clock">--:--:--</div>
-   <div class="submetric" id="date">--</div>
-   <hr style="border:0;border-top:1px solid #1b3a53;margin:15px 0">
-   <div class="row"><span class="status-dot"></span><span id="api-state" class="small">API non vérifiée</span></div>
-   <div class="submetric">Mémoire locale active</div>
+  <div class="home-sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+  <div class="home-status" id="home-status">● SYSTÈME EN VEILLE</div>
+  <div class="quick-actions">
+   <button class="btn primary" onclick="activerJarvis()">ACTIVER JARVIS</button>
+   <button class="btn" onclick="navV10('chat')">OUVRIR LE CHAT</button>
+   <button class="btn" onclick="basculerVocal()">MODE VOCAL : <span id="quick-vocal">OFF</span></button>
   </div>
-
-  <div class="card span-4">
-   <h3>ACTIVITÉ</h3>
-   <div class="kpis">
-    <div class="kpi"><strong id="task-count">0</strong><span>TÂCHES</span></div>
-    <div class="kpi"><strong id="memory-count">0</strong><span>SOUVENIRS</span></div>
-    <div class="kpi"><strong id="done-count">0</strong><span>TERMINÉES</span></div>
-   </div>
-  </div>
-
-  <div class="card span-8">
-   <h3>ACCÈS RAPIDE</h3>
-   <div class="row">
-    <button onclick="openSite('https://www.youtube.com')">YouTube</button>
-    <button onclick="openSite('https://www.google.com')">Google</button>
-    <button onclick="openSite('https://www.instagram.com')">Instagram</button>
-    <button onclick="openSite('https://www.tiktok.com')">TikTok</button>
-    <button onclick="openSite('https://calendar.google.com')">Agenda</button>
-    <button onclick="openSite('https://maps.google.com')">Cartes</button>
-   </div>
+  <div class="grid" style="width:100%;text-align:left">
+   <div class="card"><h3>HEURE ET DATE</h3><div id="clock" style="font-size:25px">--:--:--</div><div id="date" class="muted"></div></div>
+   <div class="card"><h3>ÉTAT DU SYSTÈME</h3><div id="system-card">INITIALISATION</div><p class="muted">Assistant local et outils du navigateur</p></div>
   </div>
  </div>
 </section>
 
-<!-- CONVERSATION -->
-<section class="page" id="page-chat">
- <div class="eyebrow">INTERFACE DE COMMUNICATION</div>
- <div class="page-title">CONVERSATION J.A.R.V.I.S</div>
+<section id="page-chat" class="page">
+ <div class="section-title">CENTRE DE COMMUNICATION // ASSISTANT</div>
  <div class="card">
-  <div class="row" style="justify-content:space-between">
-   <h3>CANAL PRINCIPAL</h3><span class="tag">API /api/chat</span>
+  <div id="chat-log">
+   <div class="message jarvis">Système Stark opérationnel. Bonjour Monsieur. Comment puis-je vous assister ?</div>
   </div>
-  <div id="chat-messages" class="chatbox">
-   <div class="bubble jarvis">
-    <div class="who">J.A.R.V.I.S</div>
-    Système Stark opérationnel. Comment puis-je vous assister, Monsieur ?
-   </div>
+  <div class="chat-compose">
+   <input id="chat-input" placeholder="Écrivez votre demande à J.A.R.V.I.S..." onkeydown="if(event.key==='Enter')envoyer()">
+   <button class="btn primary" onclick="envoyer()">ENVOYER</button>
   </div>
-  <div class="chat-controls">
-   <input id="chat-input" placeholder="Écrivez votre demande..." autocomplete="off">
-   <button class="primary" id="send-btn">ENVOYER</button>
-   <button id="chat-mic" title="Démarrer la reconnaissance vocale">🎙</button>
-  </div>
-  <div class="small muted" style="margin-top:8px">
-   Les demandes sont envoyées à votre endpoint Cloudflare /api/chat.
-   Ne placez jamais votre clé Groq dans cette page.
+  <div class="quick-actions" style="justify-content:flex-start">
+   <button class="small-btn" onclick="commandeRapide('Quelle heure est-il ?')">HEURE</button>
+   <button class="small-btn" onclick="commandeRapide('Ouvre YouTube')">YOUTUBE</button>
+   <button class="small-btn" onclick="commandeRapide('Ouvre Google')">GOOGLE</button>
+   <button class="small-btn" onclick="effacerChat()">EFFACER LE CHAT</button>
   </div>
  </div>
 </section>
 
-<!-- TÂCHES -->
-<section class="page" id="page-tasks">
- <div class="eyebrow">ORGANISATION PERSONNELLE</div>
- <div class="page-title">TÂCHES & AGENDA</div>
- <div class="grid">
-  <div class="card span-6">
-   <h3>NOUVELLE TÂCHE</h3>
-   <input id="task-title" placeholder="Ex. Réviser les mathématiques">
-   <div class="row" style="margin-top:9px">
-    <input id="task-date" type="datetime-local" class="grow">
-    <button class="primary" id="add-task">AJOUTER</button>
-   </div>
+<section id="page-voice" class="page">
+ <div class="section-title">CANAL VOCAL // COMMUNICATION AUDIO</div>
+ <div class="card" style="text-align:center">
+  <div id="voice-orb">◉</div>
+  <h2 id="voice-status">CANAL VOCAL DÉSACTIVÉ</h2>
+  <p class="muted" id="voice-detail">Activez le mode vocal pour parler à J.A.R.V.I.S.</p>
+  <button class="btn primary" onclick="basculerVocal()">ACTIVER / DÉSACTIVER LE MICRO</button>
+  <div style="margin-top:18px">
+   <label><input type="checkbox" id="voice-auto" style="width:auto"> Écoute continue après chaque réponse</label><br><br>
+   <label><input type="checkbox" id="voice-tts" checked style="width:auto"> Lire les réponses à voix haute</label>
   </div>
-  <div class="card span-6">
-   <h3>RAPPELS</h3>
-   <p class="small muted">Les tâches sont conservées dans ce navigateur. Autorisez les notifications si vous souhaitez les recevoir lorsque la page est ouverte.</p>
-   <button id="notify-btn">ACTIVER LES NOTIFICATIONS</button>
-  </div>
-  <div class="card span-12">
-   <h3>LISTE DES TÂCHES</h3>
-   <div id="task-list" class="list"></div>
-  </div>
+  <p class="muted">Le microphone ne fonctionne qu'après activation explicite et reste indiqué à l'écran.</p>
  </div>
 </section>
 
-<!-- MÉMOIRE -->
-<section class="page" id="page-memory">
- <div class="eyebrow">STARK COGNITIVE ARCHITECTURE</div>
- <div class="page-title">MÉMOIRE ACTIVE</div>
- <div class="grid">
-  <div class="card span-4">
-   <div class="memory-orbit">
-    <div class="memory-core">STARK<br>MEMORY CORE</div>
-   </div>
-   <p class="small muted">Mémoire locale consultable et modifiable. Les conversations ne sont pas enregistrées automatiquement.</p>
-   <div class="kpis">
-    <div class="kpi"><strong id="mem-total">0</strong><span>ENTRÉES</span></div>
-    <div class="kpi"><strong id="mem-cats">0</strong><span>CATÉGORIES</span></div>
-   </div>
-  </div>
-
-  <div class="card span-8">
-   <h3>ENREGISTRER UN SOUVENIR</h3>
-   <input id="memory-title" placeholder="Information à retenir">
-   <div class="row" style="margin-top:9px">
-    <select id="memory-category" class="grow">
-     <option>Préférences</option>
-     <option>Projets</option>
-     <option>Études</option>
-     <option>Technologie</option>
-     <option>Autre</option>
-    </select>
-    <button class="primary" id="add-memory">ENREGISTRER</button>
-   </div>
-   <p class="small muted">Enregistrez uniquement les informations que vous souhaitez conserver.</p>
-   <input id="memory-search" placeholder="Rechercher dans la mémoire..." style="margin-top:8px">
-   <div id="memory-list" class="list" style="margin-top:10px"></div>
-  </div>
- </div>
-</section>
-
-<!-- AUDIO -->
-<section class="page" id="page-voice">
- <div class="eyebrow">INTERFACE AUDIO</div>
- <div class="page-title">AUDIO & MODE VOCAL</div>
- <div class="grid">
-  <div class="card span-6">
-   <h3>SYNTHÈSE VOCALE</h3>
-   <textarea id="speak-text">Système Stark opérationnel. Je suis à votre disposition, Monsieur.</textarea>
-   <div class="row" style="margin-top:9px">
-    <button class="primary" id="speak-btn">LIRE LE TEXTE</button>
-    <button id="stop-speak">ARRÊTER</button>
-   </div>
-   <div class="small muted" id="tts-state" style="margin-top:10px">Synthèse vocale du navigateur.</div>
-  </div>
-
-  <div class="card span-6">
-   <h3>RECONNAISSANCE VOCALE</h3>
-   <p class="muted small">La reconnaissance dépend du navigateur. Chrome sur ordinateur est généralement mieux pris en charge que Safari sur iPhone. Le microphone ne s'active qu'après votre action.</p>
-   <div class="row">
-    <button class="primary" id="listen-btn">DÉMARRER LE MICRO</button>
-    <button id="stop-listen">ARRÊTER</button>
-   </div>
-   <p id="stt-state" class="small muted">Micro désactivé.</p>
-   <textarea id="speech-result" placeholder="Le texte reconnu apparaîtra ici..."></textarea>
-   <button id="send-recognized" style="margin-top:8px">ENVOYER AU CHAT</button>
-  </div>
- </div>
-</section>
-
-<!-- CAMÉRA -->
-<section class="page" id="page-camera">
- <div class="eyebrow">CAPTEURS AUTORISÉS</div>
- <div class="page-title">MODULE CAMÉRA</div>
- <div class="grid">
-  <div class="card span-8">
-   <h3>APERÇU CAMÉRA</h3>
-   <video id="camera-video" autoplay playsinline muted></video>
-   <div class="row" style="margin-top:10px">
-    <button class="primary" id="camera-start">ACTIVER LA CAMÉRA</button>
-    <button id="camera-stop">DÉSACTIVER</button>
-   </div>
-   <p class="small muted" id="camera-state">Caméra arrêtée. L'activation nécessite votre autorisation.</p>
-  </div>
-  <div class="card span-4">
-   <h3>CONFIDENTIALITÉ</h3>
-   <p class="small muted">La caméra ne démarre jamais en arrière-plan. Aucun enregistrement ni reconnaissance faciale n'est effectué par ce module. Vous pouvez couper le flux à tout moment.</p>
-  </div>
- </div>
-</section>
-
-<!-- MORSE -->
-<section class="page" id="page-morse">
- <div class="eyebrow">COMMUNICATION CODÉE</div>
- <div class="page-title">LABORATOIRE MORSE</div>
+<section id="page-tasks" class="page">
+ <div class="section-title">GESTIONNAIRE // TÂCHES & RAPPELS</div>
  <div class="card">
-  <h3>CONVERTISSEUR TEXTE / MORSE</h3>
-  <textarea id="morse-input" placeholder="Saisissez un message..."></textarea>
-  <div class="row" style="margin:10px 0">
-   <button class="primary" id="to-morse">TEXTE → MORSE</button>
-   <button id="from-morse">MORSE → TEXTE</button>
-   <button id="copy-morse">COPIER</button>
-  </div>
-  <textarea id="morse-output" placeholder="Résultat..." readonly></textarea>
-  <p class="small muted">Séparez les lettres par des espaces et les mots par / pour décoder.</p>
+  <div class="chat-compose"><input id="task-input" placeholder="Nouvelle tâche...">
+   <button class="btn primary" onclick="ajouterTache()">AJOUTER</button></div>
+  <div id="task-list"></div>
+ </div>
+ <div class="card" style="margin-top:12px">
+  <h3>RAPPELS</h3>
+  <div class="chat-compose"><input id="reminder-text" placeholder="Texte du rappel">
+   <input id="reminder-time" type="datetime-local">
+   <button class="btn" onclick="ajouterRappel()">CRÉER</button></div>
+  <div id="reminder-list"></div>
  </div>
 </section>
 
-<!-- LABORATOIRE -->
-<section class="page" id="page-labs">
- <div class="eyebrow">OUTILS & DIAGNOSTIC</div>
- <div class="page-title">LABORATOIRE STARK</div>
- <div class="grid">
-  <div class="card span-6">
-   <h3>DIAGNOSTIC SYSTÈME</h3>
-   <button class="primary" id="run-diagnostic">LANCER LE DIAGNOSTIC</button>
-   <div id="diagnostic-results" class="list" style="margin-top:12px"></div>
+<section id="page-memory" class="page">
+ <div class="section-title">STARK ARCHIVE // MÉMOIRE VISUELLE</div>
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+   <h3>BASE DE CONNAISSANCES PERSONNELLE</h3>
+   <button class="btn danger" onclick="navV10('home')">QUITTER LA MÉMOIRE ✕</button>
   </div>
-  <div class="card span-6">
-   <h3>LABORATOIRE D'IMAGES</h3>
-   <p class="small muted">Ouvrez votre outil de génération d'images. La génération n'est pas simulée localement.</p>
-   <button onclick="openSite('https://chatgpt.com')">OUVRIR CHATGPT</button>
-  </div>
-  <div class="card span-12">
-   <h3>OUTILS WEB</h3>
-   <div class="row">
-    <button onclick="openSite('https://www.google.com')">Google</button>
-    <button onclick="openSite('https://www.google.com/maps')">Google Maps</button>
-    <button onclick="openSite('https://translate.google.com')">Traduction</button>
-    <button onclick="openSite('https://www.deepl.com/translator')">DeepL</button>
-    <button onclick="openSite('https://www.wikipedia.org')">Wikipédia</button>
-   </div>
-  </div>
+  <canvas id="memory-canvas"></canvas>
+  <div class="chat-compose"><input id="memory-input" placeholder="Information à retenir...">
+   <button class="btn primary" onclick="ajouterMemoire()">MÉMORISER</button></div>
+  <input id="memory-search" placeholder="Rechercher dans la mémoire..." style="width:100%;margin-top:10px" oninput="afficherMemoire()">
+  <div id="memory-list"></div>
+  <button class="btn danger" style="margin-top:12px" onclick="viderMemoire()">VIDER LA MÉMOIRE</button>
+  <p class="muted">La mémorisation automatique est désactivée par défaut. Vous choisissez les informations enregistrées.</p>
  </div>
 </section>
 
-<!-- CONNEXIONS -->
-<section class="page" id="page-connections">
- <div class="eyebrow">INFRASTRUCTURE</div>
- <div class="page-title">CENTRE DE CONNEXIONS</div>
+<section id="page-tools" class="page">
+ <div class="section-title">LABORATOIRE // OUTILS</div>
  <div class="grid">
-  <div class="card span-6">
-   <h3>GROQ / CLOUDFLARE</h3>
-   <p class="small muted">J.A.R.V.I.S appelle le backend Cloudflare sur /api/chat. La clé API doit rester côté serveur, dans les variables d'environnement Cloudflare.</p>
-   <button id="check-api">VÉRIFIER /api/config</button>
-   <p id="config-result" class="small muted">État inconnu.</p>
-  </div>
-  <div class="card span-6">
-   <h3>SUPABASE</h3>
-   <p class="small muted">La synchronisation nécessite un endpoint sécurisé côté serveur. Aucun identifiant Supabase n'est inventé ni exposé dans ce fichier.</p>
-   <span class="tag">À CONFIGURER CÔTÉ SERVEUR</span>
-  </div>
-  <div class="card span-6">
-   <h3>KEEPSMILE KS03~240057</h3>
-   <p class="small muted">Le protocole Bluetooth de ce modèle n'est pas confirmé. Une page web seule ne peut pas garantir son pilotage BLE sur iPhone et ordinateur.</p>
-   <span class="tag">BRIDGE BLUETOOTH REQUIS</span>
-  </div>
-  <div class="card span-6">
-   <h3>APPAREILS</h3>
-   <p class="small muted">Le navigateur ne peut pas lister librement les applications installées sur votre ordinateur ou votre iPhone.</p>
-   <span class="tag">ACCÈS NAVIGATEUR LIMITÉ</span>
-  </div>
+  <div class="card"><h3>MÉTÉO</h3><button class="btn" onclick="obtenirMeteo()">OBTENIR MA MÉTÉO</button><p id="weather-result" class="muted">Localisation demandée uniquement après votre clic.</p></div>
+  <div class="card"><h3>RECHERCHE INTERNET</h3><input id="web-search" placeholder="Rechercher..." style="width:100%">
+   <button class="btn" style="margin-top:8px" onclick="rechercherWeb()">RECHERCHER</button></div>
+  <div class="card"><h3>TRADUCTEUR MORSE</h3><textarea id="morse-input" rows="3" style="width:100%" placeholder="Texte ou code Morse"></textarea>
+   <button class="btn" onclick="traduireMorse()">TRADUIRE</button><p id="morse-result" class="muted"></p></div>
+  <div class="card"><h3>LECTEUR DE DOCUMENT</h3><input type="file" id="document-file" accept=".txt,.md,.csv,.json,.html">
+   <button class="btn" onclick="lireDocument()">LIRE LE DOCUMENT</button><pre id="document-result" style="white-space:pre-wrap;max-height:180px;overflow:auto"></pre></div>
  </div>
 </section>
 
-<!-- PARAMÈTRES -->
-<section class="page" id="page-settings">
- <div class="eyebrow">CONFIGURATION</div>
- <div class="page-title">PARAMÈTRES DU SYSTÈME</div>
+<section id="page-camera" class="page">
+ <div class="section-title">VISION // CAMÉRA</div>
+ <div class="card">
+  <p class="muted">La caméra reste arrêtée jusqu'à ce que vous appuyiez sur le bouton de démarrage.</p>
+  <video id="camera-preview" autoplay playsinline></video>
+  <div class="quick-actions">
+   <button class="btn primary" onclick="demarrerCamera()">DÉMARRER LA CAMÉRA</button>
+   <button class="btn danger" onclick="arreterCamera()">ARRÊTER</button>
+   <button class="btn" onclick="prendrePhoto()">PRENDRE UNE PHOTO</button>
+  </div>
+  <canvas id="photo-canvas" style="display:none"></canvas>
+  <img id="photo-result" style="max-width:100%;border-radius:10px">
+  <p class="muted" id="camera-status">CAMÉRA INACTIVE</p>
+ </div>
+</section>
+
+<section id="page-map" class="page">
+ <div class="section-title">NAVIGATION // POSITION</div>
+ <div class="card">
+  <button class="btn primary" onclick="obtenirPosition()">AFFICHER MA POSITION</button>
+  <p id="position-result" class="muted">La géolocalisation nécessite votre autorisation.</p>
+  <div id="map-link"></div>
+ </div>
+</section>
+
+<section id="page-settings" class="page">
+ <div class="section-title">CONFIGURATION // PARAMÈTRES</div>
  <div class="grid">
-  <div class="card span-6">
-   <h3>PERSONNALITÉ</h3>
-   <select id="personality">
-    <option value="stark">STARK — Formel et précis</option>
-    <option value="technical">Technique</option>
-    <option value="concise">Concis</option>
-    <option value="calm">Calme</option>
+  <div class="card"><h3>PERSONNALITÉ</h3>
+   <select id="personality" style="width:100%">
+    <option value="stark">STARK — Professionnelle</option>
+    <option value="calm">Calme</option><option value="technical">Technique</option>
+    <option value="concise">Concise</option><option value="friendly">Amicale</option>
    </select>
-   <p class="small muted">Ce réglage est ajouté au contexte de vos demandes.</p>
+   <button class="btn" style="margin-top:10px" onclick="sauverParametres()">ENREGISTRER</button>
   </div>
-  <div class="card span-6">
-   <h3>DONNÉES LOCALES</h3>
-   <button id="export-data">EXPORTER MES DONNÉES</button>
-   <button class="danger" id="clear-data" style="margin-left:7px">EFFACER LA MÉMOIRE</button>
-   <p class="small muted">L'effacement supprime les souvenirs et tâches enregistrés dans ce navigateur.</p>
+  <div class="card"><h3>VOIX</h3>
+   <select id="voice-select" style="width:100%"></select>
+   <button class="btn" style="margin-top:10px" onclick="testerVoix()">TESTER LA VOIX</button>
   </div>
-  <div class="card span-12">
-   <h3>VERROUILLAGE DE SESSION</h3>
-   <p class="small muted">Le verrouillage masque l'interface jusqu'à la saisie du code défini dans ce navigateur. Ce n'est pas une authentification forte.</p>
-   <input id="pin-input" type="password" inputmode="numeric" placeholder="Définir un code PIN (4 à 12 chiffres)">
-   <button id="save-pin" style="margin-top:8px">ENREGISTRER LE CODE</button>
+  <div class="card"><h3>IA LOCALE</h3>
+   <p class="muted">Connexion facultative à Ollama sur cet ordinateur.</p>
+   <input id="ollama-model" value="qwen2.5:1.5b" style="width:100%">
+   <button class="btn" style="margin-top:10px" onclick="testerOllama()">TESTER OLLAMA</button>
+   <p id="ollama-status" class="muted">NON TESTÉ</p>
   </div>
+  <div class="card"><h3>MÉMOIRE</h3>
+   <label><input id="auto-memory" type="checkbox" style="width:auto"> Autoriser la mémorisation automatique</label>
+   <p class="muted">Désactivée par défaut. N'activez cette option que si vous le souhaitez.</p>
+   <button class="btn" onclick="sauverParametres()">ENREGISTRER</button>
+  </div>
+  <div class="card"><h3>CONNEXIONS</h3>
+   <p>Ollama : <span id="connection-ollama">NON TESTÉ</span></p>
+   <p>Supabase : <span class="muted">NON CONFIGURÉ</span></p>
+   <p>Groq : <span class="muted">NON CONFIGURÉ</span></p>
+   <p class="muted">Les connexions cloud nécessitent une configuration réelle. Aucune clé secrète n'est intégrée à cette page.</p>
+  </div>
+  <div class="card"><h3>JOURNAL D'ACTIONS</h3><div id="action-log"></div></div>
  </div>
 </section>
 
 </main>
+<footer>STARK INDUSTRIES • J.A.R.V.I.S V10.0 • LOCAL SYSTEM INTERFACE</footer>
 </div>
 
-<footer>J.A.R.V.I.S // STARK INDUSTRIES // VERSION 10.0 — INTERFACE WEB</footer>
-
-<div id="toast" class="hidden" role="status"></div>
-
-<div id="lock-screen" class="hidden">
- <div class="card" style="width:min(380px,100%);text-align:center">
-  <div class="eyebrow">STARK INDUSTRIES</div>
-  <h2>CONSOLE VERROUILLÉE</h2>
-  <p class="small muted">Saisissez votre code PIN.</p>
-  <input id="unlock-pin" type="password" inputmode="numeric" placeholder="Code PIN">
-  <button class="primary" id="unlock-btn" style="margin-top:10px;width:100%">DÉVERROUILLER</button>
-  <p id="unlock-error" class="small" style="color:var(--red)"></p>
+<div id="lock-screen">
+ <div class="lock-card">
+  <div class="brand">STARK INDUSTRIES</div>
+  <h2>ACCÈS PROTÉGÉ</h2>
+  <p class="muted" id="lock-description">Créez un code PIN local à 6 chiffres.</p>
+  <input id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="Code PIN">
+  <button class="btn primary" style="width:100%;margin-top:12px" onclick="validerPIN()">VALIDER</button>
+  <p class="muted">Le PIN protège l'accès à cette interface sur ce navigateur. Ce n'est pas un chiffrement complet de l'appareil.</p>
  </div>
 </div>
-
 <script>
 "use strict";
 
-/* =========================
-   CONFIGURATION ET STOCKAGE
-========================= */
-
-const $ = id => document.getElementById(id);
-
-const KEYS = {
+/* =========================================================
+   J.A.R.V.I.S V10.0 — CONFIGURATION ET DONNÉES LOCALES
+========================================================= */
+const CLE={
  tasks:"jarvis_v10_tasks",
+ reminders:"jarvis_v10_reminders",
  memory:"jarvis_v10_memory",
+ chat:"jarvis_v10_chat",
  settings:"jarvis_v10_settings",
- pin:"jarvis_v10_pin"
+ pin:"jarvis_v10_pin",
+ log:"jarvis_v10_log"
 };
 
-function safeLoad(key,fallback){
- try{
-  const value=JSON.parse(localStorage.getItem(key));
-  return value ?? fallback;
- }catch{
-  return fallback;
- }
+let jarvisActif=false;
+let vocalActif=false;
+let reconnaissance=null;
+let fluxCamera=null;
+let historique=[];
+let souvenirs=[];
+let taches=[];
+let rappels=[];
+let journal=[];
+let voixChoisie="";
+let ollamaDisponible=false;
+
+function lireStockage(cle,defaut){
+ try{return JSON.parse(localStorage.getItem(cle)) ?? defaut}
+ catch{return defaut}
+}
+function ecrireStockage(cle,valeur){
+ localStorage.setItem(cle,JSON.stringify(valeur));
+}
+function echapperHTML(texte){
+ return String(texte).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ }[c]));
+}
+function journaliser(action){
+ journal.unshift({action,date:new Date().toLocaleString("fr-FR")});
+ journal=journal.slice(0,30);
+ ecrireStockage(CLE.log,journal);
+ afficherJournal();
+}
+function afficherJournal(){
+ const zone=document.getElementById("action-log");
+ if(!zone)return;
+ zone.innerHTML=journal.slice(0,12).map(x=>
+  `<div class="log-row"><span>${echapperHTML(x.action)}</span><small class="muted">${echapperHTML(x.date)}</small></div>`
+ ).join("")||'<p class="muted">Aucune action enregistrée.</p>';
 }
 
-function safeSave(key,value){
- try{
-  localStorage.setItem(key,JSON.stringify(value));
-  return true;
- }catch(error){
-  toast("Stockage indisponible : "+error.message);
-  return false;
- }
+/* =========================================================
+   NAVIGATION ET ÉTAT
+========================================================= */
+function basculerMenuStark(force){
+ const menu=document.getElementById("stark-drawer");
+ const shade=document.getElementById("drawer-shade");
+ const ouvrir=typeof force==="boolean"?force:!menu.classList.contains("open");
+ menu.classList.toggle("open",ouvrir);
+ shade.classList.toggle("show",ouvrir);
 }
-
-let tasks=safeLoad(KEYS.tasks,[]);
-let memories=safeLoad(KEYS.memory,[]);
-let settings=safeLoad(KEYS.settings,{personality:"stark"});
-let recognition=null;
-let mediaStream=null;
-let toastTimer=null;
-
-/* =========================
-   INTERFACE
-========================= */
-
-function toast(message){
- const element=$("toast");
- element.textContent=message;
- element.classList.remove("hidden");
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>element.classList.add("hidden"),3200);
+function navV10(nom){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const page=document.getElementById("page-"+nom);
+ if(page)page.classList.add("active");
+ basculerMenuStark(false);
+ if(nom==="memory")dessinerMemoire();
+ if(nom==="tasks"){afficherTaches();afficherRappels()}
+ if(nom==="settings")chargerParametres();
 }
-
-function go(page){
- document.querySelectorAll(".page").forEach(element=>{
-  element.classList.toggle("active",element.id==="page-"+page);
- });
-
- document.querySelectorAll("#nav button[data-page]").forEach(button=>{
-  button.classList.toggle("active",button.dataset.page===page);
- });
-
- if(page==="tasks")renderTasks();
- if(page==="memory")renderMemories();
-
- window.scrollTo({top:0,behavior:"smooth"});
-}
-
-$("nav").addEventListener("click",event=>{
- const button=event.target.closest("button[data-page]");
- if(button)go(button.dataset.page);
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape")basculerMenuStark(false);
 });
-
-function openSite(url){
- window.open(url,"_blank","noopener,noreferrer");
+function definirEtat(texte,couleur){
+ document.getElementById("home-status").textContent="● "+texte;
+ document.getElementById("header-status").textContent=texte;
+ document.getElementById("system-card").textContent=texte;
+ document.getElementById("home-status").style.color=couleur||"var(--green)";
+}
+function activerJarvis(){
+ jarvisActif=!jarvisActif;
+ definirEtat(jarvisActif?"SYSTÈME OPÉRATIONNEL":"SYSTÈME EN VEILLE",
+ jarvisActif?"var(--green)":"var(--orange)");
+ journaliser(jarvisActif?"Système activé":"Système mis en veille");
 }
 
-function updateClock(){
- const date=new Date();
- $("clock").textContent=date.toLocaleTimeString("fr-FR");
- $("date").textContent=date.toLocaleDateString("fr-FR",{
-  weekday:"long",day:"numeric",month:"long",year:"numeric"
- });
+/* =========================================================
+   HORLOGE
+========================================================= */
+function actualiserHorloge(){
+ const maintenant=new Date();
+ document.getElementById("clock").textContent=
+  maintenant.toLocaleTimeString("fr-FR");
+ document.getElementById("date").textContent=
+  maintenant.toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
 }
+setInterval(actualiserHorloge,1000);
+actualiserHorloge();
 
-setInterval(updateClock,1000);
-updateClock();
-
-/* =========================
-   CHAT ET CONNEXION API
-========================= */
-
-function addBubble(text,who="jarvis"){
- const box=$("chat-messages");
- const element=document.createElement("div");
- element.className="bubble "+who;
-
- const label=document.createElement("div");
- label.className="who";
- label.textContent=who==="user"?"VOUS":"J.A.R.V.I.S";
-
- const body=document.createElement("div");
- body.textContent=text;
-
- element.append(label,body);
- box.appendChild(element);
- box.scrollTop=box.scrollHeight;
+/* =========================================================
+   CHAT ET ASSISTANT
+========================================================= */
+function ajouterMessage(type,texte){
+ const zone=document.getElementById("chat-log");
+ const div=document.createElement("div");
+ div.className="message "+type;
+ div.textContent=texte;
+ zone.appendChild(div);
+ zone.scrollTop=zone.scrollHeight;
 }
-
-async function askJarvis(message){
- $("global-status").textContent="TRAITEMENT...";
-
- const payload={
-  message:message,
-  history:[],
-  personality:settings.personality||"stark"
- };
-
- try{
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify(payload)
-  });
-
-  if(!response.ok){
-   throw new Error("HTTP "+response.status);
+function commandeRapide(texte){
+ document.getElementById("chat-input").value=texte;
+ envoyer();
+}
+function effacerChat(){
+ document.getElementById("chat-log").innerHTML="";
+ historique=[];
+ ecrireStockage(CLE.chat,historique);
+ ajouterMessage("jarvis","Historique de conversation effacé.");
+}
+function nettoyerTexte(texte){
+ return String(texte||"").trim().replace(/\s+/g," ");
+}
+function contient(texte,mots){
+ return mots.some(m=>texte.includes(m));
+}
+function ouvrirSiteDepuisCommande(texte){
+ const t=texte.toLowerCase();
+ const sites=[
+  [["youtube"],"https://www.youtube.com"],
+  [["google maps","maps"],"https://maps.google.com"],
+  [["google agenda","agenda"],"https://calendar.google.com"],
+  [["gmail"],"https://mail.google.com"],
+  [["google drive","drive"],"https://drive.google.com"],
+  [["google"],"https://www.google.com"],
+  [["tiktok"],"https://www.tiktok.com"],
+  [["instagram","insta"],"https://www.instagram.com"],
+  [["snapchat","snap"],"https://www.snapchat.com"],
+  [["discord"],"https://discord.com/app"],
+  [["spotify"],"https://open.spotify.com"],
+  [["netflix"],"https://www.netflix.com"],
+  [["twitch"],"https://www.twitch.tv"],
+  [["reddit"],"https://www.reddit.com"],
+  [["facebook"],"https://www.facebook.com"],
+  [["messenger"],"https://www.messenger.com"],
+  [["whatsapp"],"https://web.whatsapp.com"],
+  [["x","twitter"],"https://x.com"],
+  [["threads"],"https://www.threads.net"],
+  [["pinterest"],"https://www.pinterest.com"],
+  [["amazon"],"https://www.amazon.fr"],
+  [["ebay"],"https://www.ebay.fr"],
+  [["leboncoin"],"https://www.leboncoin.fr"],
+  [["chatgpt"],"https://chatgpt.com"],
+  [["claude"],"https://claude.ai"],
+  [["perplexity"],"https://www.perplexity.ai"],
+  [["github"],"https://github.com"],
+  [["microsoft"],"https://www.microsoft.com"],
+  [["outlook"],"https://outlook.live.com"],
+  [["apple"],"https://www.apple.com/fr"],
+  [["prime video","amazon prime"],"https://www.primevideo.com"],
+  [["disney"],"https://www.disneyplus.com"],
+  [["crunchyroll"],"https://www.crunchyroll.com"],
+  [["steam"],"https://store.steampowered.com"],
+  [["epic games"],"https://store.epicgames.com"],
+  [["canva"],"https://www.canva.com"],
+  [["roblox"],"https://www.roblox.com"],
+  [["minecraft"],"https://www.minecraft.net"]
+ ];
+ const demande=contient(t,["ouvre","ouvrir","lance","lancer","va sur","affiche","montre"]);
+ if(!demande)return false;
+ for(const [noms,url] of sites){
+  if(noms.some(n=>t.includes(n))){
+   window.open(url,"_blank","noopener,noreferrer");
+   journaliser("Ouverture du site : "+noms[0]);
+   return true;
   }
-
-  const data=await response.json();
-
-  const answer=typeof data==="string"
-   ?data
-   :(data.reply||
-     data.response||
-     data.answer||
-     data.message||
-     data.choices?.[0]?.message?.content);
-
-  if(!answer){
-   throw new Error("Réponse API vide ou format non reconnu.");
+ }
+ return false;
+}
+function reponseLocale(question){
+ const q=question.toLowerCase();
+ if(contient(q,["bonjour","salut","bonsoir"]))return "Bonjour Monsieur. Tous les systèmes sont prêts.";
+ if(contient(q,["qui es-tu","qui est tu","ton nom"]))return "Je suis J.A.R.V.I.S, votre assistant numérique du système Stark.";
+ if(contient(q,["quelle heure","il est quelle heure","donne l'heure"]))
+  return "Il est actuellement "+new Date().toLocaleTimeString("fr-FR")+".";
+ if(contient(q,["quelle date","quel jour","on est quel jour"]))
+  return "Nous sommes le "+new Date().toLocaleDateString("fr-FR",{dateStyle:"full"})+".";
+ if(contient(q,["tes fonctions","tes capacités","que peux-tu faire","que sais-tu faire"]))
+  return "Je peux gérer vos tâches et rappels, conserver les informations que vous choisissez, ouvrir des sites, utiliser la synthèse vocale, effectuer des recherches et accéder aux outils du navigateur.";
+ if(contient(q,["mémorise","retiens que","souviens-toi que"])){
+  const info=question.replace(/mémorise|retiens que|souviens-toi que/ig,"").trim();
+  if(info){souvenirs.push({texte:info,date:new Date().toLocaleString("fr-FR")});
+   ecrireStockage(CLE.memory,souvenirs);afficherMemoire();dessinerMemoire();
+   return "Information enregistrée dans la mémoire locale, Monsieur.";}
+ }
+ if(contient(q,["mes tâches","liste des tâches"]))return "Vous avez "+taches.filter(x=>!x.fait).length+" tâche(s) en attente.";
+ if(contient(q,["merci"]))return "Je vous en prie, Monsieur.";
+ if(contient(q,["arrête de parler","silence"])) {speechSynthesis.cancel();return "Synthèse vocale arrêtée.";}
+ if(contient(q,["aide","commande"]))return "Essayez : « Ouvre YouTube », « Quelle heure est-il ? », « Mémorise que… », ou ajoutez une tâche depuis le gestionnaire.";
+ return "Demande reçue, Monsieur. Je peux répondre aux commandes locales disponibles. Pour une conversation plus avancée, configurez Ollama dans les paramètres.";
+}
+async function demanderOllama(question){
+ const modele=document.getElementById("ollama-model").value.trim()||"qwen2.5:1.5b";
+ const reponse=await fetch("http://localhost:11434/api/chat",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+   model:modele,stream:false,
+   messages:[
+    {role:"system",content:"Tu es J.A.R.V.I.S, assistant francophone inspiré d'une interface Stark. Tu vouvoies l'utilisateur et l'appelles Monsieur. Réponds clairement et naturellement."},
+    ...historique.slice(-12),
+    {role:"user",content:question}
+   ]
+  })
+ });
+ if(!reponse.ok)throw new Error("Ollama indisponible");
+ const data=await reponse.json();
+ return data.message?.content||"Je n'ai pas reçu de réponse du modèle.";
+}
+async function envoyer(){
+ const champ=document.getElementById("chat-input");
+ const question=nettoyerTexte(champ.value);
+ if(!question)return;
+ champ.value="";
+ ajouterMessage("user",question);
+ historique.push({role:"user",content:question});
+ let reponse="";
+ if(ouvrirSiteDepuisCommande(question)){
+  reponse="Ouverture demandée, Monsieur.";
+ }else{
+  try{
+   reponse=await demanderOllama(question);
+   ollamaDisponible=true;
+  }catch{
+   reponse=reponseLocale(question);
   }
-
-  addBubble(String(answer));
-  $("global-status").textContent="SYSTÈME PRÊT";
-
- }catch(error){
-  $("global-status").textContent="API INDISPONIBLE";
-
-  addBubble(
-   "Je ne parviens pas à joindre le serveur /api/chat ("+
-   error.message+
-   "). Vérifiez votre fonction Cloudflare et son format de réponse."
-  );
  }
+ ajouterMessage("jarvis",reponse);
+ historique.push({role:"assistant",content:reponse});
+ historique=historique.slice(-30);
+ ecrireStockage(CLE.chat,historique);
+ journaliser("Message traité");
+ if(document.getElementById("voice-tts").checked)parler(reponse);
 }
+window.envoyer=envoyer;
 
-function sendChat(){
- const input=$("chat-input");
- const message=input.value.trim();
-
- if(!message)return;
-
- input.value="";
- addBubble(message,"user");
- askJarvis(message);
-}
-
-$("send-btn").addEventListener("click",sendChat);
-
-$("chat-input").addEventListener("keydown",event=>{
- if(event.key==="Enter")sendChat();
-});
-
-async function checkConfig(){
- try{
-  const response=await fetch("/api/config",{cache:"no-store"});
-
-  if(!response.ok){
-   throw new Error("HTTP "+response.status);
-  }
-
-  await response.json();
-
-  $("api-state").textContent="Configuration accessible";
-  $("config-result").textContent="Endpoint /api/config accessible.";
-  $("global-status").textContent="CONFIGURATION ACCESSIBLE";
-
- }catch(error){
-  $("api-state").textContent="API à vérifier";
-  $("config-result").textContent="Impossible de lire /api/config : "+error.message;
-  $("global-status").textContent="MODE LOCAL";
- }
-}
-
-$("check-api").addEventListener("click",checkConfig);
-checkConfig();
-
-/* =========================
-   TÂCHES ET AGENDA
-========================= */
-
-function renderTasks(){
- const box=$("task-list");
- box.replaceChildren();
-
- if(!tasks.length){
-  box.textContent="Aucune tâche enregistrée.";
-  return;
- }
-
- tasks.forEach(task=>{
-  const element=document.createElement("div");
-  element.className="item";
-
-  const left=document.createElement("div");
-  left.className="item-main";
-
-  const title=document.createElement("div");
-  title.className="item-title";
-  title.textContent=task.title;
-
-  const meta=document.createElement("div");
-  meta.className="item-meta";
-  meta.textContent=
-   (task.date?new Date(task.date).toLocaleString("fr-FR"):"Sans échéance")+
-   " · "+(task.done?"Terminée":"En attente");
-
-  left.append(title,meta);
-
-  const actions=document.createElement("div");
-  actions.className="row";
-
-  const done=document.createElement("button");
-  done.textContent=task.done?"RÉOUVRIR":"TERMINER";
-
-  done.addEventListener("click",()=>{
-   task.done=!task.done;
-   safeSave(KEYS.tasks,tasks);
-   renderTasks();
-   updateStats();
-  });
-
-  const del=document.createElement("button");
-  del.className="danger";
-  del.textContent="✕";
-
-  del.addEventListener("click",()=>{
-   tasks=tasks.filter(item=>item.id!==task.id);
-   safeSave(KEYS.tasks,tasks);
-   renderTasks();
-   updateStats();
-  });
-
-  actions.append(done,del);
-  element.append(left,actions);
-  box.append(element);
- });
-}
-
-$("add-task").addEventListener("click",()=>{
- const title=$("task-title").value.trim();
-
- if(!title){
-  toast("Saisissez une tâche.");
-  return;
- }
-
- tasks.unshift({
-  id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
-  title:title,
-  date:$("task-date").value||"",
-  done:false,
-  created:Date.now()
- });
-
- safeSave(KEYS.tasks,tasks);
-
- $("task-title").value="";
- $("task-date").value="";
-
- renderTasks();
- updateStats();
- toast("Tâche enregistrée.");
-});
-
-$("notify-btn").addEventListener("click",async()=>{
- if(!("Notification"in window)){
-  toast("Notifications non prises en charge.");
-  return;
- }
-
- const permission=await Notification.requestPermission();
-
- toast(
-  permission==="granted"
-   ?"Notifications autorisées."
-   :"Autorisation non accordée."
- );
-});
-
-/* =========================
-   MÉMOIRE ACTIVE
-========================= */
-
-function renderMemories(){
- const box=$("memory-list");
- const query=$("memory-search").value.trim().toLowerCase();
-
- box.replaceChildren();
-
- const visible=memories.filter(memory=>
-  (memory.title+" "+memory.category).toLowerCase().includes(query)
- );
-
- if(!visible.length){
-  box.textContent="Aucun souvenir correspondant.";
-  return;
- }
-
- visible.forEach(memory=>{
-  const element=document.createElement("div");
-  element.className="item";
-
-  const left=document.createElement("div");
-  left.className="item-main";
-
-  const title=document.createElement("div");
-  title.className="item-title";
-  title.textContent=memory.title;
-
-  const meta=document.createElement("div");
-  meta.className="item-meta";
-  meta.textContent=
-   memory.category+" · "+
-   new Date(memory.created).toLocaleDateString("fr-FR");
-
-  left.append(title,meta);
-
-  const del=document.createElement("button");
-  del.className="danger";
-  del.textContent="SUPPRIMER";
-
-  del.addEventListener("click",()=>{
-   memories=memories.filter(item=>item.id!==memory.id);
-   safeSave(KEYS.memory,memories);
-   renderMemories();
-   updateStats();
-  });
-
-  element.append(left,del);
-  box.append(element);
- });
-}
-
-$("add-memory").addEventListener("click",()=>{
- const title=$("memory-title").value.trim();
-
- if(!title){
-  toast("Saisissez une information à retenir.");
-  return;
- }
-
- if(!confirm("Confirmer l'enregistrement de cette information dans la mémoire locale ?")){
-  return;
- }
-
- memories.unshift({
-  id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
-  title:title,
-  category:$("memory-category").value,
-  created:Date.now()
- });
-
- safeSave(KEYS.memory,memories);
- $("memory-title").value="";
-
- renderMemories();
- updateStats();
- toast("Souvenir enregistré.");
-});
-
-$("memory-search").addEventListener("input",renderMemories);
-
-function updateStats(){
- $("task-count").textContent=tasks.filter(task=>!task.done).length;
- $("done-count").textContent=tasks.filter(task=>task.done).length;
- $("memory-count").textContent=memories.length;
- $("mem-total").textContent=memories.length;
- $("mem-cats").textContent=new Set(memories.map(item=>item.category)).size;
-}
-
-renderTasks();
-renderMemories();
-updateStats();
-
-/* =========================
+/* =========================================================
    SYNTHÈSE VOCALE
-========================= */
-
-function speak(text){
- if(!("speechSynthesis"in window)){
-  toast("Synthèse vocale non prise en charge.");
-  return;
- }
-
+========================================================= */
+function chargerVoix(){
+ if(!("speechSynthesis" in window))return;
+ const voix=speechSynthesis.getVoices();
+ const select=document.getElementById("voice-select");
+ select.innerHTML="";
+ voix.filter(v=>v.lang.toLowerCase().startsWith("fr")).forEach(v=>{
+  const option=document.createElement("option");
+  option.value=v.name;option.textContent=v.name+" — "+v.lang;
+  select.appendChild(option);
+ });
+ const sauvegarde=lireStockage(CLE.settings,{});
+ if(sauvegarde.voix)select.value=sauvegarde.voix;
+}
+if("speechSynthesis" in window){
+ speechSynthesis.onvoiceschanged=chargerVoix;
+ setTimeout(chargerVoix,500);
+}
+function parler(texte){
+ if(!("speechSynthesis" in window))return;
  speechSynthesis.cancel();
-
- const utterance=new SpeechSynthesisUtterance(text);
- utterance.lang="fr-FR";
- utterance.rate=1;
- utterance.pitch=1;
-
- const voices=speechSynthesis.getVoices();
- const frenchVoice=voices.find(voice=>
-  voice.lang?.toLowerCase().startsWith("fr")
- );
-
- if(frenchVoice)utterance.voice=frenchVoice;
-
- utterance.onstart=()=>{
-  $("tts-state").textContent="Lecture en cours.";
- };
-
- utterance.onend=()=>{
-  $("tts-state").textContent="Lecture terminée.";
- };
-
- utterance.onerror=()=>{
-  $("tts-state").textContent="Erreur de synthèse vocale.";
- };
-
+ const utterance=new SpeechSynthesisUtterance(texte);
+ utterance.lang="fr-FR";utterance.rate=1;utterance.pitch=1;
+ const nom=document.getElementById("voice-select").value||voixChoisie;
+ const voix=speechSynthesis.getVoices().find(v=>v.name===nom)
+  ||speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().startsWith("fr"));
+ if(voix)utterance.voice=voix;
  speechSynthesis.speak(utterance);
 }
-
-$("speak-btn").addEventListener("click",()=>{
- speak($("speak-text").value.trim());
-});
-
-$("stop-speak").addEventListener("click",()=>{
- if("speechSynthesis"in window){
-  speechSynthesis.cancel();
- }
- $("tts-state").textContent="Lecture arrêtée.";
-});
-
-/* =========================
-   RECONNAISSANCE VOCALE
-========================= */
-
-function startRecognition(target){
- const SpeechRecognition=
-  window.SpeechRecognition||window.webkitSpeechRecognition;
-
- if(!SpeechRecognition){
-  $("stt-state").textContent=
-   "Reconnaissance indisponible dans ce navigateur. Utilisez la saisie texte ou un navigateur compatible.";
-  toast("Reconnaissance vocale non prise en charge ici.");
+function testerVoix(){parler("Système Stark opérationnel. Comment puis-je vous assister, Monsieur ?");}
+function basculerVocal(){
+ if(vocalActif){arreterVocal();return;}
+ demarrerVocal();
+}
+function demarrerVocal(){
+ const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Recognition){
+  document.getElementById("voice-status").textContent="RECONNAISSANCE NON DISPONIBLE";
+  document.getElementById("voice-detail").textContent="Utilisez un navigateur compatible, par exemple Chrome.";
   return;
  }
-
- try{
-  if(recognition){
-   recognition.stop();
-  }
-
-  recognition=new SpeechRecognition();
-  recognition.lang="fr-FR";
-  recognition.continuous=false;
-  recognition.interimResults=true;
-
-  recognition.onresult=event=>{
-   let finalText="";
-
-   for(let i=event.resultIndex;i<event.results.length;i++){
-    finalText+=event.results[i][0].transcript;
-   }
-
-   if(target){
-    $(target).value=finalText;
-   }
-  };
-
-  recognition.onerror=event=>{
-   $("stt-state").textContent="Erreur micro : "+event.error;
-  };
-
-  recognition.onend=()=>{
-   $("stt-state").textContent="Micro désactivé.";
-  };
-
-  recognition.start();
-  $("stt-state").textContent="Écoute en cours…";
-
- }catch(error){
-  $("stt-state").textContent="Impossible de démarrer : "+error.message;
- }
-}
-
-$("listen-btn").addEventListener("click",()=>{
- startRecognition("speech-result");
-});
-
-$("chat-mic").addEventListener("click",()=>{
- startRecognition("chat-input");
-});
-
-$("stop-listen").addEventListener("click",()=>{
- if(recognition)recognition.stop();
-});
-
-$("send-recognized").addEventListener("click",()=>{
- const value=$("speech-result").value.trim();
-
- if(value){
-  go("chat");
-  $("chat-input").value=value;
-  sendChat();
- }
-});
-
-/* =========================
-   CAMÉRA
-========================= */
-
-$("camera-start").addEventListener("click",async()=>{
- if(!navigator.mediaDevices?.getUserMedia){
-  $("camera-state").textContent=
-   "Caméra non prise en charge ou page non sécurisée (HTTPS requis).";
-  return;
- }
-
- try{
-  mediaStream=await navigator.mediaDevices.getUserMedia({
-   video:{facingMode:"user"},
-   audio:false
-  });
-
-  $("camera-video").srcObject=mediaStream;
-  $("camera-state").textContent=
-   "Caméra active. Le flux reste dans cette page.";
-
-  toast("Caméra activée.");
-
- }catch(error){
-  $("camera-state").textContent=
-   "Accès refusé ou indisponible : "+error.message;
- }
-});
-
-function stopCamera(){
- if(mediaStream){
-  mediaStream.getTracks().forEach(track=>track.stop());
- }
-
- mediaStream=null;
- $("camera-video").srcObject=null;
- $("camera-state").textContent="Caméra arrêtée.";
-}
-
-$("camera-stop").addEventListener("click",stopCamera);
-window.addEventListener("pagehide",stopCamera);
-
-/* =========================
-   CONVERTISSEUR MORSE
-========================= */
-
-const MORSE={
- A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",
- G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",
- M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",
- S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",
- Y:"-.--",Z:"--..",
- 0:"-----",1:".----",2:"..---",3:"...--",4:"....-",
- 5:".....",6:"-....",7:"--...",8:"---..",9:"----."
-};
-
-const REVERSE_MORSE=Object.fromEntries(
- Object.entries(MORSE).map(([letter,code])=>[code,letter])
-);
-
-$("to-morse").addEventListener("click",()=>{
- const text=$("morse-input").value
-  .toUpperCase()
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g,"");
-
- $("morse-output").value=text
-  .split(/\s+/)
-  .map(word=>
-   [...word]
-    .map(character=>MORSE[character]||"")
-    .filter(Boolean)
-    .join(" ")
-  )
-  .join(" / ");
-});
-
-$("from-morse").addEventListener("click",()=>{
- $("morse-output").value=$("morse-input").value
-  .trim()
-  .split(/\s*\/\s*/)
-  .map(word=>
-   word.trim().split(/\s+/)
-    .map(code=>REVERSE_MORSE[code]||"?")
-    .join("")
-  )
-  .join(" ");
-});
-
-$("copy-morse").addEventListener("click",async()=>{
- try{
-  await navigator.clipboard.writeText($("morse-output").value);
-  toast("Résultat copié.");
- }catch{
-  toast("Copie impossible dans ce navigateur.");
- }
-});
-
-/* =========================
-   DIAGNOSTIC
-========================= */
-
-$("run-diagnostic").addEventListener("click",()=>{
- const checks=[
-  [
-   "Connexion sécurisée",
-   location.protocol==="https:"||location.hostname==="localhost"
-    ?"OK":"HTTPS recommandé"
-  ],
-  [
-   "Stockage local",
-   (()=>{
-    try{
-     localStorage.setItem("__jtest","1");
-     localStorage.removeItem("__jtest");
-     return "OK";
-    }catch{
-     return "Indisponible";
-    }
-   })()
-  ],
-  [
-   "Synthèse vocale",
-   "speechSynthesis"in window?"Disponible":"Non prise en charge"
-  ],
-  [
-   "Reconnaissance vocale",
-   window.SpeechRecognition||window.webkitSpeechRecognition
-    ?"Disponible":"Non prise en charge"
-  ],
-  [
-   "Caméra",
-   navigator.mediaDevices?.getUserMedia
-    ?"API disponible":"Indisponible"
-  ],
-  [
-   "Backend",
-   "/api/chat et /api/config à vérifier"
-  ]
- ];
-
- const box=$("diagnostic-results");
- box.replaceChildren();
-
- checks.forEach(([name,status])=>{
-  const element=document.createElement("div");
-  element.className="item";
-
-  const label=document.createElement("span");
-  label.textContent=name;
-
-  const result=document.createElement("span");
-  result.className="tag";
-  result.textContent=status;
-
-  element.append(label,result);
-  box.append(element);
- });
-});
-
-/* =========================
-   PARAMÈTRES
-========================= */
-
-$("personality").value=settings.personality||"stark";
-
-$("personality").addEventListener("change",event=>{
- settings.personality=event.target.value;
- safeSave(KEYS.settings,settings);
- toast("Personnalité mise à jour.");
-});
-
-$("export-data").addEventListener("click",()=>{
- const data={
-  tasks,
-  memories,
-  settings,
-  exportedAt:new Date().toISOString()
+ reconnaissance=new Recognition();
+ reconnaissance.lang="fr-FR";
+ reconnaissance.continuous=false;
+ reconnaissance.interimResults=false;
+ reconnaissance.onstart=()=>{
+  vocalActif=true;
+  document.getElementById("voice-status").textContent="MICROPHONE ACTIF";
+  document.getElementById("voice-detail").textContent="Je vous écoute, Monsieur.";
+  document.getElementById("voice-orb").classList.add("listening");
+  document.getElementById("quick-vocal").textContent="ON";
  };
-
- const blob=new Blob(
-  [JSON.stringify(data,null,2)],
-  {type:"application/json"}
- );
-
- const url=URL.createObjectURL(blob);
- const link=document.createElement("a");
-
- link.href=url;
- link.download="jarvis-stark-backup.json";
- link.click();
-
- URL.revokeObjectURL(url);
-});
-
-$("clear-data").addEventListener("click",()=>{
- if(!confirm("Effacer toutes les tâches et tous les souvenirs enregistrés sur cet appareil ? Cette action est irréversible.")){
-  return;
- }
-
- tasks=[];
- memories=[];
-
- safeSave(KEYS.tasks,tasks);
- safeSave(KEYS.memory,memories);
-
- renderTasks();
- renderMemories();
- updateStats();
-
- toast("Mémoire locale effacée.");
-});
-
-/* =========================
-   CODE PIN
-========================= */
-
-$("save-pin").addEventListener("click",()=>{
- const pin=$("pin-input").value.trim();
-
- if(!/^\d{4,12}$/.test(pin)){
-  toast("Le code doit contenir 4 à 12 chiffres.");
-  return;
- }
-
- localStorage.setItem(KEYS.pin,pin);
- $("pin-input").value="";
- toast("Code enregistré sur cet appareil.");
-});
-
-$("lock-btn").addEventListener("click",()=>{
- if(!localStorage.getItem(KEYS.pin)){
-  toast("Définissez d'abord un code PIN dans Paramètres.");
-  go("settings");
-  return;
- }
-
- $("lock-screen").classList.remove("hidden");
- $("unlock-pin").value="";
- $("unlock-error").textContent="";
-});
-
-$("unlock-btn").addEventListener("click",()=>{
- if($("unlock-pin").value===localStorage.getItem(KEYS.pin)){
-  $("lock-screen").classList.add("hidden");
- }else{
-  $("unlock-error").textContent="Code incorrect.";
- }
-});
-
-$("unlock-pin").addEventListener("keydown",event=>{
- if(event.key==="Enter"){
-  $("unlock-btn").click();
- }
-});
-
-/* =========================
-   ARRÊT PROPRE
-========================= */
-
+ reconnaissance.onresult=e=>{
+  const phrase=e.results[e.results.length-1][0].transcript;
+  document.getElementById("chat-input").value=phrase;
+  navV10("chat");
+  envoyer();
+ };
+ reconnaissance.onerror=e=>{
+  document.getElementById("voice-detail").textContent="Erreur vocale : "+e.error;
+ };
+ reconnaissance.onend=()=>{
+  if(vocalActif){
+   if(document.getElementById("voice-auto").checked){
+    setTimeout(()=>{if(vocalActif)try{reconnaissance.start()}catch{}},700);
+   }else arreterVocal();
+  }
+ };
+ try{reconnaissance.start();vocalActif=true;}
+ catch{document.getElementById("voice-detail").textContent="Impossible de démarrer le microphone.";}
+}
+function arreterVocal(){
+ vocalActif=false;
+ if(reconnaissance){try{reconnaissance.stop()}catch{}}
+ reconnaissance=null;
+ document.getElementById("voice-status").textContent="CANAL VOCAL DÉSACTIVÉ";
+ document.getElementById("voice-detail").textContent="Microphone arrêté.";
+ document.getElementById("voice-orb").classList.remove("listening");
+ document.getElementById("quick-vocal").textContent="OFF";
+}
 window.addEventListener("beforeunload",()=>{
- if(recognition)recognition.stop();
- stopCamera();
+ arreterVocal();arreterCamera();
 });
 
+/* =========================================================
+   TÂCHES ET RAPPELS
+========================================================= */
+function ajouterTache(){
+ const champ=document.getElementById("task-input");
+ const texte=nettoyerTexte(champ.value);
+ if(!texte)return;
+ taches.push({id:Date.now(),texte,fait:false});
+ champ.value="";ecrireStockage(CLE.tasks,taches);afficherTaches();
+ journaliser("Nouvelle tâche ajoutée");
+}
+function basculerTache(id){
+ const t=taches.find(x=>x.id===id);
+ if(t)t.fait=!t.fait;
+ ecrireStockage(CLE.tasks,taches);afficherTaches();
+}
+function supprimerTache(id){
+ taches=taches.filter(x=>x.id!==id);
+ ecrireStockage(CLE.tasks,taches);afficherTaches();
+}
+function afficherTaches(){
+ const zone=document.getElementById("task-list");
+ zone.innerHTML=taches.map(t=>
+ `<div class="task-row"><input type="checkbox" style="width:auto" ${t.fait?"checked":""} onchange="basculerTache(${t.id})">
+ <span style="${t.fait?"text-decoration:line-through;color:var(--muted)":""}">${echapperHTML(t.texte)}</span>
+ <button class="small-btn" onclick="supprimerTache(${t.id})">✕</button></div>`
+ ).join("")||'<p class="muted">Aucune tâche pour le moment.</p>';
+}
+function ajouterRappel(){
+ const texte=nettoyerTexte(document.getElementById("reminder-text").value);
+ const date=document.getElementById("reminder-time").value;
+ if(!texte||!date)return;
+ rappels.push({id:Date.now(),texte,date,fait:false});
+ ecrireStockage(CLE.reminders,rappels);
+ document.getElementById("reminder-text").value="";
+ afficherRappels();journaliser("Rappel créé");
+}
+function supprimerRappel(id){
+ rappels=rappels.filter(x=>x.id!==id);
+ ecrireStockage(CLE.reminders,rappels);afficherRappels();
+}
+function afficherRappels(){
+ document.getElementById("reminder-list").innerHTML=rappels.map(r=>
+ `<div class="task-row"><span>${echapperHTML(r.texte)}<br><small class="muted">${new Date(r.date).toLocaleString("fr-FR")}</small></span>
+ <button class="small-btn" onclick="supprimerRappel(${r.id})">✕</button></div>`
+ ).join("")||'<p class="muted">Aucun rappel programmé.</p>';
+}
+function verifierRappels(){
+ const maintenant=Date.now();
+ rappels.forEach(r=>{
+  if(!r.fait&&new Date(r.date).getTime()<=maintenant){
+   r.fait=true;
+   if("Notification" in window&&Notification.permission==="granted")
+    new Notification("J.A.R.V.I.S — Rappel",{body:r.texte});
+   else alert("Rappel J.A.R.V.I.S : "+r.texte);
+   parler("Monsieur, rappel : "+r.texte);
+  }
+ });
+ ecrireStockage(CLE.reminders,rappels);
+}
+setInterval(verifierRappels,15000);
+
+/* =========================================================
+   MÉMOIRE PERSONNELLE
+========================================================= */
+function ajouterMemoire(){
+ const champ=document.getElementById("memory-input");
+ const texte=nettoyerTexte(champ.value);
+ if(!texte)return;
+ souvenirs.unshift({id:Date.now(),texte,date:new Date().toLocaleString("fr-FR")});
+ champ.value="";
+ ecrireStockage(CLE.memory,souvenirs);
+ afficherMemoire();dessinerMemoire();journaliser("Information mémorisée");
+}
+function afficherMemoire(){
+ const zone=document.getElementById("memory-list");
+ if(!zone)return;
+ const filtre=(document.getElementById("memory-search")?.value||"").toLowerCase();
+ const visibles=souvenirs.filter(s=>s.texte.toLowerCase().includes(filtre));
+ zone.innerHTML=visibles.map(s=>
+ `<div class="memory-row"><span>${echapperHTML(s.texte)}<br><small class="muted">${echapperHTML(s.date||"")}</small></span>
+ <button class="small-btn" onclick="supprimerMemoire(${s.id})">✕</button></div>`
+ ).join("")||'<p class="muted">Aucun souvenir correspondant.</p>';
+}
+function supprimerMemoire(id){
+ souvenirs=souvenirs.filter(s=>s.id!==id);
+ ecrireStockage(CLE.memory,souvenirs);afficherMemoire();dessinerMemoire();
+}
+function viderMemoire(){
+ if(!confirm("Voulez-vous vraiment effacer toute la mémoire locale ?"))return;
+ souvenirs=[];ecrireStockage(CLE.memory,souvenirs);
+ afficherMemoire();dessinerMemoire();
+}
+function dessinerMemoire(){
+ const canvas=document.getElementById("memory-canvas");
+ if(!canvas)return;
+ const ctx=canvas.getContext("2d");
+ const w=canvas.width=canvas.clientWidth*devicePixelRatio;
+ const h=canvas.height=canvas.clientHeight*devicePixelRatio;
+ ctx.scale(devicePixelRatio,devicePixelRatio);
+ ctx.clearRect(0,0,w,h);
+ const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2;
+ ctx.strokeStyle="#00d9ff55";ctx.lineWidth=1;
+ ctx.beginPath();ctx.arc(cx,cy,35,0,Math.PI*2);ctx.stroke();
+ ctx.fillStyle="#00d9ff";ctx.font="bold 12px Arial";ctx.textAlign="center";
+ ctx.fillText("STARK MEMORY",cx,cy+4);
+ const total=Math.min(souvenirs.length,40);
+ for(let i=0;i<total;i++){
+  const a=i*Math.PI*2/Math.max(total,1);
+  const r=65+(i%3)*30;
+  const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+  ctx.strokeStyle="#1676ff66";ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
+  ctx.fillStyle=i%2?"#00d9ff":"#1676ff";
+  ctx.beginPath();ctx.arc(x,y,4+(i%3),0,Math.PI*2);ctx.fill();
+ }
+}
+window.addEventListener("resize",dessinerMemoire);
+
+/* =========================================================
+   MÉTÉO ET RECHERCHE
+========================================================= */
+function obtenirMeteo(){
+ const sortie=document.getElementById("weather-result");
+ if(!navigator.geolocation){sortie.textContent="Géolocalisation indisponible.";return;}
+ sortie.textContent="Demande de position en cours…";
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  try{
+   const lat=pos.coords.latitude,lon=pos.coords.longitude;
+   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`;
+   const r=await fetch(url);if(!r.ok)throw Error();
+   const d=await r.json(),c=d.current;
+   sortie.textContent=`Température : ${c.temperature_2m} °C • Humidité : ${c.relative_humidity_2m}% • Vent : ${c.wind_speed_10m} km/h`;
+  }catch{sortie.textContent="Impossible de récupérer la météo.";}
+ },()=>sortie.textContent="Autorisation de localisation refusée.");
+}
+function rechercherWeb(){
+ const q=document.getElementById("web-search").value.trim();
+ if(!q)return;
+ window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank","noopener,noreferrer");
+ journaliser("Recherche web : "+q);
+}
+
+/* =========================================================
+   MORSE
+========================================================= */
+const MORSE={
+ A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",
+ J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",
+ S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+ "0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....",
+ "6":"-....","7":"--...","8":"---..","9":"----."
+};
+function traduireMorse(){
+ const texte=document.getElementById("morse-input").value.trim().toUpperCase();
+ const sortie=document.getElementById("morse-result");
+ if(!texte)return;
+ if(/^[.\-/\s]+$/.test(texte)){
+  const inverse=Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
+  sortie.textContent=texte.split(" / ").map(m=>m.split(" ").map(c=>inverse[c]||"").join("")).join(" ");
+ }else{
+  sortie.textContent=texte.split("").map(c=>c===" "?"/":MORSE[c]||"").join(" ");
+ }
+}
+
+/* =========================================================
+   LECTEUR DE DOCUMENTS
+========================================================= */
+function lireDocument(){
+ const fichier=document.getElementById("document-file").files[0];
+ const sortie=document.getElementById("document-result");
+ if(!fichier){sortie.textContent="Sélectionnez un fichier.";return;}
+ if(fichier.size>1024*1024){sortie.textContent="Fichier trop volumineux : limite de 1 Mo.";return;}
+ const lecteur=new FileReader();
+ lecteur.onload=()=>sortie.textContent=String(lecteur.result).slice(0,15000);
+ lecteur.onerror=()=>sortie.textContent="Lecture impossible.";
+ lecteur.readAsText(fichier);
+}
+
+/* =========================================================
+   CAMÉRA — ACTIVATION MANUELLE UNIQUEMENT
+========================================================= */
+async function demarrerCamera(){
+ const video=document.getElementById("camera-preview");
+ const statut=document.getElementById("camera-status");
+ if(!navigator.mediaDevices?.getUserMedia){statut.textContent="Caméra non disponible.";return;}
+ try{
+  fluxCamera=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+  video.srcObject=fluxCamera;
+  statut.textContent="CAMÉRA ACTIVE — FLUX LOCAL";
+  journaliser("Caméra activée manuellement");
+ }catch(e){statut.textContent="Accès caméra refusé ou indisponible.";}
+}
+function arreterCamera(){
+ if(fluxCamera){fluxCamera.getTracks().forEach(t=>t.stop());fluxCamera=null;}
+ const video=document.getElementById("camera-preview");
+ if(video)video.srcObject=null;
+ const statut=document.getElementById("camera-status");
+ if(statut)statut.textContent="CAMÉRA INACTIVE";
+}
+function prendrePhoto(){
+ const video=document.getElementById("camera-preview");
+ if(!fluxCamera||!video.videoWidth){alert("Démarrez d'abord la caméra.");return;}
+ const canvas=document.getElementById("photo-canvas");
+ canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+ canvas.getContext("2d").drawImage(video,0,0);
+ document.getElementById("photo-result").src=canvas.toDataURL("image/png");
+ journaliser("Photo capturée à la demande");
+}
+
+/* =========================================================
+   GÉOLOCALISATION
+========================================================= */
+function obtenirPosition(){
+ const sortie=document.getElementById("position-result");
+ const lien=document.getElementById("map-link");
+ if(!navigator.geolocation){sortie.textContent="Géolocalisation indisponible.";return;}
+ sortie.textContent="Recherche de votre position…";
+ navigator.geolocation.getCurrentPosition(pos=>{
+  const lat=pos.coords.latitude.toFixed(6);
+  const lon=pos.coords.longitude.toFixed(6);
+  sortie.textContent=`Latitude : ${lat} • Longitude : ${lon}`;
+  lien.innerHTML=`<a style="color:var(--cyan)" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}">OUVRIR LA CARTE</a>`;
+ },()=>sortie.textContent="Position non accessible. Vérifiez les autorisations.");
+}
+
+/* =========================================================
+   PARAMÈTRES ET TEST OLLAMA
+========================================================= */
+function chargerParametres(){
+ const p=lireStockage(CLE.settings,{});
+ document.getElementById("personality").value=p.personnalite||"stark";
+ document.getElementById("auto-memory").checked=p.autoMemoire===true;
+ if(p.voix)document.getElementById("voice-select").value=p.voix;
+ if(p.modele)document.getElementById("ollama-model").value=p.modele;
+}
+function sauverParametres(){
+ const p={
+  personnalite:document.getElementById("personality").value,
+  voix:document.getElementById("voice-select").value,
+  autoMemoire:document.getElementById("auto-memory").checked,
+  modele:document.getElementById("ollama-model").value.trim()
+ };
+ ecrireStockage(CLE.settings,p);
+ alert("Paramètres enregistrés localement, Monsieur.");
+ journaliser("Paramètres modifiés");
+}
+async function testerOllama(){
+ const sortie=document.getElementById("ollama-status");
+ sortie.textContent="Connexion en cours…";
+ try{
+  const modele=document.getElementById("ollama-model").value.trim()||"qwen2.5:1.5b";
+  const r=await fetch("http://localhost:11434/api/tags");
+  if(!r.ok)throw Error();
+  const data=await r.json();
+  const trouve=data.models?.some(m=>m.name===modele||m.name.startsWith(modele+":"));
+  if(!trouve)throw Error("Modèle non installé : "+modele);
+  ollamaDisponible=true;
+  sortie.textContent="OLLAMA CONNECTÉ • "+modele;
+  document.getElementById("connection-ollama").textContent="CONNECTÉ";
+ }catch(e){
+  ollamaDisponible=false;
+  sortie.textContent="Connexion impossible. Vérifiez qu'Ollama fonctionne et que le modèle est installé.";
+  document.getElementById("connection-ollama").textContent="INDISPONIBLE";
+ }
+}
+/* =========================================================
+   RÉACTEUR STARK 3D
+========================================================= */
+(function initialiserReacteur(){
+ const canvas=document.getElementById("reactor-canvas");
+ if(!canvas)return;
+
+ if(typeof THREE==="undefined"){
+  const ctx=canvas.getContext("2d");
+  function dessinSecours(){
+   const w=canvas.width=canvas.clientWidth*devicePixelRatio;
+   const h=canvas.height=canvas.clientHeight*devicePixelRatio;
+   ctx.clearRect(0,0,w,h);
+   ctx.strokeStyle="#00d9ff";ctx.lineWidth=3;
+   ctx.beginPath();ctx.arc(w/2,h/2,Math.min(w,h)*.3,0,Math.PI*2);ctx.stroke();
+  }
+  dessinSecours();window.addEventListener("resize",dessinSecours);return;
+ }
+
+ const scene=new THREE.Scene();
+ const camera=new THREE.PerspectiveCamera(45,1,.1,100);
+ camera.position.z=6;
+ const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+
+ const groupe=new THREE.Group();
+ scene.add(groupe);
+
+ const anneau=new THREE.Mesh(
+  new THREE.TorusGeometry(1.45,.045,12,120),
+  new THREE.MeshBasicMaterial({color:0x00cfff})
+ );
+ groupe.add(anneau);
+
+ const anneau2=new THREE.Mesh(
+  new THREE.TorusGeometry(1.12,.025,8,100),
+  new THREE.MeshBasicMaterial({color:0x1676ff})
+ );
+ anneau2.rotation.x=Math.PI/2.5;
+ groupe.add(anneau2);
+
+ const noyau=new THREE.Mesh(
+  new THREE.IcosahedronGeometry(.72,2),
+  new THREE.MeshBasicMaterial({color:0x42dfff,wireframe:true})
+ );
+ groupe.add(noyau);
+
+ const lumiere=new THREE.PointLight(0x00cfff,2,10);
+ scene.add(lumiere);
+
+ const etoiles=new THREE.Group();
+ for(let i=0;i<90;i++){
+  const point=new THREE.Mesh(
+   new THREE.SphereGeometry(.012,5,5),
+   new THREE.MeshBasicMaterial({color:0x4aaaff})
+  );
+  point.position.set((Math.random()-.5)*5,(Math.random()-.5)*5,(Math.random()-.5)*2);
+  etoiles.add(point);
+ }
+ scene.add(etoiles);
+
+ function redimensionner(){
+  const w=canvas.clientWidth||300,h=canvas.clientHeight||300;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+ }
+ window.addEventListener("resize",redimensionner);
+ redimensionner();
+
+ let angle=0;
+ function animerReacteur(){
+  requestAnimationFrame(animerReacteur);
+  angle+=.006;
+  anneau.rotation.z=angle;
+  anneau2.rotation.y=-angle*.7;
+  noyau.rotation.x=angle*.6;
+  noyau.rotation.y=angle;
+  groupe.rotation.y=Math.sin(angle*.5)*.12;
+  renderer.render(scene,camera);
+ }
+ animerReacteur();
+})();
+
+/* =========================================================
+   VERROUILLAGE LOCAL PAR CODE PIN
+========================================================= */
+async function hacherPIN(pin){
+ const donnees=new TextEncoder().encode(pin);
+ const hash=await crypto.subtle.digest("SHA-256",donnees);
+ return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function validerPIN(){
+ const champ=document.getElementById("pin-input");
+ const pin=champ.value.trim();
+ if(!/^\d{6}$/.test(pin)){
+  alert("Le code doit contenir exactement 6 chiffres.");
+  return;
+ }
+ const sauvegarde=localStorage.getItem(CLE.pin);
+ if(!sauvegarde){
+  const confirmation=confirm("Créer ce code PIN pour protéger l'accès à J.A.R.V.I.S ?");
+  if(!confirmation)return;
+  localStorage.setItem(CLE.pin,await hacherPIN(pin));
+  document.getElementById("lock-screen").style.display="none";
+  champ.value="";
+  journaliser("Code PIN local créé");
+  return;
+ }
+ if(await hacherPIN(pin)===sauvegarde){
+  document.getElementById("lock-screen").style.display="none";
+  champ.value="";
+ }else{
+  champ.value="";
+  alert("Code incorrect.");
+ }
+}
+function verrouillerApplication(){
+ document.getElementById("lock-description").textContent=
+  localStorage.getItem(CLE.pin)?"Entrez votre code PIN pour continuer.":"Créez un code PIN à 6 chiffres.";
+ document.getElementById("lock-screen").style.display="flex";
+ document.getElementById("pin-input").value="";
+}
+function verifierVerrouillage(){
+ if(!localStorage.getItem(CLE.pin)){
+  document.getElementById("lock-description").textContent="Créez votre code PIN local à 6 chiffres.";
+  document.getElementById("lock-screen").style.display="flex";
+ }else{
+  document.getElementById("lock-description").textContent="Entrez votre code PIN pour continuer.";
+  document.getElementById("lock-screen").style.display="flex";
+ }
+}
+
+/* =========================================================
+   CHARGEMENT DES DONNÉES ET INITIALISATION
+========================================================= */
+function initialiserDonnees(){
+ taches=lireStockage(CLE.tasks,[]);
+ rappels=lireStockage(CLE.reminders,[]);
+ souvenirs=lireStockage(CLE.memory,[]);
+ historique=lireStockage(CLE.chat,[]);
+ journal=lireStockage(CLE.log,[]);
+
+ afficherTaches();
+ afficherRappels();
+ afficherMemoire();
+ afficherJournal();
+ chargerParametres();
+ dessinerMemoire();
+
+ if(historique.length){
+  const zone=document.getElementById("chat-log");
+  zone.innerHTML="";
+  historique.slice(-20).forEach(m=>{
+   if(m.role==="user"||m.role==="assistant")
+    ajouterMessage(m.role==="user"?"user":"jarvis",m.content);
+  });
+ }
+}
+
+/* =========================================================
+   RACCOURCIS CLAVIER
+========================================================= */
+document.addEventListener("keydown",e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+  e.preventDefault();
+  navV10("chat");
+  document.getElementById("chat-input").focus();
+ }
+});
+
+/* =========================================================
+   DÉMARRAGE FINAL
+========================================================= */
+initialiserDonnees();
+verifierVerrouillage();
+definirEtat("SYSTÈME PRÊT","var(--green)");
+document.getElementById("home-status").textContent="● SYSTÈME STARK INITIALISÉ";
+journaliser("J.A.R.V.I.S V10.0 initialisé");
+
+console.log("J.A.R.V.I.S V10.0 — STARK SYSTEM ONLINE");
 </script>
 </body>
 </html>
