@@ -2500,7 +2500,7 @@ setInterval(actualiserHorloge,1000);
 
 <!-- =====================================================
      J.A.R.V.I.S V9.2 — STARK CORE
-     MODULE 1 : MÉMOIRE VISUELLE
+     MODULE 1 : MÉMOIRE VISUELLE 3D
 ===================================================== -->
 
 <style>
@@ -2558,6 +2558,7 @@ setInterval(actualiserHorloge,1000);
  border-radius:16px;
  padding:18px;
  box-shadow:0 0 25px #008cff12;
+ min-width:0;
 }
 #v92-memory-canvas{
  display:block;
@@ -2565,8 +2566,10 @@ setInterval(actualiserHorloge,1000);
  height:440px;
  border-radius:12px;
  background:radial-gradient(circle,#0b2740,#020812 75%);
- cursor:crosshair;
+ cursor:grab;
+ touch-action:none;
 }
+#v92-memory-canvas:active{cursor:grabbing}
 .v92-memory-panel h3{
  color:#55baff;
  letter-spacing:1px;
@@ -2600,7 +2603,23 @@ setInterval(actualiserHorloge,1000);
  color:#c5eaff;
  line-height:1.5;
 }
-#v92-memory-count{color:#72caff;font-size:13px}
+#v92-memory-count{
+ color:#72caff;
+ font-size:13px;
+}
+#v92-memory-status{
+ color:#70caff;
+ font-size:12px;
+ margin-top:10px;
+}
+.v92-memory-switch{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ margin-top:12px;
+ color:#a8dfff;
+ font-size:13px;
+}
 @media(max-width:750px){
  #v92-memory-page{padding:13px}
  .v92-memory-layout{grid-template-columns:1fr}
@@ -2625,10 +2644,11 @@ setInterval(actualiserHorloge,1000);
 
  <div class="v92-memory-layout">
   <div class="v92-memory-panel">
-   <h3>NOYAU MÉMORIEL</h3>
+   <h3>NOYAU MÉMORIEL 3D</h3>
    <canvas id="v92-memory-canvas"></canvas>
    <p id="v92-memory-count">Initialisation de la mémoire...</p>
-   <small>Sélectionnez une particule pour consulter un souvenir.</small>
+   <small>Faites glisser pour tourner la sphère. Cliquez sur une particule pour consulter un souvenir. Utilisez la molette pour zoomer.</small>
+   <div id="v92-memory-status">INITIALISATION DU STARK CORE...</div>
   </div>
 
   <div class="v92-memory-panel">
@@ -2637,12 +2657,17 @@ setInterval(actualiserHorloge,1000);
     Aucun souvenir sélectionné.
    </div>
 
+   <button class="v92-memory-action" id="v92-memory-delete">
+    SUPPRIMER CE SOUVENIR
+   </button>
+
    <hr style="border-color:#168bd455;margin:18px 0">
 
    <h3>AJOUTER UN SOUVENIR</h3>
    <input class="v92-memory-input"
           id="v92-memory-name"
-          placeholder="Titre du souvenir">
+          placeholder="Titre du souvenir"
+          maxlength="100">
 
    <textarea class="v92-memory-input"
              id="v92-memory-content"
@@ -2661,9 +2686,581 @@ setInterval(actualiserHorloge,1000);
    <button class="v92-memory-action" id="v92-memory-reset">
     AFFICHER TOUT
    </button>
+
+   <label class="v92-memory-switch">
+    <input type="checkbox" id="v92-memory-auto" checked>
+    MÉMORISATION AUTOMATIQUE DES CONVERSATIONS
+   </label>
   </div>
  </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+(function(){
+
+"use strict";
+
+const CLE_MEMOIRE_3D = "jarvis_visual_memory_v1";
+const CLE_AUTO = "jarvis_auto_memory_enabled";
+
+const $ = id => document.getElementById(id);
+
+const page = $("v92-memory-page");
+const canvas = $("v92-memory-canvas");
+const detail = $("v92-memory-detail");
+const compteur = $("v92-memory-count");
+const status = $("v92-memory-status");
+
+let souvenirs = [];
+let souvenirsAffiches = [];
+let souvenirSelectionne = null;
+
+let scene = null;
+let camera = null;
+let renderer = null;
+let groupe = null;
+let particules = [];
+let animationId = null;
+
+let rotationX = 0;
+let rotationY = 0;
+let zoom = 1;
+
+let dragging = false;
+let moved = false;
+let lastX = 0;
+let lastY = 0;
+
+let raycaster = null;
+let mouse = null;
+
+function lireJSON(cle, defaut){
+ try{
+  const valeur = localStorage.getItem(cle);
+  return valeur ? JSON.parse(valeur) : defaut;
+ }catch(e){
+  return defaut;
+ }
+}
+
+function sauvegarder(){
+ try{
+  localStorage.setItem(CLE_MEMOIRE_3D, JSON.stringify(souvenirs));
+  actualiserCompteur();
+ }catch(e){
+  status.textContent = "ERREUR : STOCKAGE LOCAL INDISPONIBLE";
+ }
+}
+
+function actualiserCompteur(){
+ compteur.textContent =
+  souvenirs.length + " souvenir(s) enregistré(s)";
+}
+
+function creerSouvenir(titre, contenu, categorie="conversation"){
+ const souvenir = {
+  id: "memory_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+  titre: String(titre).slice(0,100),
+  contenu: String(contenu).slice(0,5000),
+  categorie,
+  date: new Date().toLocaleString("fr-FR")
+ };
+
+ souvenirs.unshift(souvenir);
+
+ // Limite de sécurité pour éviter de remplir le stockage du navigateur.
+ souvenirs = souvenirs.slice(0,300);
+
+ sauvegarder();
+ reconstruireSpheres();
+
+ return souvenir;
+}
+
+function afficherSouvenir(s){
+ if(!s)return;
+
+ souvenirSelectionne = s.id;
+
+ detail.textContent =
+  "TITRE : " + s.titre +
+  "\n\nCATÉGORIE : " + s.categorie +
+  "\nDATE : " + s.date +
+  "\n\nINFORMATIONS :\n" + s.contenu;
+}
+
+function chargerAncienneMemoire(){
+ const ancienne = lireJSON("jarvis_memoire",[]);
+
+ if(!Array.isArray(ancienne))return;
+
+ ancienne.forEach(item=>{
+  if(typeof item === "string"){
+   souvenirs.push({
+    id:"old_"+Math.random().toString(36).slice(2),
+    titre:"Ancien souvenir",
+    contenu:item,
+    categorie:"ancien",
+    date:"Date inconnue"
+   });
+  }else if(item && typeof item === "object"){
+   souvenirs.push({
+    id:item.id || "old_"+Math.random().toString(36).slice(2),
+    titre:String(item.titre || item.title || "Ancien souvenir"),
+    contenu:String(item.contenu || item.content || item.texte || ""),
+    categorie:String(item.categorie || "ancien"),
+    date:String(item.date || "Date inconnue")
+   });
+  }
+ });
+
+}
+
+function ouvrir(){
+ page.classList.add("open");
+
+ if(!renderer){
+  initialiser3D();
+ }else{
+  redimensionner();
+ }
+
+ reconstruireSpheres();
+}
+
+function fermer(){
+ page.classList.remove("open");
+}
+
+$("v92-memory-button").addEventListener("click",ouvrir);
+$("v92-memory-close").addEventListener("click",fermer);
+
+function initialiser3D(){
+
+ if(!window.THREE){
+  status.textContent =
+   "THREE.JS INDISPONIBLE : vérifiez votre connexion Internet.";
+  return;
+ }
+
+ try{
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(
+   55,
+   canvas.clientWidth / canvas.clientHeight,
+   0.1,
+   1000
+  );
+
+  camera.position.z = 7;
+
+  renderer = new THREE.WebGLRenderer({
+   canvas:canvas,
+   alpha:true,
+   antialias:true
+  });
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,2));
+
+  groupe = new THREE.Group();
+  scene.add(groupe);
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
+  const lumiere = new THREE.PointLight(0x36aaff,3,20);
+  lumiere.position.set(3,3,5);
+  scene.add(lumiere);
+
+  const lumiere2 = new THREE.PointLight(0x0066ff,2,20);
+  lumiere2.position.set(-3,-3,-5);
+  scene.add(lumiere2);
+
+  const noyau = new THREE.Mesh(
+   new THREE.SphereGeometry(0.65,32,32),
+   new THREE.MeshBasicMaterial({
+    color:0x087cff,
+    wireframe:true,
+    transparent:true,
+    opacity:0.65
+   })
+  );
+
+  groupe.add(noyau);
+
+  const noyauInterne = new THREE.Mesh(
+   new THREE.SphereGeometry(0.28,32,32),
+   new THREE.MeshBasicMaterial({
+    color:0x65d9ff,
+    transparent:true,
+    opacity:0.35
+   })
+  );
+
+  groupe.add(noyauInterne);
+
+  redimensionner();
+
+  animer3D();
+
+  canvas.addEventListener("pointerdown", debutGlisser);
+  canvas.addEventListener("pointermove", glisser);
+  canvas.addEventListener("pointerup", finGlisser);
+  canvas.addEventListener("pointercancel", finGlisser);
+
+  canvas.addEventListener("wheel",e=>{
+   e.preventDefault();
+   zoom += e.deltaY * -0.001;
+   zoom = Math.max(0.65,Math.min(1.8,zoom));
+   camera.position.z = 7 / zoom;
+  },{passive:false});
+
+  status.textContent = "STARK CORE : OPÉRATIONNEL";
+
+ }catch(e){
+  status.textContent = "ERREUR 3D : " + e.message;
+ }
+}
+
+function redimensionner(){
+ if(!renderer || !camera)return;
+
+ const largeur = Math.max(1,canvas.clientWidth);
+ const hauteur = Math.max(1,canvas.clientHeight);
+
+ renderer.setSize(largeur,hauteur,false);
+ camera.aspect = largeur/hauteur;
+ camera.updateProjectionMatrix();
+}
+
+window.addEventListener("resize",redimensionner);
+
+function animer3D(){
+ if(!renderer)return;
+
+ animationId = requestAnimationFrame(animer3D);
+
+ if(groupe){
+  groupe.rotation.x = rotationX;
+  groupe.rotation.y = rotationY + Date.now()*0.00008;
+ }
+
+ renderer.render(scene,camera);
+}
+
+function debutGlisser(e){
+ dragging = true;
+ moved = false;
+ lastX = e.clientX;
+ lastY = e.clientY;
+ canvas.setPointerCapture(e.pointerId);
+}
+
+function glisser(e){
+ if(!dragging)return;
+
+ const dx = e.clientX-lastX;
+ const dy = e.clientY-lastY;
+
+ if(Math.abs(dx)+Math.abs(dy)>3)moved = true;
+
+ rotationY += dx*0.008;
+ rotationX += dy*0.008;
+
+ lastX = e.clientX;
+ lastY = e.clientY;
+}
+
+function finGlisser(e){
+ if(!dragging)return;
+
+ dragging = false;
+
+ if(!moved){
+  selectionnerParticule(e);
+ }
+}
+
+function couleurCategorie(categorie){
+ const couleurs = {
+  conversation:0x36aaff,
+  personnel:0x00e5ff,
+  projet:0x9b70ff,
+  preference:0x00e6a0,
+  ancien:0xffbd4a
+ };
+
+ return couleurs[categorie] || 0x36aaff;
+}
+
+function reconstruireSpheres(){
+
+ if(!groupe || !window.THREE)return;
+
+ // Supprime tous les anciens objets de la sphère.
+ for(let i=groupe.children.length-1;i>=0;i--){
+  const objet = groupe.children[i];
+
+  if(objet.userData && objet.userData.memoryId){
+   groupe.remove(objet);
+
+   if(objet.geometry)objet.geometry.dispose();
+   if(objet.material)objet.material.dispose();
+  }
+
+  if(objet.userData && objet.userData.decoration){
+   groupe.remove(objet);
+
+   if(objet.geometry)objet.geometry.dispose();
+   if(objet.material)objet.material.dispose();
+  }
+ }
+
+ particules = [];
+ souvenirsAffiches = souvenirs.slice();
+
+ const nombre = souvenirsAffiches.length;
+
+ // Particules décoratives autour du noyau.
+ const positions = [];
+
+ for(let i=0;i<450;i++){
+  const phi = Math.acos(1-2*(i+0.5)/450);
+  const theta = Math.PI*(1+Math.sqrt(5))*i;
+
+  positions.push(
+   2.5*Math.sin(phi)*Math.cos(theta),
+   2.5*Math.cos(phi),
+   2.5*Math.sin(phi)*Math.sin(theta)
+  );
+ }
+
+ const decoGeometry = new THREE.BufferGeometry();
+ decoGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(positions,3)
+ );
+
+ const deco = new THREE.Points(
+  decoGeometry,
+  new THREE.PointsMaterial({
+   color:0x1266a0,
+   size:0.018,
+   transparent:true,
+   opacity:0.65
+  })
+ );
+
+ deco.userData.decoration = true;
+ groupe.add(deco);
+
+ souvenirsAffiches.forEach((s,i)=>{
+
+  const phi = Math.acos(1-2*(i+0.5)/Math.max(nombre,1));
+  const theta = Math.PI*(1+Math.sqrt(5))*i;
+
+  const rayon = 1.65;
+
+  const x = rayon*Math.sin(phi)*Math.cos(theta);
+  const y = rayon*Math.cos(phi);
+  const z = rayon*Math.sin(phi)*Math.sin(theta);
+
+  const geometry = new THREE.SphereGeometry(0.065,12,12);
+
+  const material = new THREE.MeshBasicMaterial({
+   color:couleurCategorie(s.categorie)
+  });
+
+  const particule = new THREE.Mesh(geometry,material);
+
+  particule.position.set(x,y,z);
+  particule.userData.memoryId = s.id;
+
+  groupe.add(particule);
+  particules.push(particule);
+ });
+
+ actualiserCompteur();
+}
+
+function selectionnerParticule(e){
+
+ if(!renderer || !camera || !raycaster)return;
+
+ const rect = canvas.getBoundingClientRect();
+
+ mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
+ mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+
+ raycaster.setFromCamera(mouse,camera);
+
+ const resultats = raycaster.intersectObjects(particules);
+
+ if(resultats.length){
+  const id = resultats[0].object.userData.memoryId;
+  const souvenir = souvenirs.find(s=>s.id===id);
+
+  if(souvenir)afficherSouvenir(souvenir);
+ }
+}
+
+$("v92-memory-add").addEventListener("click",()=>{
+
+ const titre = $("v92-memory-name").value.trim();
+ const contenu = $("v92-memory-content").value.trim();
+
+ if(!titre || !contenu){
+  status.textContent = "Veuillez renseigner un titre et un contenu.";
+  return;
+ }
+
+ const s = creerSouvenir(titre,contenu,"personnel");
+
+ $("v92-memory-name").value = "";
+ $("v92-memory-content").value = "";
+
+ afficherSouvenir(s);
+
+ status.textContent = "SOUVENIR ENREGISTRÉ DANS LE STARK CORE.";
+});
+
+$("v92-memory-delete").addEventListener("click",()=>{
+
+ if(!souvenirSelectionne){
+  status.textContent = "Aucun souvenir sélectionné.";
+  return;
+ }
+
+ souvenirs = souvenirs.filter(s=>s.id!==souvenirSelectionne);
+ souvenirSelectionne = null;
+
+ sauvegarder();
+ reconstruireSpheres();
+
+ detail.textContent = "Souvenir supprimé.";
+
+ status.textContent = "SUPPRESSION EFFECTUÉE.";
+});
+
+$("v92-memory-search").addEventListener("input",e=>{
+
+ const recherche = e.target.value.trim().toLowerCase();
+
+ if(!recherche){
+  souvenirsAffiches = souvenirs.slice();
+  reconstruireSpheres();
+  return;
+ }
+
+ souvenirsAffiches = souvenirs.filter(s=>
+  (s.titre+" "+s.contenu+" "+s.categorie)
+   .toLowerCase()
+   .includes(recherche)
+ );
+
+ // La fonction reconstruit la sphère à partir de la liste filtrée.
+ const listeOriginale = souvenirs;
+ souvenirs = souvenirsAffiches;
+ reconstruireSpheres();
+ souvenirs = listeOriginale;
+
+ compteur.textContent =
+  souvenirsAffiches.length+" résultat(s) trouvé(s)";
+});
+
+$("v92-memory-reset").addEventListener("click",()=>{
+ $("v92-memory-search").value = "";
+ souvenirsAffiches = souvenirs.slice();
+ reconstruireSpheres();
+ status.textContent = "TOUS LES SOUVENIRS SONT AFFICHÉS.";
+});
+
+const autoCheckbox = $("v92-memory-auto");
+
+autoCheckbox.checked =
+ localStorage.getItem(CLE_AUTO) !== "false";
+
+autoCheckbox.addEventListener("change",()=>{
+ localStorage.setItem(
+  CLE_AUTO,
+  autoCheckbox.checked ? "true" : "false"
+ );
+
+ status.textContent = autoCheckbox.checked
+  ? "MÉMORISATION AUTOMATIQUE ACTIVÉE."
+  : "MÉMORISATION AUTOMATIQUE DÉSACTIVÉE.";
+});
+
+function memoriserConversation(question,reponse){
+
+ if(localStorage.getItem(CLE_AUTO)==="false")return;
+ if(!question || !reponse)return;
+
+ const q = String(question).trim();
+ const r = String(reponse).trim();
+
+ if(!q || !r)return;
+
+ creerSouvenir(
+  "Conversation avec J.A.R.V.I.S",
+  "Vous : "+q+"\n\nJ.A.R.V.I.S : "+r,
+  "conversation"
+ );
+}
+
+// Fonction accessible depuis les autres modules.
+window.jarvisV92CaptureConversation = memoriserConversation;
+
+// Connexion au système d'envoi de messages existant.
+const envoyerOriginal = window.envoyer;
+
+if(typeof envoyerOriginal === "function"){
+
+ window.envoyer = async function(){
+
+  const champ = $("chat-input");
+  const question = champ ? champ.value.trim() : "";
+
+  await envoyerOriginal.apply(this,arguments);
+
+  if(!question)return;
+
+  // historique est une variable globale du script principal.
+  const derniersMessages =
+   typeof historique !== "undefined" && Array.isArray(historique)
+    ? historique.slice(-2)
+    : [];
+
+  const reponse = derniersMessages.find(m=>
+   m.role==="assistant" &&
+   typeof m.content==="string"
+  );
+
+  if(reponse){
+   memoriserConversation(question,reponse.content);
+  }
+ };
+}
+
+// Chargement de la mémoire existante.
+souvenirs = lireJSON(CLE_MEMOIRE_3D,[]);
+
+if(!Array.isArray(souvenirs)){
+ souvenirs = [];
+}
+
+chargerAncienneMemoire();
+
+sauvegarder();
+actualiserCompteur();
+
+status.textContent = "MÉMOIRE LOCALE INITIALISÉE.";
+
+})();
+</script>
 
 <script>
 (function(){
