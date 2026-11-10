@@ -3111,8 +3111,11 @@ $("v92-memory-add").addEventListener("click",(e)=>{
 
  e.preventDefault();
 
- const titre = $("v92-memory-name").value.trim();
- const contenu = $("v92-memory-content").value.trim();
+ const titre = document.getElementById("v92-memory-name")?.value?.trim() || "";
+ const contenu = document.getElementById("v92-memory-content")?.value?.trim() || "";
+
+console.log("TITRE :", titre);
+console.log("CONTENU :", contenu);
 
  if(!titre || !contenu){
   status.textContent = "ERREUR : TITRE ET CONTENU OBLIGATOIRES.";
