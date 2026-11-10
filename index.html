@@ -3107,24 +3107,51 @@ function selectionnerParticule(e){
  }
 }
 
-$("v92-memory-add").addEventListener("click",()=>{
+$("v92-memory-add").addEventListener("click",(e)=>{
+
+ e.preventDefault();
 
  const titre = $("v92-memory-name").value.trim();
  const contenu = $("v92-memory-content").value.trim();
 
  if(!titre || !contenu){
-  status.textContent = "Veuillez renseigner un titre et un contenu.";
+  status.textContent = "ERREUR : TITRE ET CONTENU OBLIGATOIRES.";
   return;
  }
 
- const s = creerSouvenir(titre,contenu,"personnel");
+ try{
 
- $("v92-memory-name").value = "";
- $("v92-memory-content").value = "";
+  const souvenir = {
+   id: "memory_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+   titre: titre,
+   contenu: contenu,
+   categorie: "personnel",
+   date: new Date().toLocaleString("fr-FR")
+  };
 
- afficherSouvenir(s);
+  souvenirs.unshift(souvenir);
+  souvenirs = souvenirs.slice(0,300);
 
- status.textContent = "SOUVENIR ENREGISTRÉ DANS LE STARK CORE.";
+  localStorage.setItem(
+   CLE_MEMOIRE_3D,
+   JSON.stringify(souvenirs)
+  );
+
+  actualiserCompteur();
+  reconstruireSpheres();
+  afficherSouvenir(souvenir);
+
+  $("v92-memory-name").value = "";
+  $("v92-memory-content").value = "";
+
+  status.textContent = "SOUVENIR ENREGISTRÉ AVEC SUCCÈS.";
+
+ }catch(erreur){
+
+  status.textContent = "ERREUR DE SAUVEGARDE : " + erreur.message;
+
+ }
+
 });
 
 $("v92-memory-delete").addEventListener("click",()=>{
