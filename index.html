@@ -2497,5 +2497,763 @@ actualiserHorloge();
 setInterval(actualiserHorloge,1000);
 
 </script>
+
+<!-- =====================================================
+     J.A.R.V.I.S V9.2 — STARK CORE
+     MODULE 1 : MÉMOIRE VISUELLE
+===================================================== -->
+
+<style>
+#v92-memory-button{
+ position:fixed;
+ right:18px;
+ bottom:18px;
+ z-index:9998;
+ border:1px solid #28aaff;
+ background:#071a2c;
+ color:#65caff;
+ padding:13px 18px;
+ border-radius:12px;
+ font-weight:700;
+ letter-spacing:1px;
+ box-shadow:0 0 18px #008cff55;
+ cursor:pointer;
+}
+#v92-memory-page{
+ position:fixed;
+ inset:0;
+ z-index:9997;
+ display:none;
+ overflow:auto;
+ padding:24px;
+ color:#d9f2ff;
+ background:radial-gradient(circle at center,#102d48 0%,#06111f 48%,#02060d 100%);
+ font-family:Arial,sans-serif;
+}
+#v92-memory-page.open{display:block}
+.v92-memory-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ flex-wrap:wrap;
+ border-bottom:1px solid #168bd455;
+ padding-bottom:16px;
+}
+.v92-memory-title{
+ color:#66caff;
+ letter-spacing:3px;
+ font-size:22px;
+ font-weight:800;
+}
+.v92-memory-layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);
+ gap:18px;
+ margin-top:20px;
+}
+.v92-memory-panel{
+ background:#071727dd;
+ border:1px solid #168bd455;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 0 25px #008cff12;
+}
+#v92-memory-canvas{
+ display:block;
+ width:100%;
+ height:440px;
+ border-radius:12px;
+ background:radial-gradient(circle,#0b2740,#020812 75%);
+ cursor:crosshair;
+}
+.v92-memory-panel h3{
+ color:#55baff;
+ letter-spacing:1px;
+ font-size:14px;
+}
+.v92-memory-input{
+ box-sizing:border-box;
+ width:100%;
+ padding:12px;
+ margin:7px 0;
+ color:#e7f7ff;
+ background:#020b15;
+ border:1px solid #1c75a8;
+ border-radius:8px;
+ outline:none;
+}
+.v92-memory-action{
+ padding:11px 14px;
+ margin:5px 3px 5px 0;
+ border:1px solid #168bd4;
+ border-radius:8px;
+ background:#092b46;
+ color:#8bd8ff;
+ cursor:pointer;
+}
+.v92-memory-action:hover{background:#10456d}
+#v92-memory-detail{
+ min-height:110px;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ color:#c5eaff;
+ line-height:1.5;
+}
+#v92-memory-count{color:#72caff;font-size:13px}
+@media(max-width:750px){
+ #v92-memory-page{padding:13px}
+ .v92-memory-layout{grid-template-columns:1fr}
+ #v92-memory-canvas{height:330px}
+}
+</style>
+
+<button id="v92-memory-button" type="button">
+ ✧ MÉMOIRE 3D
+</button>
+
+<section id="v92-memory-page">
+ <header class="v92-memory-header">
+  <div>
+   <div class="v92-memory-title">STARK CORE</div>
+   <small>J.A.R.V.I.S // MÉMOIRE VISUELLE</small>
+  </div>
+  <button class="v92-memory-action" id="v92-memory-close">
+   FERMER ✕
+  </button>
+ </header>
+
+ <div class="v92-memory-layout">
+  <div class="v92-memory-panel">
+   <h3>NOYAU MÉMORIEL</h3>
+   <canvas id="v92-memory-canvas"></canvas>
+   <p id="v92-memory-count">Initialisation de la mémoire...</p>
+   <small>Sélectionnez une particule pour consulter un souvenir.</small>
+  </div>
+
+  <div class="v92-memory-panel">
+   <h3>SOUVENIR SÉLECTIONNÉ</h3>
+   <div id="v92-memory-detail">
+    Aucun souvenir sélectionné.
+   </div>
+
+   <hr style="border-color:#168bd455;margin:18px 0">
+
+   <h3>AJOUTER UN SOUVENIR</h3>
+   <input class="v92-memory-input"
+          id="v92-memory-name"
+          placeholder="Titre du souvenir">
+
+   <textarea class="v92-memory-input"
+             id="v92-memory-content"
+             rows="5"
+             placeholder="Informations à mémoriser..."></textarea>
+
+   <button class="v92-memory-action" id="v92-memory-add">
+    + ENREGISTRER
+   </button>
+
+   <h3>RECHERCHER</h3>
+   <input class="v92-memory-input"
+          id="v92-memory-search"
+          placeholder="Rechercher un souvenir...">
+
+   <button class="v92-memory-action" id="v92-memory-reset">
+    AFFICHER TOUT
+   </button>
+  </div>
+ </div>
+</section>
+
+<script>
+(function(){
+ "use strict";
+
+ const STORAGE_KEY="jarvis_visual_memory_v1";
+
+ const page=document.getElementById("v92-memory-page");
+ const canvas=document.getElementById("v92-memory-canvas");
+ const ctx=canvas.getContext("2d");
+
+ const detail=document.getElementById("v92-memory-detail");
+ const count=document.getElementById("v92-memory-count");
+
+ let memories=[];
+ let visibleMemories=[];
+ let particles=[];
+ let selected=-1;
+ let angle=0;
+ let animationFrame=null;
+
+ try{
+  memories=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+  if(!Array.isArray(memories)) memories=[];
+ }catch(e){
+  memories=[];
+ }
+
+ visibleMemories=memories.slice();
+
+ function save(){
+  try{
+   localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));
+  }catch(e){
+   alert("Impossible d'enregistrer ce souvenir dans le stockage du navigateur.");
+  }
+ }
+
+ function createParticle(index){
+  const phi=Math.acos(2*Math.random()-1);
+  const theta=Math.random()*Math.PI*2;
+  const radius=0.75+Math.random()*0.25;
+
+  return {
+   index,
+   x:Math.sin(phi)*Math.cos(theta)*radius,
+   y:Math.cos(phi)*radius,
+   z:Math.sin(phi)*Math.sin(theta)*radius,
+   size:2+Math.random()*2
+  };
+ }
+
+ function rebuild(){
+  particles=visibleMemories.map((m,i)=>createParticle(i));
+  count.textContent=
+   visibleMemories.length+" souvenir(s) affiché(s) · "+
+   memories.length+" au total";
+ }
+
+ function resize(){
+  const rect=canvas.getBoundingClientRect();
+  const ratio=window.devicePixelRatio||1;
+  canvas.width=Math.max(1,Math.floor(rect.width*ratio));
+  canvas.height=Math.max(1,Math.floor(rect.height*ratio));
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+ }
+
+ function project(p,w,h){
+  const c=Math.cos(angle);
+  const s=Math.sin(angle);
+
+  const x=p.x*c-p.z*s;
+  const z=p.x*s+p.z*c;
+  const y=p.y;
+
+  const perspective=3/(3+z);
+  const scale=Math.min(w,h)*0.34;
+
+  return {
+   x:w/2+x*scale*perspective,
+   y:h/2+y*scale*perspective,
+   size:p.size*perspective,
+   depth:z
+  };
+ }
+
+ function draw(){
+  const w=canvas.clientWidth;
+  const h=canvas.clientHeight;
+
+  ctx.clearRect(0,0,w,h);
+
+  const cx=w/2;
+  const cy=h/2;
+  const radius=Math.min(w,h)*0.32;
+
+  const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,radius*1.5);
+  glow.addColorStop(0,"rgba(0,140,255,.16)");
+  glow.addColorStop(1,"rgba(0,30,70,0)");
+  ctx.fillStyle=glow;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,radius,0,Math.PI*2);
+  ctx.strokeStyle="rgba(50,170,255,.18)";
+  ctx.lineWidth=1;
+  ctx.stroke();
+
+  const projected=particles.map(p=>({
+   particle:p,
+   point:project(p,w,h)
+  })).sort((a,b)=>a.point.depth-b.point.depth);
+
+  for(const item of projected){
+   const p=item.point;
+   const isSelected=item.particle.index===selected;
+
+   ctx.beginPath();
+   ctx.arc(p.x,p.y,p.size+(isSelected?4:0),0,Math.PI*2);
+
+   ctx.fillStyle=isSelected?"#ffffff":
+    p.depth>0?"#38baff":"#176b9f";
+
+   ctx.shadowBlur=isSelected?20:9;
+   ctx.shadowColor="#18aaff";
+   ctx.fill();
+   ctx.shadowBlur=0;
+  }
+
+  ctx.fillStyle="#7bd3ff";
+  ctx.font="12px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("STARK MEMORY CORE",cx,h-15);
+
+  angle+=0.003;
+  animationFrame=requestAnimationFrame(draw);
+ }
+
+ function showMemory(index){
+  const memory=visibleMemories[index];
+  if(!memory) return;
+
+  selected=index;
+
+  detail.textContent=
+   "TITRE : "+memory.title+
+   "\n\nCONTENU :\n"+memory.content+
+   "\n\nDATE : "+new Date(memory.date).toLocaleString("fr-FR");
+
+  const originalIndex=memories.findIndex(m=>m.id===memory.id);
+  selected=originalIndex;
+ }
+
+ function addMemory(){
+  const title=document.getElementById("v92-memory-name").value.trim();
+  const content=document.getElementById("v92-memory-content").value.trim();
+
+  if(!title||!content){
+   alert("Veuillez renseigner un titre et un contenu.");
+   return;
+  }
+
+  memories.unshift({
+   id:Date.now().toString(36)+Math.random().toString(36).slice(2),
+   title,
+   content,
+   date:new Date().toISOString()
+  });
+
+  save();
+
+  document.getElementById("v92-memory-name").value="";
+  document.getElementById("v92-memory-content").value="";
+
+  visibleMemories=memories.slice();
+  selected=-1;
+  detail.textContent="Souvenir enregistré.";
+  rebuild();
+ }
+
+ function search(){
+  const query=document.getElementById("v92-memory-search").value
+   .trim().toLocaleLowerCase("fr");
+
+  visibleMemories=memories.filter(m=>
+   (m.title+" "+m.content).toLocaleLowerCase("fr").includes(query)
+  );
+
+  selected=-1;
+  detail.textContent="Sélectionnez un souvenir dans le noyau.";
+  rebuild();
+ }
+
+ function open(){
+  page.classList.add("open");
+  resize();
+  rebuild();
+
+  if(animationFrame===null) draw();
+ }
+
+ function close(){
+  page.classList.remove("open");
+
+  if(animationFrame!==null){
+   cancelAnimationFrame(animationFrame);
+   animationFrame=null;
+  }
+ }
+
+ canvas.addEventListener("click",function(event){
+  const rect=canvas.getBoundingClientRect();
+  const x=event.clientX-rect.left;
+  const y=event.clientY-rect.top;
+
+  let nearest=-1;
+  let nearestDistance=Infinity;
+
+  particles.forEach(p=>{
+   const point=project(p,canvas.clientWidth,canvas.clientHeight);
+   const distance=Math.hypot(point.x-x,point.y-y);
+
+   if(distance<nearestDistance){
+    nearestDistance=distance;
+    nearest=p.index;
+   }
+  });
+
+  if(nearest>=0&&nearestDistance<35){
+   showMemory(nearest);
+  }
+ });
+
+ document.getElementById("v92-memory-button")
+  .addEventListener("click",open);
+
+ document.getElementById("v92-memory-close")
+  .addEventListener("click",close);
+
+ document.getElementById("v92-memory-add")
+  .addEventListener("click",addMemory);
+
+ document.getElementById("v92-memory-search")
+  .addEventListener("input",search);
+
+ document.getElementById("v92-memory-reset")
+  .addEventListener("click",function(){
+   document.getElementById("v92-memory-search").value="";
+   visibleMemories=memories.slice();
+   selected=-1;
+   rebuild();
+   detail.textContent="Sélectionnez un souvenir dans le noyau.";
+  });
+
+ window.addEventListener("resize",function(){
+  if(page.classList.contains("open")) resize();
+ });
+
+ rebuild();
+
+})();
+</script>
+
+<!-- =====================================================
+     MODULE 2 : PERSONNALITE ET VOIX
+===================================================== -->
+
+<style>
+#v92-settings-button{
+ position:fixed;
+ right:18px;
+ bottom:75px;
+ z-index:9998;
+ padding:12px 16px;
+ border:1px solid #168bd4;
+ border-radius:10px;
+ background:#071a2c;
+ color:#75d0ff;
+ cursor:pointer;
+}
+#v92-settings{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:9999;
+ background:#020914ee;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+#v92-settings.open{display:flex}
+.v92-settings-card{
+ width:min(500px,100%);
+ padding:22px;
+ background:#071727;
+ border:1px solid #168bd4;
+ border-radius:16px;
+ color:#d9f2ff;
+ box-shadow:0 0 35px #008cff33;
+}
+.v92-settings-card h2{color:#68caff;letter-spacing:2px}
+.v92-settings-card label{
+ display:block;
+ margin-top:16px;
+ color:#8ed9ff;
+}
+.v92-settings-card select{
+ width:100%;
+ padding:12px;
+ margin-top:7px;
+ color:#e8f7ff;
+ background:#020b15;
+ border:1px solid #168bd4;
+ border-radius:8px;
+}
+.v92-settings-card button{
+ padding:11px 15px;
+ margin-top:15px;
+ border:1px solid #168bd4;
+ border-radius:8px;
+ background:#092b46;
+ color:#8bd8ff;
+ cursor:pointer;
+}
+</style>
+
+<button id="v92-settings-button">
+ ◈ PERSONNALITÉ
+</button>
+
+<div id="v92-settings">
+ <div class="v92-settings-card">
+  <h2>CONFIGURATION J.A.R.V.I.S</h2>
+  <p>Personnalisez le comportement de votre assistant.</p>
+
+  <label for="v92-personality">PERSONNALITÉ</label>
+  <select id="v92-personality">
+   <option value="stark">Assistant Stark — professionnel et précis</option>
+   <option value="calm">Calme — posé et rassurant</option>
+   <option value="technical">Ingénieur — technique et détaillé</option>
+   <option value="concise">Direct — réponses courtes</option>
+   <option value="friendly">Amical — naturel et accessible</option>
+  </select>
+
+  <label for="v92-voice">VOIX</label>
+  <select id="v92-voice">
+   <option value="">Voix française par défaut</option>
+  </select>
+
+  <button id="v92-save-settings">ENREGISTRER</button>
+  <button id="v92-test-voice">TESTER LA VOIX</button>
+  <button id="v92-close-settings">FERMER</button>
+
+  <p id="v92-settings-status" style="color:#70caff"></p>
+ </div>
+</div>
+
+<script>
+(function(){
+ "use strict";
+
+ const KEY="jarvis_v92_preferences";
+
+ const panel=document.getElementById("v92-settings");
+ const personality=document.getElementById("v92-personality");
+ const voiceSelect=document.getElementById("v92-voice");
+ const status=document.getElementById("v92-settings-status");
+
+ let preferences={personality:"stark",voice:""};
+
+ try{
+  preferences=Object.assign(
+   preferences,
+   JSON.parse(localStorage.getItem(KEY)||"{}")
+  );
+ }catch(e){}
+
+ personality.value=preferences.personality;
+
+ function loadVoices(){
+  if(!window.speechSynthesis) return;
+
+  const voices=speechSynthesis.getVoices();
+  const previous=preferences.voice;
+
+  voiceSelect.innerHTML=
+   '<option value="">Voix française par défaut</option>';
+
+  voices
+   .filter(v=>v.lang.toLowerCase().startsWith("fr"))
+   .forEach(v=>{
+    const option=document.createElement("option");
+    option.value=v.name;
+    option.textContent=v.name+" ("+v.lang+")";
+    voiceSelect.appendChild(option);
+   });
+
+  voiceSelect.value=previous;
+ }
+
+ function getPreferences(){
+  return {
+   personality:personality.value,
+   voice:voiceSelect.value
+  };
+ }
+
+ function personalityInstruction(){
+  const modes={
+   stark:"Tu es J.A.R.V.I.S, assistant personnel inspiré d'une interface technologique Stark. Tu es professionnel, poli, précis et méthodique. Tu t'adresses à l'utilisateur avec respect.",
+   calm:"Tu es J.A.R.V.I.S. Tu adoptes un ton calme, clair, posé et rassurant.",
+   technical:"Tu es J.A.R.V.I.S, assistant technique. Tu expliques les sujets avec méthode, précision et des étapes concrètes.",
+   concise:"Tu es J.A.R.V.I.S. Tu réponds directement et brièvement, sans détails inutiles.",
+   friendly:"Tu es J.A.R.V.I.S. Tu adoptes un ton naturel, accessible et respectueux."
+  };
+
+  return modes[personality.value]||modes.stark;
+ }
+
+ function speak(text){
+  if(!window.speechSynthesis){
+   status.textContent="Synthèse vocale indisponible.";
+   return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang="fr-FR";
+  utterance.rate=0.95;
+  utterance.pitch=0.9;
+
+  const selected=voiceSelect.value;
+  const voices=speechSynthesis.getVoices();
+
+  const chosen=voices.find(v=>v.name===selected);
+
+  if(chosen){
+   utterance.voice=chosen;
+  }else{
+   const french=voices.find(v=>v.lang.toLowerCase().startsWith("fr"));
+   if(french) utterance.voice=french;
+  }
+
+  speechSynthesis.speak(utterance);
+ }
+
+ window.jarvisV92GetPersonality=personalityInstruction;
+ window.jarvisV92GetPreferences=getPreferences;
+ window.jarvisV92Speak=speak;
+
+ document.getElementById("v92-settings-button")
+  .addEventListener("click",()=>panel.classList.add("open"));
+
+ document.getElementById("v92-close-settings")
+  .addEventListener("click",()=>panel.classList.remove("open"));
+
+ document.getElementById("v92-save-settings")
+  .addEventListener("click",()=>{
+   preferences=getPreferences();
+   localStorage.setItem(KEY,JSON.stringify(preferences));
+   status.textContent="Préférences enregistrées.";
+  });
+
+ document.getElementById("v92-test-voice")
+  .addEventListener("click",()=>{
+   speak("Bonjour Monsieur. Système J.A.R.V.I.S opérationnel. Configuration vocale activée.");
+  });
+
+ if(window.speechSynthesis){
+  loadVoices();
+  speechSynthesis.onvoiceschanged=loadVoices;
+ }
+
+})();
+</script>
+
+<!-- =====================================================
+     MODULE 3 : CENTRE DES CONNEXIONS
+===================================================== -->
+
+<style>
+#v92-connect-button{
+ position:fixed;
+ left:18px;
+ bottom:18px;
+ z-index:9998;
+ padding:12px 16px;
+ border:1px solid #168bd4;
+ border-radius:10px;
+ background:#071a2c;
+ color:#75d0ff;
+ cursor:pointer;
+}
+#v92-connect{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:9999;
+ overflow:auto;
+ padding:20px;
+ color:#d9f2ff;
+ background:#030b16f5;
+}
+#v92-connect.open{display:block}
+.v92-connect-card{
+ max-width:750px;
+ margin:35px auto;
+ padding:22px;
+ border:1px solid #168bd455;
+ border-radius:15px;
+ background:#071727;
+}
+.v92-connect-card h2{color:#65caff}
+.v92-service{
+ margin:12px 0;
+ padding:15px;
+ border:1px solid #168bd455;
+ border-radius:10px;
+ background:#04111e;
+}
+.v92-service strong{color:#7bd3ff}
+.v92-connect button{
+ padding:10px 14px;
+ margin-top:12px;
+ border:1px solid #168bd4;
+ border-radius:8px;
+ background:#092b46;
+ color:#8bd8ff;
+ cursor:pointer;
+}
+</style>
+
+<button id="v92-connect-button">◉ CONNEXIONS</button>
+
+<section id="v92-connect">
+ <div class="v92-connect-card">
+  <h2>CENTRE DES CONNEXIONS</h2>
+  <p>Gestion des services externes de J.A.R.V.I.S.</p>
+
+  <div class="v92-service">
+   <strong>GMAIL</strong>
+   <p>Accès aux messages après autorisation officielle Google OAuth.</p>
+   <span id="v92-gmail-status">Non connecté dans cette version.</span>
+  </div>
+
+  <div class="v92-service">
+   <strong>GOOGLE AGENDA</strong>
+   <p>Connexion nécessitant une autorisation Google spécifique.</p>
+   <span>Non connecté dans cette version.</span>
+  </div>
+
+  <div class="v92-service">
+   <strong>SUPABASE</strong>
+   <p>Stockage cloud et synchronisation des données.</p>
+   <span>Configuration serveur nécessaire.</span>
+  </div>
+
+  <div class="v92-service">
+   <strong>GROQ / INTELLIGENCE ARTIFICIELLE</strong>
+   <p>Les réponses IA nécessitent un endpoint serveur sécurisé.</p>
+   <span>Configuration serveur nécessaire.</span>
+  </div>
+
+  <div class="v92-service">
+   <strong>AUTHENTIFICATION BIOMÉTRIQUE</strong>
+   <p>
+    Face ID et Windows Hello ne transmettent pas les données biométriques
+    à une page web. Une authentification locale par passkey peut être
+    mise en place avec un serveur compatible.
+   </p>
+   <span>Non configurée.</span>
+  </div>
+
+  <button id="v92-connect-close">FERMER</button>
+ </div>
+</section>
+
+<script>
+(function(){
+ const panel=document.getElementById("v92-connect");
+
+ document.getElementById("v92-connect-button")
+  .addEventListener("click",()=>panel.classList.add("open"));
+
+ document.getElementById("v92-connect-close")
+  .addEventListener("click",()=>panel.classList.remove("open"));
+})();
+</script>
+
+
 </body>
 </html>
