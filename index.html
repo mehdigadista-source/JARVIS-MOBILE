@@ -2625,6 +2625,20 @@ setInterval(actualiserHorloge,1000);
  .v92-memory-layout{grid-template-columns:1fr}
  #v92-memory-canvas{height:330px}
 }
+
+/* CORRECTIF AFFICHAGE BOUTON FERMER */
+#v92-memory-page.open #v92-memory-close {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    top: 18px !important;
+    right: 18px !important;
+    z-index: 100000 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
+}
 </style>
 
 <button id="v92-memory-button" type="button">
