@@ -3253,7 +3253,132 @@ setInterval(actualiserHorloge,1000);
   .addEventListener("click",()=>panel.classList.remove("open"));
 })();
 </script>
+<!-- CORRECTION MENU STARK V9.2 -->
 
+<style>
+/* Menu latéral : défilement vertical */
+#stark-drawer{
+ position:fixed;
+ top:0;
+ bottom:0;
+ left:0;
+ height:100vh;
+ height:100dvh;
+ max-height:100dvh;
+ overflow-y:auto !important;
+ overflow-x:hidden;
+ -webkit-overflow-scrolling:touch;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:thin;
+ scrollbar-color:#168bd4 #071727;
+}
+
+/* Zone de défilement et espacement */
+#stark-drawer > *{
+ max-width:100%;
+}
+
+#stark-drawer .drawer-group{
+ overflow:visible;
+}
+
+#stark-drawer .drawer-group[open]{
+ padding-bottom:4px;
+}
+
+/* Fond derrière le menu */
+#drawer-shade{
+ touch-action:pan-y;
+}
+
+/* Bouton trois traits */
+#top-menu-button{
+ z-index:10001;
+ cursor:pointer;
+}
+
+/* Menu ouvert */
+#stark-drawer.open{
+ z-index:10002;
+}
+
+/* Bouton de fermeture accessible */
+#top-menu-button.menu-open{
+ color:#ffffff;
+}
+</style>
+
+<script>
+/* OUVERTURE ET FERMETURE DU MENU */
+
+window.basculerMenuStark=function(force){
+
+ const drawer=document.getElementById("stark-drawer");
+ const shade=document.getElementById("drawer-shade");
+ const button=document.getElementById("top-menu-button");
+
+ if(!drawer||!shade)return;
+
+ const ouvrir=typeof force==="boolean"
+  ?force
+  :!drawer.classList.contains("open");
+
+ drawer.classList.toggle("open",ouvrir);
+ shade.classList.toggle("show",ouvrir);
+
+ if(button){
+  button.classList.toggle("menu-open",ouvrir);
+  button.setAttribute("aria-expanded",String(ouvrir));
+  button.setAttribute(
+   "aria-label",
+   ouvrir?"Fermer le menu":"Ouvrir le menu"
+  );
+ }
+
+};
+
+/* NAVIGATION ENTRE LES PAGES */
+
+window.navV9=function(nom){
+
+ if(typeof allerPage==="function"){
+  allerPage(nom);
+ }else{
+  document.querySelectorAll(".page").forEach(page=>{
+   page.classList.remove("active");
+  });
+
+  const destination=document.getElementById("page-"+nom);
+
+  if(destination){
+   destination.classList.add("active");
+   window.scrollTo({top:0,behavior:"smooth"});
+  }else{
+   console.warn("Page introuvable :",nom);
+  }
+ }
+
+ window.basculerMenuStark(false);
+
+};
+
+/* FERMETURE AVEC LA TOUCHE ECHAP */
+
+document.addEventListener("keydown",function(event){
+ if(event.key==="Escape"){
+  window.basculerMenuStark(false);
+ }
+});
+
+/* FERMETURE SI ON CLIQUE SUR LE FOND */
+
+document.getElementById("drawer-shade")
+ ?.addEventListener("click",function(){
+  window.basculerMenuStark(false);
+});
+
+</script>
 
 </body>
 </html>
