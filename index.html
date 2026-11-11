@@ -5000,5 +5000,388 @@ try {
     console.error("Erreur initialisation V10 :", e);
 }
 
+<style>
+/* CORRECTIF 1 — SPHÈRE DE L'ACCUEIL */
+#reactor {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#stark-three {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+/* CORRECTIF 2 — FERMETURE DE LA MÉMOIRE */
+#v92-memory-page.open #v92-memory-close {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  top: 18px !important;
+  right: 18px !important;
+  z-index: 100000 !important;
+  pointer-events: auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 16px !important;
+  background: #092b46 !important;
+  color: #8bd8ff !important;
+  border: 1px solid #168bd4 !important;
+  border-radius: 9px !important;
+}
+
+/* CORRECTIF 3 — BOUTONS VOCAUX */
+#voice-start {
+  min-height: 46px;
+  cursor: pointer;
+}
+</style>
+
+<script>
+/* =====================================================
+   J.A.R.V.I.S — CORRECTIF SPHÈRE D'ACCUEIL
+===================================================== */
+
+(function () {
+  const canvas = document.getElementById("stark-three");
+  if (!canvas) {
+    console.error("JARVIS : canvas de la sphère introuvable.");
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let largeur = 0;
+  let hauteur = 0;
+  let angle = 0;
+
+  function redimensionnerSphere() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    largeur = Math.max(1, rect.width);
+    hauteur = Math.max(1, rect.height);
+
+    canvas.width = Math.round(largeur * dpr);
+    canvas.height = Math.round(hauteur * dpr);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function dessinerSphere() {
+    ctx.clearRect(0, 0, largeur, hauteur);
+
+    const cx = largeur / 2;
+    const cy = hauteur / 2;
+    const rayon = Math.min(largeur, hauteur) * 0.34;
+
+    // Halo extérieur
+    const halo = ctx.createRadialGradient(
+      cx, cy, rayon * 0.2,
+      cx, cy, rayon * 1.6
+    );
+
+    halo.addColorStop(0, "rgba(0,160,255,0.12)");
+    halo.addColorStop(0.65, "rgba(0,100,255,0.08)");
+    halo.addColorStop(1, "rgba(0,0,0,0)");
+
+    ctx.fillStyle = halo;
+    ctx.fillRect(0, 0, largeur, hauteur);
+
+    // Anneaux lumineux
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle * 0.35);
+
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.ellipse(
+        0, 0,
+        rayon * (1.13 + i * 0.13),
+        rayon * (0.35 + i * 0.08),
+        i * 0.6,
+        0, Math.PI * 2
+      );
+
+      ctx.strokeStyle = `rgba(35,180,255,${0.35 - i * 0.08})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // Sphère centrale
+    const sphere = ctx.createRadialGradient(
+      cx - rayon * 0.35,
+      cy - rayon * 0.4,
+      rayon * 0.05,
+      cx, cy, rayon
+    );
+
+    sphere.addColorStop(0, "#a8f3ff");
+    sphere.addColorStop(0.18, "#168cff");
+    sphere.addColorStop(0.55, "#063d91");
+    sphere.addColorStop(1, "#020b25");
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
+    ctx.fillStyle = sphere;
+    ctx.shadowColor = "#00aaff";
+    ctx.shadowBlur = 30;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Lignes de latitude
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
+    ctx.clip();
+
+    for (let i = -2; i <= 2; i++) {
+      const y = i * rayon * 0.32;
+      const largeurArc = Math.sqrt(
+        Math.max(0, rayon * rayon - y * y)
+      );
+
+      ctx.beginPath();
+      ctx.ellipse(
+        cx, cy + y,
+        largeurArc, Math.max(2, rayon * 0.12),
+        0, 0, Math.PI * 2
+      );
+
+      ctx.strokeStyle = "rgba(125,225,255,0.55)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Méridiens
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.ellipse(
+        cx, cy,
+        rayon * Math.abs(Math.cos(angle + i * Math.PI / 4)),
+        rayon,
+        0, 0, Math.PI * 2
+      );
+      ctx.strokeStyle = "rgba(130,225,255,0.32)";
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // Contour lumineux
+    ctx.beginPath();
+    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
+    ctx.strokeStyle = "#55dfff";
+    ctx.lineWidth = 2;
+    ctx.shadowColor = "#00aaff";
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    angle += 0.008;
+
+    window.__jarvisHomeSphereFrame =
+      requestAnimationFrame(dessinerSphere);
+  }
+
+  redimensionnerSphere();
+  dessinerSphere();
+
+  window.addEventListener("resize", redimensionnerSphere);
+
+  console.log("JARVIS : sphère d'accueil initialisée.");
+})();
+
+/* =====================================================
+   J.A.R.V.I.S — BOUTON QUITTER MÉMOIRE
+===================================================== */
+
+(function () {
+  const page = document.getElementById("v92-memory-page");
+  if (!page) return;
+
+  let bouton = document.getElementById("v92-memory-close");
+
+  if (!bouton) {
+    bouton = document.createElement("button");
+    bouton.id = "v92-memory-close";
+    bouton.textContent = "QUITTER LA MÉMOIRE ✕";
+    page.prepend(bouton);
+  } else {
+    bouton.textContent = "QUITTER LA MÉMOIRE ✕";
+  }
+
+  bouton.addEventListener("click", function () {
+    page.classList.remove("open");
+  });
+
+  console.log("JARVIS : fermeture mémoire initialisée.");
+})();
+
+/* =====================================================
+   J.A.R.V.I.S — CORRECTION MICROPHONE
+===================================================== */
+
+window.demarrerConversationVocale = async function () {
+  if (window.vocalActif) return;
+
+  const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SR) {
+    alert("La reconnaissance vocale n'est pas disponible dans ce navigateur.");
+    return;
+  }
+
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia) {
+    alert("Le navigateur ne permet pas l'accès au microphone. Vérifiez que JARVIS est ouvert en HTTPS.");
+    return;
+  }
+
+  try {
+    // Vérification de l'autorisation du microphone
+    const flux = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+
+    // Libérer le micro avant de démarrer la reconnaissance
+    flux.getTracks().forEach(track => track.stop());
+
+    window.reconnaissance = new SR();
+    window.reconnaissance.lang = "fr-FR";
+    window.reconnaissance.interimResults = false;
+    window.reconnaissance.continuous = false;
+
+    window.vocalActif = true;
+
+    const caption = document.getElementById("voice-caption");
+    if (caption) caption.textContent = "Je vous écoute, Monsieur.";
+
+    if (typeof window.definirEtatVocal === "function") {
+      window.definirEtatVocal("listening", "ÉCOUTE ACTIVE");
+    }
+
+    if (typeof window.ecouterProchainePhrase === "function") {
+      window.ecouterProchainePhrase();
+    } else {
+      window.reconnaissance.onresult = function (event) {
+        const texte = event.results[0][0].transcript;
+        const champ = document.getElementById("chat-input");
+
+        if (champ) {
+          champ.value = texte;
+          if (typeof window.envoyer === "function") {
+            window.envoyer();
+          }
+        }
+      };
+
+      window.reconnaissance.start();
+    }
+
+  } catch (erreur) {
+    window.vocalActif = false;
+
+    const messages = {
+      NotAllowedError: "Accès au microphone refusé. Autorisez le microphone dans Chrome.",
+      NotFoundError: "Aucun microphone détecté.",
+      NotReadableError: "Le microphone est déjà utilisé ou indisponible."
+    };
+
+    alert(messages[erreur.name] ||
+      "Erreur microphone : " + erreur.message);
+  }
+};
+
+/* =====================================================
+   J.A.R.V.I.S — CORRECTION SYNTHÈSE VOCALE
+===================================================== */
+
+window.parlerVocal = function (texte) {
+  if (!window.speechSynthesis) {
+    alert("La synthèse vocale n'est pas disponible.");
+    return;
+  }
+
+  const contenu = String(texte || "").trim();
+  if (!contenu) return;
+
+  window.speechSynthesis.cancel();
+
+  const phrase = new SpeechSynthesisUtterance(contenu);
+  phrase.lang = "fr-FR";
+  phrase.rate = 0.95;
+  phrase.pitch = 0.95;
+  phrase.volume = 1;
+
+  const voix = window.speechSynthesis.getVoices();
+
+  const voixFrancaise =
+    voix.find(v => v.lang === "fr-FR") ||
+    voix.find(v => v.lang.toLowerCase().startsWith("fr"));
+
+  if (voixFrancaise) {
+    phrase.voice = voixFrancaise;
+  }
+
+  phrase.onerror = function (event) {
+    console.error("JARVIS TTS :", event.error);
+    const status = document.getElementById("voice-status");
+    if (status) status.textContent = "ERREUR DE SYNTHÈSE VOCALE";
+  };
+
+  phrase.onstart = function () {
+    if (typeof window.definirEtatVocal === "function") {
+      window.definirEtatVocal("speaking", "J.A.R.V.I.S RÉPOND");
+    }
+  };
+
+  phrase.onend = function () {
+    if (typeof window.definirEtatVocal === "function") {
+      window.definirEtatVocal("idle", "RÉPONSE TERMINÉE");
+    }
+  };
+
+  window.speechSynthesis.speak(phrase);
+};
+
+/* Réactiver la lecture vocale pour les réponses */
+try {
+  lectureActive = true;
+  localStorage.setItem("jarvis_tts_v8", "true");
+} catch (e) {}
+
+/* Ajouter un bouton de test vocal */
+(function () {
+  const zone = document.querySelector("#page-vocal .actions");
+  if (!zone || document.getElementById("jarvis-test-voice")) return;
+
+  const bouton = document.createElement("button");
+  bouton.id = "jarvis-test-voice";
+  bouton.className = "secondary";
+  bouton.textContent = "TESTER LA VOIX DE JARVIS";
+
+  bouton.addEventListener("click", function () {
+    window.parlerVocal(
+      "Bonjour Monsieur. Système JARVIS opérationnel. Test audio réussi."
+    );
+  });
+
+  zone.appendChild(bouton);
+})();
+
+console.log("JARVIS : correctifs chargés.");
+</script>
 </body>
 </html>
