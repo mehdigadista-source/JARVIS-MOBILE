@@ -3979,7 +3979,24 @@ body.v10-module-open #v10-status{
 "use strict";
 
 const $v10 = id => document.getElementById(id);
+// Synchronisation des anciennes variables avec V10.1
+try {
+ Object.defineProperty(window,"vocalActif",{
+  configurable:true,
+  get:()=>vocalActif,
+  set:value=>{vocalActif=!!value;}
+ });
 
+ Object.defineProperty(window,"historique",{
+  configurable:true,
+  get:()=>historique,
+  set:value=>{
+   if(Array.isArray(value))historique=value;
+  }
+ });
+} catch(e) {
+ console.warn("Synchronisation globale :",e);
+}
 function ledV10(id,etat){
  const el=$v10(id);
  if(!el)return;
@@ -4701,8 +4718,11 @@ document.body.classList.remove("v10-module-open");
 console.log("J.A.R.V.I.S V10.1 — Interface initialisée.");
 
 })();
+      
 </script>
- 
+
+
+<script>
 /* =====================================================
    J.A.R.V.I.S V10 — CORRECTIF CENTRAL
    GROQ + CHAT + MÉMOIRE LOCALE + JOURNAL
@@ -4929,7 +4949,7 @@ window.traiterCommandeMemoire = function(texte) {
 
     return false;
 };
-
+     
 /* 6. AFFICHAGE DES SOUVENIRS */
 
 window.afficherSouvenirs = function() {
@@ -4999,6 +5019,9 @@ try {
 } catch (e) {
     console.error("Erreur initialisation V10 :", e);
 }
+
+<style>
+</script>
 
 <style>
 /* CORRECTIF 1 — SPHÈRE DE L'ACCUEIL */
@@ -5226,141 +5249,6 @@ try {
 
   console.log("JARVIS : fermeture mémoire initialisée.");
 })();
-
-/* =====================================================
-   J.A.R.V.I.S — CORRECTION MICROPHONE
-===================================================== */
-
-window.demarrerConversationVocale = async function () {
-  if (window.vocalActif) return;
-
-  const SR =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!SR) {
-    alert("La reconnaissance vocale n'est pas disponible dans ce navigateur.");
-    return;
-  }
-
-  if (!navigator.mediaDevices ||
-      !navigator.mediaDevices.getUserMedia) {
-    alert("Le navigateur ne permet pas l'accès au microphone. Vérifiez que JARVIS est ouvert en HTTPS.");
-    return;
-  }
-
-  try {
-    // Vérification de l'autorisation du microphone
-    const flux = await navigator.mediaDevices.getUserMedia({
-      audio: true
-    });
-
-    // Libérer le micro avant de démarrer la reconnaissance
-    flux.getTracks().forEach(track => track.stop());
-
-    window.reconnaissance = new SR();
-    window.reconnaissance.lang = "fr-FR";
-    window.reconnaissance.interimResults = false;
-    window.reconnaissance.continuous = false;
-
-    window.vocalActif = true;
-
-    const caption = document.getElementById("voice-caption");
-    if (caption) caption.textContent = "Je vous écoute, Monsieur.";
-
-    if (typeof window.definirEtatVocal === "function") {
-      window.definirEtatVocal("listening", "ÉCOUTE ACTIVE");
-    }
-
-    if (typeof window.ecouterProchainePhrase === "function") {
-      window.ecouterProchainePhrase();
-    } else {
-      window.reconnaissance.onresult = function (event) {
-        const texte = event.results[0][0].transcript;
-        const champ = document.getElementById("chat-input");
-
-        if (champ) {
-          champ.value = texte;
-          if (typeof window.envoyer === "function") {
-            window.envoyer();
-          }
-        }
-      };
-
-      window.reconnaissance.start();
-    }
-
-  } catch (erreur) {
-    window.vocalActif = false;
-
-    const messages = {
-      NotAllowedError: "Accès au microphone refusé. Autorisez le microphone dans Chrome.",
-      NotFoundError: "Aucun microphone détecté.",
-      NotReadableError: "Le microphone est déjà utilisé ou indisponible."
-    };
-
-    alert(messages[erreur.name] ||
-      "Erreur microphone : " + erreur.message);
-  }
-};
-
-/* =====================================================
-   J.A.R.V.I.S — CORRECTION SYNTHÈSE VOCALE
-===================================================== */
-
-window.parlerVocal = function (texte) {
-  if (!window.speechSynthesis) {
-    alert("La synthèse vocale n'est pas disponible.");
-    return;
-  }
-
-  const contenu = String(texte || "").trim();
-  if (!contenu) return;
-
-  window.speechSynthesis.cancel();
-
-  const phrase = new SpeechSynthesisUtterance(contenu);
-  phrase.lang = "fr-FR";
-  phrase.rate = 0.95;
-  phrase.pitch = 0.95;
-  phrase.volume = 1;
-
-  const voix = window.speechSynthesis.getVoices();
-
-  const voixFrancaise =
-    voix.find(v => v.lang === "fr-FR") ||
-    voix.find(v => v.lang.toLowerCase().startsWith("fr"));
-
-  if (voixFrancaise) {
-    phrase.voice = voixFrancaise;
-  }
-
-  phrase.onerror = function (event) {
-    console.error("JARVIS TTS :", event.error);
-    const status = document.getElementById("voice-status");
-    if (status) status.textContent = "ERREUR DE SYNTHÈSE VOCALE";
-  };
-
-  phrase.onstart = function () {
-    if (typeof window.definirEtatVocal === "function") {
-      window.definirEtatVocal("speaking", "J.A.R.V.I.S RÉPOND");
-    }
-  };
-
-  phrase.onend = function () {
-    if (typeof window.definirEtatVocal === "function") {
-      window.definirEtatVocal("idle", "RÉPONSE TERMINÉE");
-    }
-  };
-
-  window.speechSynthesis.speak(phrase);
-};
-
-/* Réactiver la lecture vocale pour les réponses */
-try {
-  lectureActive = true;
-  localStorage.setItem("jarvis_tts_v8", "true");
-} catch (e) {}
 
 /* Ajouter un bouton de test vocal */
 (function () {
