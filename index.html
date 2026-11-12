@@ -5541,36 +5541,233 @@ function jouerCoupHumain(from,to){
 
 /* 5. COUP DE J.A.R.V.I.S */
 
+/* MOTEUR LOCAL DE SECOURS */
+
+function chessEvaluerPosition(game){
+  if(game.in_checkmate()){
+    return game.turn() === "w" ? -100000 : 100000;
+  }
+
+  if(game.in_draw()) return 0;
+
+  const valeurs = {
+    p:100,
+    n:320,
+    b:330,
+    r:500,
+    q:900,
+    k:20000
+  };
+
+  let score = 0;
+  const plateau = game.board();
+
+  for(let row=0; row<8; row++){
+    for(let col=0; col<8; col++){
+      const piece = plateau[row][col];
+      if(!piece) continue;
+
+      const valeur = valeurs[piece.type] || 0;
+      const signe = piece.color === "w" ? 1 : -1;
+
+      // Bonus léger pour occuper le centre.
+      const centre = 3.5 - (
+        Math.abs(3.5-row) + Math.abs(3.5-col)
+      ) / 2;
+
+      score += signe * (valeur + centre * 5);
+    }
+  }
+
+  return score;
+}
+
+function chessMinimax(game, profondeur, alpha, beta){
+  if(profondeur <= 0 || game.game_over()){
+    return chessEvaluerPosition(game);
+  }
+
+  const coups = game.moves({verbose:true});
+  const maximiser = game.turn() === "w";
+
+  if(maximiser){
+    let meilleur = -Infinity;
+
+    for(const coup of coups){
+      const copie = new Chess(game.fen());
+
+      copie.move({
+        from:coup.from,
+        to:coup.to,
+        promotion:coup.promotion || "q"
+      });
+
+      meilleur = Math.max(
+        meilleur,
+        chessMinimax(copie,profondeur-1,alpha,beta)
+      );
+
+      alpha = Math.max(alpha,meilleur);
+      if(beta <= alpha) break;
+    }
+
+    return meilleur;
+  }else{
+    let meilleur = Infinity;
+
+    for(const coup of coups){
+      const copie = new Chess(game.fen());
+
+      copie.move({
+        from:coup.from,
+        to:coup.to,
+        promotion:coup.promotion || "q"
+      });
+
+      meilleur = Math.min(
+        meilleur,
+        chessMinimax(copie,profondeur-1,alpha,beta)
+      );
+
+      beta = Math.min(beta,meilleur);
+      if(beta <= alpha) break;
+    }
+
+    return meilleur;
+  }
+}
+
+function chessChoisirCoupLocal(game,niveau){
+  const coups = game.moves({verbose:true});
+  if(!coups.length) return null;
+
+  const profondeurs = {
+    easy:1,
+    medium:2,
+    hard:3
+  };
+
+  const profondeur = profondeurs[niveau] || 2;
+  const scores = [];
+
+  for(const coup of coups){
+    const copie = new Chess(game.fen());
+
+    copie.move({
+      from:coup.from,
+      to:coup.to,
+      promotion:coup.promotion || "q"
+    });
+
+    let score = chessMinimax(
+      copie,
+      profondeur-1,
+      -Infinity,
+      Infinity
+    );
+
+    // Le joueur noir cherche le score le plus bas.
+    if(niveau === "easy"){
+      score += (Math.random()-0.5)*180;
+    }
+
+    scores.push({san:coup.san,score});
+  }
+
+  scores.sort((a,b)=>a.score-b.score);
+
+  return scores[0]?.san || null;
+}
+
+/* COUP DE J.A.R.V.I.S */
+
 async function jouerCoupJarvis(){
   try{
     if(!chessGame || chessGame.game_over()) return;
 
-    const fen = chessGame.fen();
     const coupsLegaux = chessGame.moves();
-
     if(!coupsLegaux.length) return;
 
-    if(typeof window.appelerIA !== "function"){
-      actualiserStatut(
-        "Connexion IA indisponible. Recommencez plus tard."
+    let coupChoisi = null;
+    let erreurIA = "";
+
+    // Première tentative : demander un coup à Groq.
+    if(typeof window.appelerIA === "function"){
+      try{
+        const prompt = `
+Tu joues aux échecs avec les noirs.
+Position FEN : ${chessGame.fen()}
+
+Coups légaux :
+${coupsLegaux.join(", ")}
+
+Difficulté : ${chessDifficulty}.
+
+Choisis un coup parmi cette liste.
+Réponds uniquement avec le coup SAN exact.
+`;
+
+        const reponse = await window.appelerIA(prompt,[]);
+        const texte = String(reponse || "").trim();
+
+        // Cherche le coup même si l'IA ajoute une phrase.
+        coupChoisi = coupsLegaux.find(coup =>
+          new RegExp(
+            "(^|[^A-Za-z0-9+#=])" +
+            coup.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") +
+            "($|[^A-Za-z0-9+#=])"
+          ).test(texte)
+        );
+
+        if(!coupChoisi){
+          erreurIA = "Réponse IA non reconnue comme coup légal.";
+        }
+
+      }catch(error){
+        erreurIA = error.message || "Connexion IA indisponible.";
+        console.warn("Échecs : IA indisponible :",error);
+      }
+    }
+
+    // Deuxième tentative : moteur local.
+    if(!coupChoisi){
+      console.info(
+        "Échecs : activation du moteur local.",
+        erreurIA
       );
-      return;
+
+      actualiserStatut("J.A.R.V.I.S utilise son moteur local...");
+
+      coupChoisi = chessChoisirCoupLocal(
+        chessGame,
+        chessDifficulty
+      );
     }
 
-    let consigne = "";
-
-    if(chessDifficulty === "easy"){
-      consigne =
-        "Choisis un coup légal simple. Ne cherche pas forcément le meilleur.";
-    }else if(chessDifficulty === "hard"){
-      consigne =
-        "Choisis le coup légal le plus stratégique possible. " +
-        "Prends en compte les échecs, les captures et la protection du roi.";
-    }else{
-      consigne =
-        "Choisis un coup légal raisonnable et équilibré.";
+    if(!coupChoisi){
+      throw new Error("Aucun coup légal disponible.");
     }
 
+    const resultat = chessGame.move(coupChoisi);
+
+    if(!resultat){
+      throw new Error("Le coup sélectionné est invalide.");
+    }
+
+    dessinerEchiquier();
+    actualiserHistorique();
+
+    if(!verifierFinPartie()){
+      actualiserStatut("À vous de jouer, Monsieur.");
+    }
+
+  }catch(error){
+    console.error("Erreur échecs :",error);
+    actualiserStatut("Erreur : " + error.message);
+  }finally{
+    chessBusy = false;
+  }
+}
     const prompt = `
 Tu joues une partie d'échecs.
 Tu es les noirs et tu dois jouer maintenant.
@@ -5714,6 +5911,208 @@ if(document.readyState === "loading"){
 }else{
   attendreModuleEchecs();
 }
+
+})();
+</script>
+<style>
+/* CORRECTION DE LA SPHÈRE PRINCIPALE */
+
+#page-home.active{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+#page-home .immersive-home{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  min-height:100vh!important;
+}
+
+#page-home #reactor-wrap{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:min(65vh,620px)!important;
+  min-height:280px!important;
+  position:relative!important;
+  z-index:2!important;
+}
+
+#page-home #reactor{
+  display:grid!important;
+  place-items:center!important;
+  position:relative!important;
+  flex:none!important;
+  width:min(76vw,460px)!important;
+  height:min(76vw,460px)!important;
+  min-width:260px!important;
+  min-height:260px!important;
+  border:2px solid #16baff!important;
+  border-radius:50%!important;
+  background:radial-gradient(
+    circle,
+    #1b5879 0%,
+    #09243b 45%,
+    #020812 75%
+  )!important;
+  box-shadow:
+    0 0 25px #00bfff99,
+    0 0 80px #008cff55,
+    inset 0 0 55px #00bfff55!important;
+  overflow:hidden!important;
+}
+
+#page-home #reactor:before,
+#page-home #reactor:after{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  border-radius:50%!important;
+  pointer-events:none!important;
+}
+
+#page-home #reactor:before{
+  inset:12px!important;
+  border:3px dashed #4bdfff!important;
+  animation:spin 18s linear infinite!important;
+}
+
+#page-home #reactor:after{
+  inset:32px!important;
+  border:2px solid #00bfff99!important;
+  animation:spin 12s linear infinite reverse!important;
+}
+
+#page-home #reactor-core{
+  display:block!important;
+  position:relative!important;
+  z-index:3!important;
+  width:clamp(95px,25vw,150px)!important;
+  height:clamp(95px,25vw,150px)!important;
+  border-radius:50%!important;
+  background:radial-gradient(
+    circle,
+    #ffffff 0%,
+    #8df4ff 12%,
+    #16baff 38%,
+    #07518c 68%,
+    #031528 100%
+  )!important;
+  box-shadow:
+    0 0 25px #00e5ff,
+    0 0 60px #008cff,
+    0 0 120px #0077ff88!important;
+  animation:starkCorePulse 2.5s ease-in-out infinite!important;
+}
+
+/* Le canvas principal n'a pas de moteur 3D associé.
+   On laisse donc le réacteur CSS visible. */
+#page-home #stark-three{
+  display:none!important;
+}
+
+#page-home .home-brand{
+  position:relative!important;
+  z-index:4!important;
+  color:#d9f8ff!important;
+  text-shadow:0 0 20px #00bfff!important;
+}
+
+@keyframes starkCorePulse{
+  50%{
+    transform:scale(1.06);
+    filter:brightness(1.3);
+  }
+}
+</style>
+<style>
+/* FERMETURE ET VISIBILITÉ DE LA MÉMOIRE */
+
+
+#v92-memory-page{
+  z-index:9997!important;
+}
+
+#v92-memory-page:not(.open){
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+#v92-memory-page.open{
+  display:block!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+#v92-memory-close{
+  position:fixed!important;
+  top:15px!important;
+  right:15px!important;
+  z-index:1000000!important;
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  padding:12px 17px!important;
+  color:#a8eaff!important;
+  background:#092b46!important;
+  border:1px solid #168bd4!important;
+  border-radius:10px!important;
+  cursor:pointer!important;
+}
+</style>
+
+<script>
+(function(){
+
+  const page = document.getElementById("v92-memory-page");
+  const bouton = document.getElementById("v92-memory-close");
+
+  if(!page || !bouton){
+    console.error("JARVIS : élément mémoire introuvable.");
+    return;
+  }
+
+  // Fonction unique de fermeture.
+  window.jarvisFermerMemoire = function(){
+    page.classList.remove("open");
+    page.setAttribute("aria-hidden","true");
+
+    if(typeof window.navV9 === "function"){
+      window.navV9("home");
+    }
+
+    console.log("JARVIS : mémoire visuelle fermée.");
+  };
+
+  // Interception du clic avant les anciens gestionnaires.
+  document.addEventListener("click",function(event){
+
+    const cible = event.target.closest("#v92-memory-close");
+
+    if(!cible) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    window.jarvisFermerMemoire();
+
+  },true);
+
+  // Échap ferme également la mémoire.
+  document.addEventListener("keydown",function(event){
+    if(event.key === "Escape" && page.classList.contains("open")){
+      window.jarvisFermerMemoire();
+    }
+  });
+
+  console.log("JARVIS : système de fermeture mémoire actif.");
 
 })();
 </script>
