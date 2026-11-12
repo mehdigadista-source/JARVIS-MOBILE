@@ -5224,7 +5224,8 @@ function installerOngletEchecs(){
     drawer.appendChild(group);
   }
 
-  if(!chessElement("page-chess")){
+
+  if (!chessElement("page-chess")) {
     const page = document.createElement("section");
     page.id = "page-chess";
     page.className = "page";
@@ -5248,7 +5249,7 @@ function installerOngletEchecs(){
             <option value="hard">DIFFICILE</option>
           </select>
 
-          <button class="secondary" id="chess-new">
+          <button type="button" class="secondary" id="chess-new">
             NOUVELLE PARTIE
           </button>
         </div>
@@ -5256,18 +5257,22 @@ function installerOngletEchecs(){
 
       <div class="chess-layout">
         <div class="panel">
-          <div class="chess-board" id="chess-board"
-               aria-label="Échiquier"></div>
+          <div
+            class="chess-board"
+            id="chess-board"
+            aria-label="Échiquier"
+          ></div>
 
           <div class="chess-status" id="chess-status">
             Initialisation de l'échiquier...
           </div>
 
           <div class="chess-controls">
-            <button class="secondary" id="chess-undo">
+            <button type="button" class="secondary" id="chess-undo">
               ANNULER LE TOUR
             </button>
-            <button class="secondary" id="chess-reset">
+
+            <button type="button" class="secondary" id="chess-reset">
               RECOMMENCER
             </button>
           </div>
@@ -5276,14 +5281,17 @@ function installerOngletEchecs(){
         <div class="chess-side">
           <div class="panel">
             <h2>ADVERSAIRE</h2>
+
             <div class="stat">
               <span>JOUEUR</span>
               <strong>VOUS — BLANCS</strong>
             </div>
+
             <div class="stat">
               <span>ADVERSAIRE</span>
               <strong>J.A.R.V.I.S — NOIRS</strong>
             </div>
+
             <div class="stat">
               <span>DIFFICULTÉ</span>
               <strong id="chess-level-label">MOYEN</strong>
@@ -5299,14 +5307,21 @@ function installerOngletEchecs(){
 
           <div class="panel">
             <h2>BOT EN LIGNE</h2>
+
             <p class="small">
               Ouvrir une plateforme externe pour jouer contre
               d'autres joueurs ou des bots.
             </p>
-            <button class="primary" id="chess-online"
-                    style="width:100%">
+
+            <button
+              type="button"
+              class="primary"
+              id="chess-online"
+              style="width:100%"
+            >
               JOUER SUR LICHESS
             </button>
+
             <p class="small" style="margin-top:10px">
               La partie en ligne se déroule sur le site externe,
               pas dans cet échiquier.
@@ -5351,25 +5366,18 @@ function connecterCommandesEchecs(){
   if(difficulty){
     difficulty.addEventListener("change",function(){
       chessDifficulty = difficulty.value;
-
       const labels = {
         easy:"FACILE",
         medium:"MOYEN",
         hard:"DIFFICILE"
       };
-
       chessElement("chess-level-label").textContent =
         labels[chessDifficulty];
     });
   }
 
-  if(newGame){
-    newGame.addEventListener("click",initialiserEchecs);
-  }
-
-  if(reset){
-    reset.addEventListener("click",initialiserEchecs);
-  }
+  if(newGame) newGame.addEventListener("click",initialiserEchecs);
+  if(reset) reset.addEventListener("click",initialiserEchecs);
 
   if(undo){
     undo.addEventListener("click",function(){
@@ -5392,11 +5400,7 @@ function connecterCommandesEchecs(){
 
   if(online){
     online.addEventListener("click",function(){
-      window.open(
-        "https://lichess.org/",
-        "_blank",
-        "noopener,noreferrer"
-      );
+      window.open("https://lichess.org/","_blank","noopener,noreferrer");
     });
   }
 
@@ -5412,30 +5416,25 @@ function dessinerEchiquier(){
   if(!boardElement) return;
 
   boardElement.innerHTML = "";
-
   const board = chessGame.board();
   const files = ["a","b","c","d","e","f","g","h"];
 
-  for(let row = 0; row < 8; row++){
-    for(let col = 0; col < 8; col++){
+  for(let row=0; row<8; row++){
+    for(let col=0; col<8; col++){
       const squareName = files[col] + (8-row);
       const piece = board[row][col];
 
       const button = document.createElement("button");
       button.type = "button";
-      button.className =
-        "chess-square " +
+      button.className = "chess-square " +
         ((row+col)%2===0 ? "light" : "dark");
-
       button.dataset.square = squareName;
       button.setAttribute("aria-label",squareName);
 
       if(piece){
         button.textContent = CHESS_PIECES[piece.color][piece.type];
         button.classList.add(
-          piece.color === "w"
-            ? "chess-piece-white"
-            : "chess-piece-black"
+          piece.color === "w" ? "chess-piece-white" : "chess-piece-black"
         );
       }
 
@@ -5443,14 +5442,9 @@ function dessinerEchiquier(){
         button.classList.add("selected");
       }
 
-      const destination = chessLegalMoves.find(
-        move => move.to === squareName
-      );
-
+      const destination = chessLegalMoves.find(move => move.to === squareName);
       if(destination){
-        button.classList.add(
-          destination.captured ? "capture" : "possible"
-        );
+        button.classList.add(destination.captured ? "capture" : "possible");
       }
 
       button.addEventListener("click",function(){
@@ -5471,10 +5465,7 @@ function cliquerCase(square){
   const piece = chessGame.get(square);
 
   if(chessSelection){
-    const coupPossible = chessLegalMoves.find(
-      move => move.to === square
-    );
-
+    const coupPossible = chessLegalMoves.find(move => move.to === square);
     if(coupPossible){
       jouerCoupHumain(chessSelection,square);
       return;
@@ -5483,11 +5474,7 @@ function cliquerCase(square){
 
   if(piece && piece.color === "w"){
     chessSelection = square;
-    chessLegalMoves = chessGame.moves({
-      square:square,
-      verbose:true
-    });
-
+    chessLegalMoves = chessGame.moves({square:square,verbose:true});
     dessinerEchiquier();
     return;
   }
@@ -5499,17 +5486,11 @@ function cliquerCase(square){
 
 function jouerCoupHumain(from,to){
   try{
-    const coup = chessGame.move({
-      from:from,
-      to:to,
-      promotion:"q"
-    });
-
+    const coup = chessGame.move({from:from,to:to,promotion:"q"});
     if(!coup) return;
 
     chessSelection = null;
     chessLegalMoves = [];
-
     dessinerEchiquier();
     actualiserHistorique();
 
@@ -5517,16 +5498,13 @@ function jouerCoupHumain(from,to){
 
     actualiserStatut("J.A.R.V.I.S réfléchit...");
     chessBusy = true;
-
     setTimeout(jouerCoupJarvis,250);
   }catch(error){
     console.error("Erreur coup joueur :",error);
   }
 }
 
-/* 5. COUP DE J.A.R.V.I.S */
-
-/* MOTEUR LOCAL DE SECOURS */
+/* 5. MOTEUR LOCAL DE SECOURS */
 
 function chessEvaluerPosition(game){
   if(game.in_checkmate()){
@@ -5535,15 +5513,7 @@ function chessEvaluerPosition(game){
 
   if(game.in_draw()) return 0;
 
-  const valeurs = {
-    p:100,
-    n:320,
-    b:330,
-    r:500,
-    q:900,
-    k:20000
-  };
-
+  const valeurs = {p:100,n:320,b:330,r:500,q:900,k:20000};
   let score = 0;
   const plateau = game.board();
 
@@ -5554,20 +5524,16 @@ function chessEvaluerPosition(game){
 
       const valeur = valeurs[piece.type] || 0;
       const signe = piece.color === "w" ? 1 : -1;
+      const centre = 3.5 -
+        (Math.abs(3.5-row)+Math.abs(3.5-col))/2;
 
-      // Bonus léger pour occuper le centre.
-      const centre = 3.5 - (
-        Math.abs(3.5-row) + Math.abs(3.5-col)
-      ) / 2;
-
-      score += signe * (valeur + centre * 5);
+      score += signe*(valeur+centre*5);
     }
   }
-
   return score;
 }
 
-function chessMinimax(game, profondeur, alpha, beta){
+function chessMinimax(game,profondeur,alpha,beta){
   if(profondeur <= 0 || game.game_over()){
     return chessEvaluerPosition(game);
   }
@@ -5577,10 +5543,8 @@ function chessMinimax(game, profondeur, alpha, beta){
 
   if(maximiser){
     let meilleur = -Infinity;
-
     for(const coup of coups){
-      const copie = new Chess(game.fen());
-
+      const copie = new window.Chess(game.fen());
       copie.move({
         from:coup.from,
         to:coup.to,
@@ -5591,53 +5555,41 @@ function chessMinimax(game, profondeur, alpha, beta){
         meilleur,
         chessMinimax(copie,profondeur-1,alpha,beta)
       );
-
       alpha = Math.max(alpha,meilleur);
       if(beta <= alpha) break;
     }
-
-    return meilleur;
-  }else{
-    let meilleur = Infinity;
-
-    for(const coup of coups){
-      const copie = new Chess(game.fen());
-
-      copie.move({
-        from:coup.from,
-        to:coup.to,
-        promotion:coup.promotion || "q"
-      });
-
-      meilleur = Math.min(
-        meilleur,
-        chessMinimax(copie,profondeur-1,alpha,beta)
-      );
-
-      beta = Math.min(beta,meilleur);
-      if(beta <= alpha) break;
-    }
-
     return meilleur;
   }
+
+  let meilleur = Infinity;
+  for(const coup of coups){
+    const copie = new window.Chess(game.fen());
+    copie.move({
+      from:coup.from,
+      to:coup.to,
+      promotion:coup.promotion || "q"
+    });
+
+    meilleur = Math.min(
+      meilleur,
+      chessMinimax(copie,profondeur-1,alpha,beta)
+    );
+    beta = Math.min(beta,meilleur);
+    if(beta <= alpha) break;
+  }
+  return meilleur;
 }
 
 function chessChoisirCoupLocal(game,niveau){
   const coups = game.moves({verbose:true});
   if(!coups.length) return null;
 
-  const profondeurs = {
-    easy:1,
-    medium:2,
-    hard:3
-  };
-
+  const profondeurs = {easy:1,medium:2,hard:3};
   const profondeur = profondeurs[niveau] || 2;
   const scores = [];
 
   for(const coup of coups){
-    const copie = new Chess(game.fen());
-
+    const copie = new window.Chess(game.fen());
     copie.move({
       from:coup.from,
       to:coup.to,
@@ -5645,13 +5597,9 @@ function chessChoisirCoupLocal(game,niveau){
     });
 
     let score = chessMinimax(
-      copie,
-      profondeur-1,
-      -Infinity,
-      Infinity
+      copie,profondeur-1,-Infinity,Infinity
     );
 
-    // Le joueur noir cherche le score le plus bas.
     if(niveau === "easy"){
       score += (Math.random()-0.5)*180;
     }
@@ -5660,7 +5608,6 @@ function chessChoisirCoupLocal(game,niveau){
   }
 
   scores.sort((a,b)=>a.score-b.score);
-
   return scores[0]?.san || null;
 }
 
@@ -5674,14 +5621,65 @@ async function jouerCoupJarvis(){
     if(!coupsLegaux.length) return;
 
     let coupChoisi = null;
-    let erreurIA = "";
 
-    // Première tentative : demander un coup à Groq.
     if(typeof window.appelerIA === "function"){
       try{
-     
+        const prompt = `
+Tu joues une partie d'échecs.
+Tu es les noirs et tu dois jouer maintenant.
 
-/* 6. STATUT ET HISTORIQUE */
+Position FEN :
+${chessGame.fen()}
+
+Coups autorisés :
+${coupsLegaux.join(", ")}
+
+Niveau : ${chessDifficulty}.
+
+Réponds uniquement avec un coup exactement présent
+dans la liste. Aucun commentaire.
+`;
+
+        const reponse = await window.appelerIA(prompt,[]);
+        const texte = String(reponse || "").trim();
+
+        coupChoisi = coupsLegaux.find(coup => coup === texte);
+
+        if(!coupChoisi){
+          coupChoisi = coupsLegaux.find(coup =>
+            texte.split(/\s+/).includes(coup)
+          );
+        }
+      }catch(error){
+        console.warn("IA indisponible, moteur local utilisé :",error);
+      }
+    }
+
+    if(!coupChoisi){
+      coupChoisi = chessChoisirCoupLocal(chessGame,chessDifficulty);
+    }
+
+    if(!coupChoisi){
+      throw new Error("Aucun coup légal trouvé.");
+    }
+
+    const coup = chessGame.move(coupChoisi);
+    if(!coup) throw new Error("Coup invalide.");
+
+    dessinerEchiquier();
+    actualiserHistorique();
+
+    if(!verifierFinPartie()){
+      actualiserStatut("À vous de jouer, Monsieur.");
+    }
+
+  }catch(error){
+    console.error("Erreur échecs J.A.R.V.I.S :",error);
+    actualiserStatut("Impossible de jouer le coup de J.A.R.V.I.S.");
+  }finally{
+    chessBusy = false;
+  }
+}
 
 function actualiserStatut(message){
   const zone = chessElement("chess-status");
@@ -5967,6 +5965,82 @@ if(document.readyState === "loading"){
 
   console.log("JARVIS : système de fermeture mémoire actif.");
 
+})();
+</script>
+
+<style>
+#jarvis-home-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+  margin-top:22px;
+  position:relative;
+  z-index:10;
+}
+#jarvis-home-actions button{
+  min-width:145px;
+  padding:14px 18px;
+  border-radius:12px;
+}
+</style>
+
+<script>
+(function(){
+  const home=document.querySelector("#page-home .immersive-home");
+  if(!home || document.getElementById("jarvis-home-actions")) return;
+
+  const zone=document.createElement("div");
+  zone.id="jarvis-home-actions";
+
+  zone.innerHTML=`
+    <button class="primary" onclick="navV9('vocal')">
+      🎙 PARLER À JARVIS
+    </button>
+    <button class="secondary" onclick="navV9('assistant')">
+      ✎ ÉCRIRE À JARVIS
+    </button>
+  `;
+
+  home.appendChild(zone);
+})();
+</script>
+
+<script>
+(function(){
+  const bouton=document.getElementById("v92-memory-button");
+  const page=document.getElementById("v92-memory-page");
+
+  if(!bouton || !page) return;
+
+  bouton.style.display="block";
+  bouton.style.pointerEvents="auto";
+  bouton.style.zIndex="999999";
+
+  bouton.addEventListener("click",function(){
+    page.classList.add("open");
+    page.style.display="block";
+    page.style.visibility="visible";
+    page.setAttribute("aria-hidden","false");
+    window.dispatchEvent(new Event("resize"));
+  });
+
+  window.jarvisFermerMemoire=function(){
+    page.classList.remove("open");
+    page.style.display="none";
+    page.setAttribute("aria-hidden","true");
+    if(typeof window.navV9==="function"){
+      window.navV9("home");
+    }
+  };
+
+  document.addEventListener("click",function(e){
+    if(e.target.closest("#v92-memory-close")){
+      e.preventDefault();
+      e.stopPropagation();
+      window.jarvisFermerMemoire();
+    }
+  },true);
 })();
 </script>
 </body>
