@@ -2831,23 +2831,26 @@ function normaliserSouvenir(s,index){
 }
 
 function ouvrir(){
- page.classList.add("open");
+  page.classList.add("open");
+  page.style.display = "block";
+  page.setAttribute("aria-hidden","false");
 
- if(!renderer){
-  initialiser3D();
- }else{
-  redimensionner();
- }
+  if(!renderer){
+    initialiser3D();
+  }else{
+    redimensionner();
+  }
 
- reconstruire();
+  reconstruire();
 }
 
 function fermer(){
- page.classList.remove("open");
+  page.classList.remove("open");
+  page.style.display = "none";
+  page.setAttribute("aria-hidden","true");
 }
 
-$("v92-memory-button").addEventListener("click",ouvrir);
-$("v92-memory-close").addEventListener("click",fermer);
+window.jarvisFermerMemoire = fermer;
 
 function initialiser3D(){
 
@@ -4427,24 +4430,6 @@ window.arreterConversationVocale=function(){
 
 const $=id=>document.getElementById(id);
 
-/* CRÉATION DU LOGO CAMÉRA */
-
-const cameraPage=$("page-camera");
-const reactorWrap=$("reactor-wrap");
-const homeBrand=document.querySelector("#page-home .home-brand");
-
-if(cameraPage && reactorWrap && homeBrand){
-
- const cameraPanel=cameraPage.querySelector(".panel");
-
- const logo=document.createElement("div");
- logo.id="v10-camera-logo";
-
- cameraPanel.appendChild(logo);
- logo.appendChild(reactorWrap);
- logo.appendChild(homeBrand);
-}
-
 /* BOUTON D'ANALYSE */
 
 const cameraActions=cameraPage?.querySelector(".actions");
@@ -5694,140 +5679,7 @@ async function jouerCoupJarvis(){
     // Première tentative : demander un coup à Groq.
     if(typeof window.appelerIA === "function"){
       try{
-        const prompt = `
-Tu joues aux échecs avec les noirs.
-Position FEN : ${chessGame.fen()}
-
-Coups légaux :
-${coupsLegaux.join(", ")}
-
-Difficulté : ${chessDifficulty}.
-
-Choisis un coup parmi cette liste.
-Réponds uniquement avec le coup SAN exact.
-`;
-
-        const reponse = await window.appelerIA(prompt,[]);
-        const texte = String(reponse || "").trim();
-
-        // Cherche le coup même si l'IA ajoute une phrase.
-        coupChoisi = coupsLegaux.find(coup =>
-          new RegExp(
-            "(^|[^A-Za-z0-9+#=])" +
-            coup.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") +
-            "($|[^A-Za-z0-9+#=])"
-          ).test(texte)
-        );
-
-        if(!coupChoisi){
-          erreurIA = "Réponse IA non reconnue comme coup légal.";
-        }
-
-      }catch(error){
-        erreurIA = error.message || "Connexion IA indisponible.";
-        console.warn("Échecs : IA indisponible :",error);
-      }
-    }
-
-    // Deuxième tentative : moteur local.
-    if(!coupChoisi){
-      console.info(
-        "Échecs : activation du moteur local.",
-        erreurIA
-      );
-
-      actualiserStatut("J.A.R.V.I.S utilise son moteur local...");
-
-      coupChoisi = chessChoisirCoupLocal(
-        chessGame,
-        chessDifficulty
-      );
-    }
-
-    if(!coupChoisi){
-      throw new Error("Aucun coup légal disponible.");
-    }
-
-    const resultat = chessGame.move(coupChoisi);
-
-    if(!resultat){
-      throw new Error("Le coup sélectionné est invalide.");
-    }
-
-    dessinerEchiquier();
-    actualiserHistorique();
-
-    if(!verifierFinPartie()){
-      actualiserStatut("À vous de jouer, Monsieur.");
-    }
-
-  }catch(error){
-    console.error("Erreur échecs :",error);
-    actualiserStatut("Erreur : " + error.message);
-  }finally{
-    chessBusy = false;
-  }
-}
-    const prompt = `
-Tu joues une partie d'échecs.
-Tu es les noirs et tu dois jouer maintenant.
-
-Position FEN :
-${fen}
-
-Liste des coups autorisés au format SAN :
-${coupsLegaux.join(", ")}
-
-Niveau demandé : ${chessDifficulty}.
-${consigne}
-
-Réponds uniquement par un seul coup exactement présent
-dans la liste des coups autorisés.
-N'ajoute aucune explication, aucun commentaire.
-`;
-
-    const reponse = await window.appelerIA(prompt,[]);
-    const texte = String(reponse || "").trim();
-
-    let coupChoisi = coupsLegaux.find(
-      coup => coup === texte
-    );
-
-    if(!coupChoisi){
-      coupChoisi = coupsLegaux.find(coup =>
-        texte.split(/\s+/).includes(coup)
-      );
-    }
-
-    if(!coupChoisi){
-      throw new Error(
-        "J.A.R.V.I.S n'a pas proposé un coup légal."
-      );
-    }
-
-    const coup = chessGame.move(coupChoisi);
-
-    if(!coup){
-      throw new Error("Le coup proposé est invalide.");
-    }
-
-    dessinerEchiquier();
-    actualiserHistorique();
-
-    if(!verifierFinPartie()){
-      actualiserStatut("À vous de jouer, Monsieur.");
-    }
-
-  }catch(error){
-    console.error("Erreur échecs J.A.R.V.I.S :",error);
-    actualiserStatut(
-      "Impossible de jouer le coup de J.A.R.V.I.S. " +
-      "Vérifiez la connexion IA puis recommencez."
-    );
-  }finally{
-    chessBusy = false;
-  }
-}
+     
 
 /* 6. STATUT ET HISTORIQUE */
 
@@ -6080,8 +5932,9 @@ if(document.readyState === "loading"){
 
   // Fonction unique de fermeture.
   window.jarvisFermerMemoire = function(){
-    page.classList.remove("open");
-    page.setAttribute("aria-hidden","true");
+     page.classList.remove("open");
+     page.style.display = "none";
+     page.setAttribute("aria-hidden","true");
 
     if(typeof window.navV9 === "function"){
       window.navV9("home");
