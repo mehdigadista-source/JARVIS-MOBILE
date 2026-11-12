@@ -2498,9 +2498,10 @@ setInterval(actualiserHorloge,1000);
 
 </script>
 
+
 <!-- =====================================================
-     J.A.R.V.I.S V9.2 — STARK CORE
-     MODULE 1 : MÉMOIRE VISUELLE 3D
+     J.A.R.V.I.S V10.2 — MÉMOIRE STARK CORE
+     STOCKAGE PARTAGÉ AVEC LA MÉMOIRE PRINCIPALE
 ===================================================== -->
 
 <style>
@@ -2508,17 +2509,23 @@ setInterval(actualiserHorloge,1000);
  position:fixed;
  right:18px;
  bottom:18px;
- z-index:9998;
- border:1px solid #28aaff;
- background:#071a2c;
- color:#65caff;
+ z-index:9996;
  padding:13px 18px;
+ border:1px solid #28aaff;
  border-radius:12px;
- font-weight:700;
+ background:rgba(7,26,44,.96);
+ color:#65caff;
+ font-weight:800;
  letter-spacing:1px;
  box-shadow:0 0 18px #008cff55;
  cursor:pointer;
 }
+
+#v92-memory-button:hover{
+ background:#10456d;
+ box-shadow:0 0 28px #008cff99;
+}
+
 #v92-memory-page{
  position:fixed;
  inset:0;
@@ -2527,10 +2534,14 @@ setInterval(actualiserHorloge,1000);
  overflow:auto;
  padding:24px;
  color:#d9f2ff;
- background:radial-gradient(circle at center,#102d48 0%,#06111f 48%,#02060d 100%);
+ background:radial-gradient(circle at center,#102d48,#06111f 55%,#02060d);
  font-family:Arial,sans-serif;
 }
-#v92-memory-page.open{display:block}
+
+#v92-memory-page.open{
+ display:block;
+}
+
 .v92-memory-header{
  display:flex;
  justify-content:space-between;
@@ -2538,28 +2549,31 @@ setInterval(actualiserHorloge,1000);
  gap:12px;
  flex-wrap:wrap;
  border-bottom:1px solid #168bd455;
- padding-bottom:16px;
+ padding:12px 0 18px;
 }
+
 .v92-memory-title{
  color:#66caff;
  letter-spacing:3px;
- font-size:22px;
- font-weight:800;
+ font-size:23px;
+ font-weight:900;
 }
+
 .v92-memory-layout{
  display:grid;
  grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);
  gap:18px;
  margin-top:20px;
 }
+
 .v92-memory-panel{
- background:#071727dd;
+ background:#071727ee;
  border:1px solid #168bd455;
  border-radius:16px;
  padding:18px;
- box-shadow:0 0 25px #008cff12;
  min-width:0;
 }
+
 #v92-memory-canvas{
  display:block;
  width:100%;
@@ -2569,12 +2583,17 @@ setInterval(actualiserHorloge,1000);
  cursor:grab;
  touch-action:none;
 }
-#v92-memory-canvas:active{cursor:grabbing}
+
+#v92-memory-canvas:active{
+ cursor:grabbing;
+}
+
 .v92-memory-panel h3{
  color:#55baff;
  letter-spacing:1px;
  font-size:14px;
 }
+
 .v92-memory-input{
  box-sizing:border-box;
  width:100%;
@@ -2584,8 +2603,8 @@ setInterval(actualiserHorloge,1000);
  background:#020b15;
  border:1px solid #1c75a8;
  border-radius:8px;
- outline:none;
 }
+
 .v92-memory-action{
  padding:11px 14px;
  margin:5px 3px 5px 0;
@@ -2595,7 +2614,11 @@ setInterval(actualiserHorloge,1000);
  color:#8bd8ff;
  cursor:pointer;
 }
-.v92-memory-action:hover{background:#10456d}
+
+.v92-memory-action:hover{
+ background:#10456d;
+}
+
 #v92-memory-detail{
  min-height:110px;
  white-space:pre-wrap;
@@ -2603,15 +2626,14 @@ setInterval(actualiserHorloge,1000);
  color:#c5eaff;
  line-height:1.5;
 }
-#v92-memory-count{
+
+#v92-memory-count,
+#v92-memory-status{
  color:#72caff;
  font-size:13px;
-}
-#v92-memory-status{
- color:#70caff;
- font-size:12px;
  margin-top:10px;
 }
+
 .v92-memory-switch{
  display:flex;
  align-items:center;
@@ -2620,24 +2642,18 @@ setInterval(actualiserHorloge,1000);
  color:#a8dfff;
  font-size:13px;
 }
+
+#v92-memory-close{
+ position:fixed;
+ top:18px;
+ right:18px;
+ z-index:100000;
+}
+
 @media(max-width:750px){
  #v92-memory-page{padding:13px}
  .v92-memory-layout{grid-template-columns:1fr}
  #v92-memory-canvas{height:330px}
-}
-
-/* CORRECTIF AFFICHAGE BOUTON FERMER */
-#v92-memory-page.open #v92-memory-close {
-    display: inline-flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    top: 18px !important;
-    right: 18px !important;
-    z-index: 100000 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    pointer-events: auto !important;
 }
 </style>
 
@@ -2646,27 +2662,42 @@ setInterval(actualiserHorloge,1000);
 </button>
 
 <section id="v92-memory-page">
+
  <header class="v92-memory-header">
   <div>
    <div class="v92-memory-title">STARK CORE</div>
    <small>J.A.R.V.I.S // MÉMOIRE VISUELLE</small>
   </div>
+
   <button class="v92-memory-action" id="v92-memory-close">
-   FERMER ✕
+   QUITTER LA MÉMOIRE ✕
   </button>
  </header>
 
  <div class="v92-memory-layout">
+
   <div class="v92-memory-panel">
    <h3>NOYAU MÉMORIEL 3D</h3>
+
    <canvas id="v92-memory-canvas"></canvas>
-   <p id="v92-memory-count">Initialisation de la mémoire...</p>
-   <small>Faites glisser pour tourner la sphère. Cliquez sur une particule pour consulter un souvenir. Utilisez la molette pour zoomer.</small>
-   <div id="v92-memory-status">INITIALISATION DU STARK CORE...</div>
+
+   <p id="v92-memory-count">Initialisation...</p>
+
+   <small>
+    Faites glisser pour tourner le noyau.
+    Cliquez sur une particule pour consulter un souvenir.
+    Utilisez la molette pour zoomer.
+   </small>
+
+   <div id="v92-memory-status">
+    INITIALISATION DU STARK CORE...
+   </div>
   </div>
 
   <div class="v92-memory-panel">
+
    <h3>SOUVENIR SÉLECTIONNÉ</h3>
+
    <div id="v92-memory-detail">
     Aucun souvenir sélectionné.
    </div>
@@ -2678,158 +2709,125 @@ setInterval(actualiserHorloge,1000);
    <hr style="border-color:#168bd455;margin:18px 0">
 
    <h3>AJOUTER UN SOUVENIR</h3>
-   <input class="v92-memory-input"
-          id="v92-memory-name"
-          placeholder="Titre du souvenir"
-          maxlength="100">
 
-   <textarea class="v92-memory-input"
-             id="v92-memory-content"
-             rows="5"
-             placeholder="Informations à mémoriser..."></textarea>
+   <input
+    class="v92-memory-input"
+    id="v92-memory-name"
+    placeholder="Titre du souvenir"
+    maxlength="100"
+   >
+
+   <textarea
+    class="v92-memory-input"
+    id="v92-memory-content"
+    rows="5"
+    placeholder="Informations à mémoriser..."
+   ></textarea>
 
    <button class="v92-memory-action" id="v92-memory-add">
     + ENREGISTRER
    </button>
 
    <h3>RECHERCHER</h3>
-   <input class="v92-memory-input"
-          id="v92-memory-search"
-          placeholder="Rechercher un souvenir...">
+
+   <input
+    class="v92-memory-input"
+    id="v92-memory-search"
+    placeholder="Rechercher un souvenir..."
+   >
 
    <button class="v92-memory-action" id="v92-memory-reset">
     AFFICHER TOUT
    </button>
 
    <label class="v92-memory-switch">
-    <input type="checkbox" id="v92-memory-auto" checked>
+    <input type="checkbox" id="v92-memory-auto">
     MÉMORISATION AUTOMATIQUE DES CONVERSATIONS
    </label>
+
   </div>
  </div>
 </section>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
 (function(){
 
 "use strict";
 
-const CLE_MEMOIRE_3D = "jarvis_visual_memory_v1";
-const CLE_AUTO = "jarvis_auto_memory_enabled";
-
 const $ = id => document.getElementById(id);
 
 const page = $("v92-memory-page");
 const canvas = $("v92-memory-canvas");
+const status = $("v92-memory-status");
 const detail = $("v92-memory-detail");
 const compteur = $("v92-memory-count");
-const status = $("v92-memory-status");
-
-let souvenirs = [];
-let souvenirsAffiches = [];
-let souvenirSelectionne = null;
 
 let scene = null;
 let camera = null;
 let renderer = null;
 let groupe = null;
+let raycaster = null;
+let souris = null;
+
 let particules = [];
-let animationId = null;
+let selection = null;
+let animation = null;
 
 let rotationX = 0;
 let rotationY = 0;
-let zoom = 1;
+let zoom = 7;
 
-let dragging = false;
-let moved = false;
-let lastX = 0;
-let lastY = 0;
+let glisse = false;
+let dernierX = 0;
+let dernierY = 0;
+let mouvement = false;
 
-let raycaster = null;
-let mouse = null;
+const cleAuto = "jarvis_auto_memory_enabled";
 
-function lireJSON(cle, defaut){
+const souvenirs = () => {
  try{
-  const valeur = localStorage.getItem(cle);
-  return valeur ? JSON.parse(valeur) : defaut;
+  return Array.isArray(memoireLocale)
+   ? memoireLocale
+   : [];
  }catch(e){
-  return defaut;
+  return [];
  }
-}
+};
 
 function sauvegarder(){
  try{
-  localStorage.setItem(CLE_MEMOIRE_3D, JSON.stringify(souvenirs));
-  actualiserCompteur();
+  if(typeof sauvegarderMemoire === "function"){
+   sauvegarderMemoire();
+  }else{
+   localStorage.setItem(
+    "jarvis_memoire",
+    JSON.stringify(souvenirs())
+   );
+  }
  }catch(e){
-  status.textContent = "ERREUR : STOCKAGE LOCAL INDISPONIBLE";
+  status.textContent = "ERREUR DE SAUVEGARDE : " + e.message;
  }
 }
 
-function actualiserCompteur(){
- compteur.textContent =
-  souvenirs.length + " souvenir(s) enregistré(s)";
-}
+function normaliserSouvenir(s,index){
+ if(typeof s === "string"){
+  return {
+   id:"ancien_"+index,
+   titre:"Ancien souvenir",
+   contenu:s,
+   categorie:"ancien",
+   date:"Date inconnue"
+  };
+ }
 
-function creerSouvenir(titre, contenu, categorie="conversation"){
- const souvenir = {
-  id: "memory_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
-  titre: String(titre).slice(0,100),
-  contenu: String(contenu).slice(0,5000),
-  categorie,
-  date: new Date().toLocaleString("fr-FR")
+ return {
+  ...s,
+  id:s.id || "memory_"+index,
+  titre:s.titre || s.title || "Souvenir",
+  contenu:s.contenu || s.content || s.texte || "",
+  categorie:s.categorie || "personnel",
+  date:s.date || "Date inconnue"
  };
-
- souvenirs.unshift(souvenir);
-
- // Limite de sécurité pour éviter de remplir le stockage du navigateur.
- souvenirs = souvenirs.slice(0,300);
-
- sauvegarder();
- reconstruireSpheres();
-
- return souvenir;
-}
-
-function afficherSouvenir(s){
- if(!s)return;
-
- souvenirSelectionne = s.id;
-
- detail.textContent =
-  "TITRE : " + s.titre +
-  "\n\nCATÉGORIE : " + s.categorie +
-  "\nDATE : " + s.date +
-  "\n\nINFORMATIONS :\n" + s.contenu;
-}
-
-function chargerAncienneMemoire(){
- const ancienne = lireJSON("jarvis_memoire",[]);
-
- if(!Array.isArray(ancienne))return;
-
- ancienne.forEach(item=>{
-  if(typeof item === "string"){
-   souvenirs.push({
-    id:"old_"+Math.random().toString(36).slice(2),
-    titre:"Ancien souvenir",
-    contenu:item,
-    categorie:"ancien",
-    date:"Date inconnue"
-   });
-  }else if(item && typeof item === "object"){
-   souvenirs.push({
-    id:item.id || "old_"+Math.random().toString(36).slice(2),
-    titre:String(item.titre || item.title || "Ancien souvenir"),
-    contenu:String(item.contenu || item.content || item.texte || ""),
-    categorie:String(item.categorie || "ancien"),
-    date:String(item.date || "Date inconnue")
-   });
-  }
- });
-
 }
 
 function ouvrir(){
@@ -2841,7 +2839,7 @@ function ouvrir(){
   redimensionner();
  }
 
- reconstruireSpheres();
+ reconstruire();
 }
 
 function fermer(){
@@ -2854,8 +2852,7 @@ $("v92-memory-close").addEventListener("click",fermer);
 function initialiser3D(){
 
  if(!window.THREE){
-  status.textContent =
-   "THREE.JS INDISPONIBLE : vérifiez votre connexion Internet.";
+  status.textContent = "Three.js indisponible. Vérifiez Internet.";
   return;
  }
 
@@ -2864,12 +2861,12 @@ function initialiser3D(){
 
   camera = new THREE.PerspectiveCamera(
    55,
-   canvas.clientWidth / canvas.clientHeight,
+   1,
    0.1,
    1000
   );
 
-  camera.position.z = 7;
+  camera.position.z = zoom;
 
   renderer = new THREE.WebGLRenderer({
    canvas:canvas,
@@ -2877,65 +2874,61 @@ function initialiser3D(){
    antialias:true
   });
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,2));
+  renderer.setPixelRatio(
+   Math.min(window.devicePixelRatio || 1,2)
+  );
 
   groupe = new THREE.Group();
   scene.add(groupe);
 
   raycaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
+  souris = new THREE.Vector2();
 
   const lumiere = new THREE.PointLight(0x36aaff,3,20);
   lumiere.position.set(3,3,5);
   scene.add(lumiere);
 
-  const lumiere2 = new THREE.PointLight(0x0066ff,2,20);
-  lumiere2.position.set(-3,-3,-5);
-  scene.add(lumiere2);
-
   const noyau = new THREE.Mesh(
-   new THREE.SphereGeometry(0.65,32,32),
+   new THREE.SphereGeometry(.65,32,32),
    new THREE.MeshBasicMaterial({
     color:0x087cff,
     wireframe:true,
     transparent:true,
-    opacity:0.65
+    opacity:.7
    })
   );
 
   groupe.add(noyau);
 
-  const noyauInterne = new THREE.Mesh(
-   new THREE.SphereGeometry(0.28,32,32),
+  const centre = new THREE.Mesh(
+   new THREE.SphereGeometry(.25,24,24),
    new THREE.MeshBasicMaterial({
     color:0x65d9ff,
     transparent:true,
-    opacity:0.35
+    opacity:.65
    })
   );
 
-  groupe.add(noyauInterne);
+  groupe.add(centre);
 
   redimensionner();
+  animer();
 
-  animer3D();
-
-  canvas.addEventListener("pointerdown", debutGlisser);
-  canvas.addEventListener("pointermove", glisser);
-  canvas.addEventListener("pointerup", finGlisser);
-  canvas.addEventListener("pointercancel", finGlisser);
+  canvas.addEventListener("pointerdown",debutGlisse);
+  canvas.addEventListener("pointermove",glisser);
+  canvas.addEventListener("pointerup",finGlisse);
+  canvas.addEventListener("pointercancel",finGlisse);
 
   canvas.addEventListener("wheel",e=>{
    e.preventDefault();
-   zoom += e.deltaY * -0.001;
-   zoom = Math.max(0.65,Math.min(1.8,zoom));
-   camera.position.z = 7 / zoom;
+   zoom = Math.max(4,Math.min(12,zoom + e.deltaY*.008));
+   camera.position.z = zoom;
   },{passive:false});
 
-  status.textContent = "STARK CORE : OPÉRATIONNEL";
+  status.textContent = "STARK CORE OPÉRATIONNEL.";
 
  }catch(e){
-  status.textContent = "ERREUR 3D : " + e.message;
+  status.textContent = "ERREUR 3D : "+e.message;
  }
 }
 
@@ -2946,59 +2939,63 @@ function redimensionner(){
  const hauteur = Math.max(1,canvas.clientHeight);
 
  renderer.setSize(largeur,hauteur,false);
+
  camera.aspect = largeur/hauteur;
  camera.updateProjectionMatrix();
 }
 
 window.addEventListener("resize",redimensionner);
 
-function animer3D(){
+function animer(){
  if(!renderer)return;
 
- animationId = requestAnimationFrame(animer3D);
+ animation = requestAnimationFrame(animer);
 
  if(groupe){
   groupe.rotation.x = rotationX;
-  groupe.rotation.y = rotationY + Date.now()*0.00008;
+  groupe.rotation.y = rotationY + Date.now()*.00008;
  }
 
  renderer.render(scene,camera);
 }
 
-function debutGlisser(e){
- dragging = true;
- moved = false;
- lastX = e.clientX;
- lastY = e.clientY;
+function debutGlisse(e){
+ glisse = true;
+ mouvement = false;
+ dernierX = e.clientX;
+ dernierY = e.clientY;
+
  canvas.setPointerCapture(e.pointerId);
 }
 
 function glisser(e){
- if(!dragging)return;
+ if(!glisse)return;
 
- const dx = e.clientX-lastX;
- const dy = e.clientY-lastY;
+ const dx = e.clientX-dernierX;
+ const dy = e.clientY-dernierY;
 
- if(Math.abs(dx)+Math.abs(dy)>3)moved = true;
+ if(Math.abs(dx)+Math.abs(dy)>3){
+  mouvement = true;
+ }
 
- rotationY += dx*0.008;
- rotationX += dy*0.008;
+ rotationY += dx*.008;
+ rotationX += dy*.008;
 
- lastX = e.clientX;
- lastY = e.clientY;
+ dernierX = e.clientX;
+ dernierY = e.clientY;
 }
 
-function finGlisser(e){
- if(!dragging)return;
+function finGlisse(e){
+ if(!glisse)return;
 
- dragging = false;
+ glisse = false;
 
- if(!moved){
-  selectionnerParticule(e);
+ if(!mouvement){
+  selectionner(e);
  }
 }
 
-function couleurCategorie(categorie){
+function couleur(categorie){
  const couleurs = {
   conversation:0x36aaff,
   personnel:0x00e5ff,
@@ -3010,39 +3007,38 @@ function couleurCategorie(categorie){
  return couleurs[categorie] || 0x36aaff;
 }
 
-function reconstruireSpheres(){
+function reconstruire(){
 
  if(!groupe || !window.THREE)return;
 
- // Supprime tous les anciens objets de la sphère.
- for(let i=groupe.children.length-1;i>=0;i--){
-  const objet = groupe.children[i];
-
-  if(objet.userData && objet.userData.memoryId){
-   groupe.remove(objet);
-
-   if(objet.geometry)objet.geometry.dispose();
-   if(objet.material)objet.material.dispose();
-  }
-
-  if(objet.userData && objet.userData.decoration){
-   groupe.remove(objet);
-
-   if(objet.geometry)objet.geometry.dispose();
-   if(objet.material)objet.material.dispose();
-  }
- }
+ groupe.children
+  .filter(o=>o.userData.memoryId || o.userData.decoration)
+  .forEach(o=>{
+   groupe.remove(o);
+   o.geometry?.dispose();
+   o.material?.dispose();
+  });
 
  particules = [];
- souvenirsAffiches = souvenirs.slice();
 
- const nombre = souvenirsAffiches.length;
+ const recherche = $("v92-memory-search").value
+  .trim()
+  .toLowerCase();
 
- // Particules décoratives autour du noyau.
+ const liste = souvenirs()
+  .map(normaliserSouvenir)
+  .filter(s=>{
+   const texte = s.titre+" "+s.contenu+" "+s.categorie;
+   return texte.toLowerCase().includes(recherche);
+  });
+
+ compteur.textContent =
+  liste.length+" souvenir(s) affiché(s)";
+
  const positions = [];
 
- for(let i=0;i<450;i++){
-  const phi = Math.acos(1-2*(i+0.5)/450);
+ for(let i=0;i<300;i++){
+  const phi = Math.acos(1-2*(i+.5)/300);
   const theta = Math.PI*(1+Math.sqrt(5))*i;
 
   positions.push(
@@ -3052,256 +3048,197 @@ function reconstruireSpheres(){
   );
  }
 
- const decoGeometry = new THREE.BufferGeometry();
- decoGeometry.setAttribute(
+ const geometry = new THREE.BufferGeometry();
+
+ geometry.setAttribute(
   "position",
   new THREE.Float32BufferAttribute(positions,3)
  );
 
- const deco = new THREE.Points(
-  decoGeometry,
+ const decoration = new THREE.Points(
+  geometry,
   new THREE.PointsMaterial({
    color:0x1266a0,
-   size:0.018,
+   size:.025,
    transparent:true,
-   opacity:0.65
+   opacity:.7
   })
  );
 
- deco.userData.decoration = true;
- groupe.add(deco);
+ decoration.userData.decoration = true;
+ groupe.add(decoration);
 
- souvenirsAffiches.forEach((s,i)=>{
+ liste.forEach((s,i)=>{
 
-  const phi = Math.acos(1-2*(i+0.5)/Math.max(nombre,1));
+  const phi = Math.acos(
+   1-2*(i+.5)/Math.max(liste.length,1)
+  );
+
   const theta = Math.PI*(1+Math.sqrt(5))*i;
-
   const rayon = 1.65;
 
-  const x = rayon*Math.sin(phi)*Math.cos(theta);
-  const y = rayon*Math.cos(phi);
-  const z = rayon*Math.sin(phi)*Math.sin(theta);
+  const particule = new THREE.Mesh(
+   new THREE.SphereGeometry(.065,12,12),
+   new THREE.MeshBasicMaterial({
+    color:couleur(s.categorie)
+   })
+  );
 
-  const geometry = new THREE.SphereGeometry(0.065,12,12);
+  particule.position.set(
+   rayon*Math.sin(phi)*Math.cos(theta),
+   rayon*Math.cos(phi),
+   rayon*Math.sin(phi)*Math.sin(theta)
+  );
 
-  const material = new THREE.MeshBasicMaterial({
-   color:couleurCategorie(s.categorie)
-  });
-
-  const particule = new THREE.Mesh(geometry,material);
-
-  particule.position.set(x,y,z);
   particule.userData.memoryId = s.id;
 
   groupe.add(particule);
   particules.push(particule);
  });
 
- actualiserCompteur();
 }
 
-function selectionnerParticule(e){
+function selectionner(e){
 
  if(!renderer || !camera || !raycaster)return;
 
  const rect = canvas.getBoundingClientRect();
 
- mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
- mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+ souris.x = ((e.clientX-rect.left)/rect.width)*2-1;
+ souris.y = -((e.clientY-rect.top)/rect.height)*2+1;
 
- raycaster.setFromCamera(mouse,camera);
+ raycaster.setFromCamera(souris,camera);
 
- const resultats = raycaster.intersectObjects(particules);
+ const resultat = raycaster.intersectObjects(particules);
 
- if(resultats.length){
-  const id = resultats[0].object.userData.memoryId;
-  const souvenir = souvenirs.find(s=>s.id===id);
+ if(!resultat.length)return;
 
-  if(souvenir)afficherSouvenir(souvenir);
- }
+ const id = resultat[0].object.userData.memoryId;
+
+ const souvenir = souvenirs()
+  .map(normaliserSouvenir)
+  .find(s=>s.id===id);
+
+ if(!souvenir)return;
+
+ selection = id;
+
+ detail.textContent =
+  "TITRE : "+souvenir.titre+
+  "\n\nCATÉGORIE : "+souvenir.categorie+
+  "\nDATE : "+souvenir.date+
+  "\n\nINFORMATIONS :\n"+souvenir.contenu;
+
+ status.textContent = "SOUVENIR SÉLECTIONNÉ.";
 }
 
-$("v92-memory-add").addEventListener("click",(e)=>{
+$("v92-memory-add").addEventListener("click",()=>{
 
- e.preventDefault();
-
- const titre = document.getElementById("v92-memory-name")?.value?.trim() || "";
- const contenu = document.getElementById("v92-memory-content")?.value?.trim() || "";
-
-console.log("TITRE :", titre);
-console.log("CONTENU :", contenu);
+ const titre = $("v92-memory-name").value.trim();
+ const contenu = $("v92-memory-content").value.trim();
 
  if(!titre || !contenu){
-  status.textContent = "ERREUR : TITRE ET CONTENU OBLIGATOIRES.";
+  status.textContent = "Renseignez le titre et le contenu.";
   return;
  }
 
- try{
+ const souvenir = {
+  id:"memory_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
+  titre,
+  contenu,
+  categorie:"personnel",
+  date:new Date().toLocaleString("fr-FR")
+ };
 
-  const souvenir = {
-   id: "memory_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
-   titre: titre,
-   contenu: contenu,
-   categorie: "personnel",
-   date: new Date().toLocaleString("fr-FR")
-  };
+ memoireLocale.unshift(souvenir);
+ memoireLocale.splice(300);
 
-  souvenirs.unshift(souvenir);
-  souvenirs = souvenirs.slice(0,300);
+ sauvegarder();
 
-  localStorage.setItem(
-   CLE_MEMOIRE_3D,
-   JSON.stringify(souvenirs)
-  );
+ $("v92-memory-name").value = "";
+ $("v92-memory-content").value = "";
 
-  actualiserCompteur();
-  reconstruireSpheres();
-  afficherSouvenir(souvenir);
+ selection = souvenir.id;
 
-  $("v92-memory-name").value = "";
-  $("v92-memory-content").value = "";
+ detail.textContent = titre+"\n\n"+contenu;
 
-  status.textContent = "SOUVENIR ENREGISTRÉ AVEC SUCCÈS.";
+ reconstruire();
 
- }catch(erreur){
-
-  status.textContent = "ERREUR DE SAUVEGARDE : " + erreur.message;
-
- }
-
+ status.textContent = "SOUVENIR ENREGISTRÉ.";
 });
 
 $("v92-memory-delete").addEventListener("click",()=>{
 
- if(!souvenirSelectionne){
-  status.textContent = "Aucun souvenir sélectionné.";
+ if(!selection){
+  status.textContent = "Sélectionnez d'abord un souvenir.";
   return;
  }
 
- souvenirs = souvenirs.filter(s=>s.id!==souvenirSelectionne);
- souvenirSelectionne = null;
-
- sauvegarder();
- reconstruireSpheres();
-
- detail.textContent = "Souvenir supprimé.";
-
- status.textContent = "SUPPRESSION EFFECTUÉE.";
-});
-
-$("v92-memory-search").addEventListener("input",e=>{
-
- const recherche = e.target.value.trim().toLowerCase();
-
- if(!recherche){
-  souvenirsAffiches = souvenirs.slice();
-  reconstruireSpheres();
-  return;
- }
-
- souvenirsAffiches = souvenirs.filter(s=>
-  (s.titre+" "+s.contenu+" "+s.categorie)
-   .toLowerCase()
-   .includes(recherche)
+ const index = souvenirs().findIndex(s=>
+  String(s.id)===String(selection)
  );
 
- // La fonction reconstruit la sphère à partir de la liste filtrée.
- const listeOriginale = souvenirs;
- souvenirs = souvenirsAffiches;
- reconstruireSpheres();
- souvenirs = listeOriginale;
+ if(index<0){
+  status.textContent = "Souvenir introuvable.";
+  return;
+ }
 
- compteur.textContent =
-  souvenirsAffiches.length+" résultat(s) trouvé(s)";
+ if(!confirm("Supprimer définitivement ce souvenir ?"))return;
+
+ memoireLocale.splice(index,1);
+
+ selection = null;
+
+ sauvegarder();
+reconstruire();
+
+ detail.textContent = "Aucun souvenir sélectionné.";
+ status.textContent = "SOUVENIR SUPPRIMÉ.";
 });
+
+$("v92-memory-search").addEventListener("input",reconstruire);
 
 $("v92-memory-reset").addEventListener("click",()=>{
  $("v92-memory-search").value = "";
- souvenirsAffiches = souvenirs.slice();
- reconstruireSpheres();
+ reconstruire();
  status.textContent = "TOUS LES SOUVENIRS SONT AFFICHÉS.";
 });
 
-const autoCheckbox = $("v92-memory-auto");
+const auto = $("v92-memory-auto");
 
-autoCheckbox.checked =
- localStorage.getItem(CLE_AUTO) !== "false";
+auto.checked = localStorage.getItem(cleAuto)==="true";
 
-autoCheckbox.addEventListener("change",()=>{
- localStorage.setItem(
-  CLE_AUTO,
-  autoCheckbox.checked ? "true" : "false"
- );
+auto.addEventListener("change",()=>{
+ localStorage.setItem(cleAuto,String(auto.checked));
 
- status.textContent = autoCheckbox.checked
+ status.textContent = auto.checked
   ? "MÉMORISATION AUTOMATIQUE ACTIVÉE."
   : "MÉMORISATION AUTOMATIQUE DÉSACTIVÉE.";
 });
 
-function memoriserConversation(question,reponse){
+window.jarvisV92CaptureConversation = function(question,reponse){
 
- if(localStorage.getItem(CLE_AUTO)==="false")return;
- if(!question || !reponse)return;
+ if(localStorage.getItem(cleAuto)!=="true")return;
 
- const q = String(question).trim();
- const r = String(reponse).trim();
-
- if(!q || !r)return;
-
- creerSouvenir(
-  "Conversation avec J.A.R.V.I.S",
-  "Vous : "+q+"\n\nJ.A.R.V.I.S : "+r,
-  "conversation"
- );
-}
-
-// Fonction accessible depuis les autres modules.
-window.jarvisV92CaptureConversation = memoriserConversation;
-
-// Connexion au système d'envoi de messages existant.
-const envoyerOriginal = window.envoyer;
-
-if(typeof envoyerOriginal === "function"){
-
- window.envoyer = async function(){
-
-  const champ = $("chat-input");
-  const question = champ ? champ.value.trim() : "";
-
-  await envoyerOriginal.apply(this,arguments);
-
-  if(!question)return;
-
-  // historique est une variable globale du script principal.
-  const derniersMessages =
-   typeof historique !== "undefined" && Array.isArray(historique)
-    ? historique.slice(-2)
-    : [];
-
-  const reponse = derniersMessages.find(m=>
-   m.role==="assistant" &&
-   typeof m.content==="string"
+ if(typeof window.enregistrerSouvenir==="function"){
+  window.enregistrerSouvenir(
+   "Conversation — "+String(question)+
+   "\nJ.A.R.V.I.S — "+String(reponse)
   );
+ }
+};
 
-  if(reponse){
-   memoriserConversation(question,reponse.content);
-  }
- };
-}
+window.jarvisV92ActualiserMemoire = function(){
+ if(page.classList.contains("open")){
+  reconstruire();
+ }
+};
 
-// Chargement de la mémoire existante.
-souvenirs = lireJSON(CLE_MEMOIRE_3D,[]);
+window.addEventListener("storage",()=>{
+ if(page.classList.contains("open"))reconstruire();
+});
 
-if(!Array.isArray(souvenirs)){
- souvenirs = [];
-}
-
-chargerAncienneMemoire();
-
-sauvegarder();
-actualiserCompteur();
-
-status.textContent = "MÉMOIRE LOCALE INITIALISÉE.";
+status.textContent = "MÉMOIRE PARTAGÉE INITIALISÉE.";
 
 })();
 </script>
@@ -3632,7 +3569,6 @@ status.textContent = "MÉMOIRE LOCALE INITIALISÉE.";
   .addEventListener("click",()=>panel.classList.remove("open"));
 })();
 </script>
-<!-- CORRECTION MENU STARK V9.2 -->
 
 <style>
 /* Menu latéral : défilement vertical */
@@ -4714,7 +4650,29 @@ setInterval(()=>{
 /* INITIALISATION */
 
 document.body.classList.remove("v10-module-open");
+     
+/* SYNCHRONISATION DES VARIABLES V10 */
 
+Object.defineProperty(window, "vocalActif", {
+    configurable: true,
+    get: () => vocalActif,
+    set: valeur => {
+        vocalActif = Boolean(valeur);
+    }
+});
+
+Object.defineProperty(window, "historique", {
+    configurable: true,
+    get: () => historique,
+    set: valeur => {
+        if (Array.isArray(valeur)) {
+            historique = valeur;
+        }
+    }
+});
+
+console.log("JARVIS : variables vocales synchronisées.");
+     
 console.log("J.A.R.V.I.S V10.1 — Interface initialisée.");
 
 })();
@@ -5065,162 +5023,6 @@ try {
 </style>
 
 <script>
-/* =====================================================
-   J.A.R.V.I.S — CORRECTIF SPHÈRE D'ACCUEIL
-===================================================== */
-
-(function () {
-  const canvas = document.getElementById("stark-three");
-  if (!canvas) {
-    console.error("JARVIS : canvas de la sphère introuvable.");
-    return;
-  }
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  let largeur = 0;
-  let hauteur = 0;
-  let angle = 0;
-
-  function redimensionnerSphere() {
-    const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    largeur = Math.max(1, rect.width);
-    hauteur = Math.max(1, rect.height);
-
-    canvas.width = Math.round(largeur * dpr);
-    canvas.height = Math.round(hauteur * dpr);
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function dessinerSphere() {
-    ctx.clearRect(0, 0, largeur, hauteur);
-
-    const cx = largeur / 2;
-    const cy = hauteur / 2;
-    const rayon = Math.min(largeur, hauteur) * 0.34;
-
-    // Halo extérieur
-    const halo = ctx.createRadialGradient(
-      cx, cy, rayon * 0.2,
-      cx, cy, rayon * 1.6
-    );
-
-    halo.addColorStop(0, "rgba(0,160,255,0.12)");
-    halo.addColorStop(0.65, "rgba(0,100,255,0.08)");
-    halo.addColorStop(1, "rgba(0,0,0,0)");
-
-    ctx.fillStyle = halo;
-    ctx.fillRect(0, 0, largeur, hauteur);
-
-    // Anneaux lumineux
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(angle * 0.35);
-
-    for (let i = 0; i < 3; i++) {
-      ctx.beginPath();
-      ctx.ellipse(
-        0, 0,
-        rayon * (1.13 + i * 0.13),
-        rayon * (0.35 + i * 0.08),
-        i * 0.6,
-        0, Math.PI * 2
-      );
-
-      ctx.strokeStyle = `rgba(35,180,255,${0.35 - i * 0.08})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
-    ctx.restore();
-
-    // Sphère centrale
-    const sphere = ctx.createRadialGradient(
-      cx - rayon * 0.35,
-      cy - rayon * 0.4,
-      rayon * 0.05,
-      cx, cy, rayon
-    );
-
-    sphere.addColorStop(0, "#a8f3ff");
-    sphere.addColorStop(0.18, "#168cff");
-    sphere.addColorStop(0.55, "#063d91");
-    sphere.addColorStop(1, "#020b25");
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
-    ctx.fillStyle = sphere;
-    ctx.shadowColor = "#00aaff";
-    ctx.shadowBlur = 30;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Lignes de latitude
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
-    ctx.clip();
-
-    for (let i = -2; i <= 2; i++) {
-      const y = i * rayon * 0.32;
-      const largeurArc = Math.sqrt(
-        Math.max(0, rayon * rayon - y * y)
-      );
-
-      ctx.beginPath();
-      ctx.ellipse(
-        cx, cy + y,
-        largeurArc, Math.max(2, rayon * 0.12),
-        0, 0, Math.PI * 2
-      );
-
-      ctx.strokeStyle = "rgba(125,225,255,0.55)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    // Méridiens
-    for (let i = 0; i < 4; i++) {
-      ctx.beginPath();
-      ctx.ellipse(
-        cx, cy,
-        rayon * Math.abs(Math.cos(angle + i * Math.PI / 4)),
-        rayon,
-        0, 0, Math.PI * 2
-      );
-      ctx.strokeStyle = "rgba(130,225,255,0.32)";
-      ctx.stroke();
-    }
-
-    ctx.restore();
-
-    // Contour lumineux
-    ctx.beginPath();
-    ctx.arc(cx, cy, rayon, 0, Math.PI * 2);
-    ctx.strokeStyle = "#55dfff";
-    ctx.lineWidth = 2;
-    ctx.shadowColor = "#00aaff";
-    ctx.shadowBlur = 18;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    angle += 0.008;
-
-    window.__jarvisHomeSphereFrame =
-      requestAnimationFrame(dessinerSphere);
-  }
-
-  redimensionnerSphere();
-  dessinerSphere();
-
-  window.addEventListener("resize", redimensionnerSphere);
-
-  console.log("JARVIS : sphère d'accueil initialisée.");
-})();
 
 /* =====================================================
    J.A.R.V.I.S — BOUTON QUITTER MÉMOIRE
@@ -5268,6 +5070,652 @@ try {
 })();
 
 console.log("JARVIS : correctifs chargés.");
+</script>
+<!-- =====================================================
+     J.A.R.V.I.S — MODULE ÉCHECS
+     À INSÉRER JUSTE AVANT </body>
+===================================================== -->
+
+<style>
+#chess-page{
+  color:#d9efff;
+}
+.chess-layout{
+  display:grid;
+  grid-template-columns:minmax(280px,520px) minmax(220px,1fr);
+  gap:18px;
+  align-items:start;
+}
+.chess-board{
+  width:100%;
+  max-width:520px;
+  aspect-ratio:1;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  border:3px solid #168bd4;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 0 28px #008cff33;
+}
+.chess-square{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:0;
+  min-width:0;
+  aspect-ratio:1;
+  font-size:clamp(23px,5vw,46px);
+  line-height:1;
+  cursor:pointer;
+}
+.chess-square.light{background:#c5d9e8;color:#071522}
+.chess-square.dark{background:#315a78;color:#fff}
+.chess-square.selected{
+  box-shadow:inset 0 0 0 4px #00e5ff;
+}
+.chess-square.possible::after{
+  content:"";
+  position:absolute;
+  width:23%;
+  height:23%;
+  border-radius:50%;
+  background:#00e5ff99;
+}
+.chess-square.capture::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:4px solid #00e5ffbb;
+  border-radius:50%;
+}
+.chess-square:disabled{opacity:1}
+.chess-side{
+  min-width:0;
+}
+.chess-status{
+  padding:13px;
+  border:1px solid #168bd455;
+  border-radius:10px;
+  background:#071827;
+  margin:12px 0;
+  color:#8eeaff;
+  font-weight:700;
+}
+.chess-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.chess-controls button{
+  flex:1;
+  min-width:110px;
+}
+.chess-moves{
+  max-height:210px;
+  overflow:auto;
+  padding:10px;
+  background:#061321;
+  border:1px solid #173b55;
+  border-radius:9px;
+  font-size:13px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+.chess-piece-white{
+  text-shadow:0 1px 2px #0008;
+}
+.chess-piece-black{
+  text-shadow:0 1px 2px #0008;
+}
+@media(max-width:760px){
+  .chess-layout{grid-template-columns:1fr}
+  .chess-board{margin:auto}
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+<script>
+(function(){
+"use strict";
+
+const CHESS_PIECES = {
+  w:{
+    k:"♔",q:"♕",r:"♖",b:"♗",n:"♘",p:"♙"
+  },
+  b:{
+    k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"
+  }
+};
+
+let chessGame = null;
+let chessSelection = null;
+let chessLegalMoves = [];
+let chessBusy = false;
+let chessDifficulty = "medium";
+
+function chessElement(id){
+  return document.getElementById(id);
+}
+
+/* 1. AJOUT DE L'ONGLET DANS LE MENU */
+
+function installerOngletEchecs(){
+  const drawer = chessElement("stark-drawer");
+  const main = document.querySelector("main");
+
+  if(!drawer || !main) return;
+
+  if(!chessElement("chess-nav-button")){
+    const group = document.createElement("details");
+    group.className = "drawer-group";
+    group.open = false;
+
+    const summary = document.createElement("summary");
+    summary.textContent = "DIVERTISSEMENT";
+    group.appendChild(summary);
+
+    const button = document.createElement("button");
+    button.id = "chess-nav-button";
+    button.className = "drawer-link";
+    button.textContent = "♟  Échecs contre J.A.R.V.I.S";
+    button.addEventListener("click",function(){
+      if(typeof window.navV9 === "function"){
+        window.navV9("chess");
+      }else if(typeof window.allerPage === "function"){
+        window.allerPage("chess");
+      }
+
+      if(typeof window.basculerMenuStark === "function"){
+        window.basculerMenuStark(false);
+      }
+    });
+
+    group.appendChild(button);
+    drawer.appendChild(group);
+  }
+
+  if(!chessElement("page-chess")){
+    const page = document.createElement("section");
+    page.id = "page-chess";
+    page.className = "page";
+
+    page.innerHTML = `
+      <div class="panel">
+        <div class="section-title">
+          <h2>STARK CHESS SYSTEM</h2>
+          <span class="tag">MODULE ÉCHECS</span>
+        </div>
+
+        <p class="small">
+          Affrontez J.A.R.V.I.S sur un échiquier interactif.
+          Vous jouez les blancs, J.A.R.V.I.S joue les noirs.
+        </p>
+
+        <div class="chess-controls">
+          <select id="chess-difficulty" aria-label="Difficulté">
+            <option value="easy">FACILE</option>
+            <option value="medium" selected>MOYEN</option>
+            <option value="hard">DIFFICILE</option>
+          </select>
+
+          <button class="secondary" id="chess-new">
+            NOUVELLE PARTIE
+          </button>
+        </div>
+      </div>
+
+      <div class="chess-layout">
+        <div class="panel">
+          <div class="chess-board" id="chess-board"
+               aria-label="Échiquier"></div>
+
+          <div class="chess-status" id="chess-status">
+            Initialisation de l'échiquier...
+          </div>
+
+          <div class="chess-controls">
+            <button class="secondary" id="chess-undo">
+              ANNULER LE TOUR
+            </button>
+            <button class="secondary" id="chess-reset">
+              RECOMMENCER
+            </button>
+          </div>
+        </div>
+
+        <div class="chess-side">
+          <div class="panel">
+            <h2>ADVERSAIRE</h2>
+            <div class="stat">
+              <span>JOUEUR</span>
+              <strong>VOUS — BLANCS</strong>
+            </div>
+            <div class="stat">
+              <span>ADVERSAIRE</span>
+              <strong>J.A.R.V.I.S — NOIRS</strong>
+            </div>
+            <div class="stat">
+              <span>DIFFICULTÉ</span>
+              <strong id="chess-level-label">MOYEN</strong>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>HISTORIQUE DES COUPS</h2>
+            <div class="chess-moves" id="chess-moves">
+              Aucun coup joué.
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>BOT EN LIGNE</h2>
+            <p class="small">
+              Ouvrir une plateforme externe pour jouer contre
+              d'autres joueurs ou des bots.
+            </p>
+            <button class="primary" id="chess-online"
+                    style="width:100%">
+              JOUER SUR LICHESS
+            </button>
+            <p class="small" style="margin-top:10px">
+              La partie en ligne se déroule sur le site externe,
+              pas dans cet échiquier.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    main.appendChild(page);
+  }
+
+  connecterCommandesEchecs();
+}
+
+/* 2. INITIALISATION */
+
+function initialiserEchecs(){
+  if(typeof window.Chess !== "function"){
+    chessElement("chess-status").textContent =
+      "Bibliothèque d'échecs indisponible. Vérifiez votre connexion.";
+    return;
+  }
+
+  chessGame = new window.Chess();
+  chessSelection = null;
+  chessLegalMoves = [];
+  chessBusy = false;
+
+  dessinerEchiquier();
+  actualiserHistorique();
+  actualiserStatut("À vous de jouer, Monsieur.");
+}
+
+function connecterCommandesEchecs(){
+  const difficulty = chessElement("chess-difficulty");
+  const newGame = chessElement("chess-new");
+  const reset = chessElement("chess-reset");
+  const undo = chessElement("chess-undo");
+  const online = chessElement("chess-online");
+
+  if(difficulty){
+    difficulty.addEventListener("change",function(){
+      chessDifficulty = difficulty.value;
+
+      const labels = {
+        easy:"FACILE",
+        medium:"MOYEN",
+        hard:"DIFFICILE"
+      };
+
+      chessElement("chess-level-label").textContent =
+        labels[chessDifficulty];
+    });
+  }
+
+  if(newGame){
+    newGame.addEventListener("click",initialiserEchecs);
+  }
+
+  if(reset){
+    reset.addEventListener("click",initialiserEchecs);
+  }
+
+  if(undo){
+    undo.addEventListener("click",function(){
+      if(!chessGame || chessBusy) return;
+
+      if(chessGame.history().length >= 2){
+        chessGame.undo();
+        chessGame.undo();
+      }else if(chessGame.history().length === 1){
+        chessGame.undo();
+      }
+
+      chessSelection = null;
+      chessLegalMoves = [];
+      dessinerEchiquier();
+      actualiserHistorique();
+      actualiserStatut("Tour annulé.");
+    });
+  }
+
+  if(online){
+    online.addEventListener("click",function(){
+      window.open(
+        "https://lichess.org/",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+  }
+
+  initialiserEchecs();
+}
+
+/* 3. DESSIN DU PLATEAU */
+
+function dessinerEchiquier(){
+  if(!chessGame) return;
+
+  const boardElement = chessElement("chess-board");
+  if(!boardElement) return;
+
+  boardElement.innerHTML = "";
+
+  const board = chessGame.board();
+  const files = ["a","b","c","d","e","f","g","h"];
+
+  for(let row = 0; row < 8; row++){
+    for(let col = 0; col < 8; col++){
+      const squareName = files[col] + (8-row);
+      const piece = board[row][col];
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className =
+        "chess-square " +
+        ((row+col)%2===0 ? "light" : "dark");
+
+      button.dataset.square = squareName;
+      button.setAttribute("aria-label",squareName);
+
+      if(piece){
+        button.textContent = CHESS_PIECES[piece.color][piece.type];
+        button.classList.add(
+          piece.color === "w"
+            ? "chess-piece-white"
+            : "chess-piece-black"
+        );
+      }
+
+      if(chessSelection === squareName){
+        button.classList.add("selected");
+      }
+
+      const destination = chessLegalMoves.find(
+        move => move.to === squareName
+      );
+
+      if(destination){
+        button.classList.add(
+          destination.captured ? "capture" : "possible"
+        );
+      }
+
+      button.addEventListener("click",function(){
+        cliquerCase(squareName);
+      });
+
+      boardElement.appendChild(button);
+    }
+  }
+}
+
+/* 4. SÉLECTION ET DÉPLACEMENT */
+
+function cliquerCase(square){
+  if(!chessGame || chessBusy || chessGame.game_over()) return;
+  if(chessGame.turn() !== "w") return;
+
+  const piece = chessGame.get(square);
+
+  if(chessSelection){
+    const coupPossible = chessLegalMoves.find(
+      move => move.to === square
+    );
+
+    if(coupPossible){
+      jouerCoupHumain(chessSelection,square);
+      return;
+    }
+  }
+
+  if(piece && piece.color === "w"){
+    chessSelection = square;
+    chessLegalMoves = chessGame.moves({
+      square:square,
+      verbose:true
+    });
+
+    dessinerEchiquier();
+    return;
+  }
+
+  chessSelection = null;
+  chessLegalMoves = [];
+  dessinerEchiquier();
+}
+
+function jouerCoupHumain(from,to){
+  try{
+    const coup = chessGame.move({
+      from:from,
+      to:to,
+      promotion:"q"
+    });
+
+    if(!coup) return;
+
+    chessSelection = null;
+    chessLegalMoves = [];
+
+    dessinerEchiquier();
+    actualiserHistorique();
+
+    if(verifierFinPartie()) return;
+
+    actualiserStatut("J.A.R.V.I.S réfléchit...");
+    chessBusy = true;
+
+    setTimeout(jouerCoupJarvis,250);
+  }catch(error){
+    console.error("Erreur coup joueur :",error);
+  }
+}
+
+/* 5. COUP DE J.A.R.V.I.S */
+
+async function jouerCoupJarvis(){
+  try{
+    if(!chessGame || chessGame.game_over()) return;
+
+    const fen = chessGame.fen();
+    const coupsLegaux = chessGame.moves();
+
+    if(!coupsLegaux.length) return;
+
+    if(typeof window.appelerIA !== "function"){
+      actualiserStatut(
+        "Connexion IA indisponible. Recommencez plus tard."
+      );
+      return;
+    }
+
+    let consigne = "";
+
+    if(chessDifficulty === "easy"){
+      consigne =
+        "Choisis un coup légal simple. Ne cherche pas forcément le meilleur.";
+    }else if(chessDifficulty === "hard"){
+      consigne =
+        "Choisis le coup légal le plus stratégique possible. " +
+        "Prends en compte les échecs, les captures et la protection du roi.";
+    }else{
+      consigne =
+        "Choisis un coup légal raisonnable et équilibré.";
+    }
+
+    const prompt = `
+Tu joues une partie d'échecs.
+Tu es les noirs et tu dois jouer maintenant.
+
+Position FEN :
+${fen}
+
+Liste des coups autorisés au format SAN :
+${coupsLegaux.join(", ")}
+
+Niveau demandé : ${chessDifficulty}.
+${consigne}
+
+Réponds uniquement par un seul coup exactement présent
+dans la liste des coups autorisés.
+N'ajoute aucune explication, aucun commentaire.
+`;
+
+    const reponse = await window.appelerIA(prompt,[]);
+    const texte = String(reponse || "").trim();
+
+    let coupChoisi = coupsLegaux.find(
+      coup => coup === texte
+    );
+
+    if(!coupChoisi){
+      coupChoisi = coupsLegaux.find(coup =>
+        texte.split(/\s+/).includes(coup)
+      );
+    }
+
+    if(!coupChoisi){
+      throw new Error(
+        "J.A.R.V.I.S n'a pas proposé un coup légal."
+      );
+    }
+
+    const coup = chessGame.move(coupChoisi);
+
+    if(!coup){
+      throw new Error("Le coup proposé est invalide.");
+    }
+
+    dessinerEchiquier();
+    actualiserHistorique();
+
+    if(!verifierFinPartie()){
+      actualiserStatut("À vous de jouer, Monsieur.");
+    }
+
+  }catch(error){
+    console.error("Erreur échecs J.A.R.V.I.S :",error);
+    actualiserStatut(
+      "Impossible de jouer le coup de J.A.R.V.I.S. " +
+      "Vérifiez la connexion IA puis recommencez."
+    );
+  }finally{
+    chessBusy = false;
+  }
+}
+
+/* 6. STATUT ET HISTORIQUE */
+
+function actualiserStatut(message){
+  const zone = chessElement("chess-status");
+  if(zone) zone.textContent = message;
+}
+
+function actualiserHistorique(){
+  if(!chessGame) return;
+
+  const zone = chessElement("chess-moves");
+  if(!zone) return;
+
+  const coups = chessGame.history();
+
+  if(!coups.length){
+    zone.textContent = "Aucun coup joué.";
+    return;
+  }
+
+  let html = "";
+
+  for(let i=0;i<coups.length;i+=2){
+    const numero = Math.floor(i/2)+1;
+    const blanc = coups[i] || "";
+    const noir = coups[i+1] || "";
+
+    html += numero + ". " + blanc + "　" + noir + "<br>";
+  }
+
+  zone.innerHTML = html;
+}
+
+/* 7. FIN DE PARTIE */
+
+function verifierFinPartie(){
+  if(!chessGame || !chessGame.game_over()) return false;
+
+  if(chessGame.in_checkmate()){
+    actualiserStatut(
+      chessGame.turn() === "w"
+        ? "Échec et mat. J.A.R.V.I.S remporte la partie."
+        : "Échec et mat. Vous remportez la partie, Monsieur."
+    );
+  }else if(chessGame.in_draw()){
+    actualiserStatut("Partie nulle.");
+  }else{
+    actualiserStatut("La partie est terminée.");
+  }
+
+  return true;
+}
+
+/* 8. DÉMARRAGE */
+
+function attendreModuleEchecs(){
+  installerOngletEchecs();
+
+  if(!window.Chess){
+    const script = document.querySelector(
+      'script[src*="chess.min.js"]'
+    );
+
+    if(script){
+      script.addEventListener(
+        "load",
+        initialiserEchecs,
+        {once:true}
+      );
+    }
+  }
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    attendreModuleEchecs,
+    {once:true}
+  );
+}else{
+  attendreModuleEchecs();
+}
+
+})();
 </script>
 </body>
 </html>
